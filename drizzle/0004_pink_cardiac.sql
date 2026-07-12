@@ -1,0 +1,1 @@
+ALTER TABLE `cvs` MODIFY COLUMN `template` enum('modern','classic','minimal','executive','tech','creative','elegant','bold','corporate','academic','compact','timeline','infographic','newspaper','nordic','retro','stealth','gradient','brutalist','sidebar-light','two-page','portfolio','monochrome','atlas','swiss') NOT NULL DEFAULT 'modern';

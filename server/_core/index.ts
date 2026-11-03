@@ -7,7 +7,7 @@ import { registerAuthRoutes } from "./localAuth";
 import { registerStorageProxy } from "./storageProxy";
 import { appRouter } from "../routers";
 import { createContext } from "./context";
-import { serveStatic, setupVite } from "./vite";
+import { serveStatic } from "./static";
 import { runMigrations } from "../db";
 
 function isPortAvailable(port: number): Promise<boolean> {
@@ -53,7 +53,13 @@ async function startServer() {
   );
 
   if (process.env.NODE_ENV === "development") {
-    await setupVite(app, server);
+    try {
+      const { setupVite } = await import("./vite");
+      await setupVite(app, server);
+    } catch (err) {
+      console.warn("[Vite] Development server setup failed or Vite not available, falling back to static:", err);
+      serveStatic(app);
+    }
   } else {
     serveStatic(app);
   }

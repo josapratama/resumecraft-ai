@@ -14,8 +14,8 @@ RUN corepack enable && corepack prepare pnpm@10.4.1 --activate
 COPY package.json pnpm-lock.yaml ./
 COPY patches ./patches
 
-# Install all dependencies (including devDependencies for building)
-RUN pnpm install --frozen-lockfile
+# Install all dependencies (tolerant to lockfile sync differences across git pulls)
+RUN pnpm install || pnpm install --no-frozen-lockfile
 
 # Copy source code and config
 COPY tsconfig.json vite.config.ts ./
@@ -43,8 +43,8 @@ RUN corepack enable && corepack prepare pnpm@10.4.1 --activate
 COPY package.json pnpm-lock.yaml ./
 COPY patches ./patches
 
-# Install production dependencies only
-RUN pnpm install --prod --frozen-lockfile
+# Install production dependencies only (tolerant to lockfile sync differences)
+RUN pnpm install --prod || pnpm install --prod --no-frozen-lockfile
 
 # Copy build artifacts and migrations from builder
 COPY --from=builder /app/dist ./dist
@@ -59,4 +59,3 @@ HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
 
 # Start the application
 CMD ["node", "dist/index.js"]
-

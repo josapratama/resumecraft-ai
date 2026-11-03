@@ -4,13 +4,12 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useLocation } from "wouter";
 import { trpc } from "@/lib/trpc";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -30,10 +29,6 @@ import {
   Layout,
   ArrowRight,
   ExternalLink,
-  Target,
-  FileCheck,
-  ShieldCheck,
-  Bot,
 } from "lucide-react";
 import { toast } from "sonner";
 import ImportResumeModal from "@/components/ImportResumeModal";
@@ -113,12 +108,78 @@ const SHOWCASE_TEMPLATES = [
   { id: "timeline", name: "Timeline", category: "Unique", desc: "Visual career progression journey" },
 ];
 
+/**
+ * Standalone Dialog Component defined outside the parent to prevent
+ * unmounting and losing input focus on every keystroke.
+ */
+interface CreateResumeModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onSubmit: (title: string) => void;
+  isPending: boolean;
+}
+
+function CreateResumeModal({
+  isOpen,
+  onClose,
+  onSubmit,
+  isPending,
+}: CreateResumeModalProps) {
+  const [title, setTitle] = useState("");
+
+  // Reset input when dialog opens
+  useEffect(() => {
+    if (isOpen) {
+      setTitle("");
+    }
+  }, [isOpen]);
+
+  const handleSubmit = (e?: React.FormEvent) => {
+    e?.preventDefault();
+    const trimmed = title.trim();
+    if (!trimmed || isPending) return;
+    onSubmit(trimmed);
+  };
+
+  return (
+    <Dialog open={isOpen} onOpenChange={open => !open && onClose()}>
+      <DialogContent className="border border-neutral-200 rounded-2xl shadow-xl max-w-md">
+        <DialogHeader>
+          <DialogTitle className="text-lg font-bold text-neutral-900">
+            Create New Resume
+          </DialogTitle>
+        </DialogHeader>
+        <form onSubmit={handleSubmit} className="space-y-4 pt-2">
+          <div>
+            <Label className="text-xs font-semibold text-neutral-600 uppercase tracking-wider">
+              Resume Title
+            </Label>
+            <Input
+              value={title}
+              onChange={e => setTitle(e.target.value)}
+              placeholder="e.g. Senior Software Engineer - FAANG"
+              className="mt-1.5 border-neutral-300 focus:border-neutral-900 rounded-xl"
+              autoFocus
+            />
+          </div>
+          <Button
+            type="submit"
+            disabled={isPending || !title.trim()}
+            className="w-full bg-neutral-900 text-white hover:bg-neutral-800 rounded-xl h-10 font-semibold text-xs sm:text-sm shadow-xs"
+          >
+            {isPending ? "Creating Resume..." : "Create & Start Editing"}
+          </Button>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 export default function Home() {
   const { user, isAuthenticated, loading, logout } = useAuth();
   const [, navigate] = useLocation();
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isImportDialogOpen, setIsImportDialogOpen] = useState(false);
-  const [newCVTitle, setNewCVTitle] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTemplateFilter, setSelectedTemplateFilter] = useState("all");
 
@@ -130,36 +191,36 @@ export default function Home() {
 
   const createMutation = trpc.cv.create.useMutation({
     onSuccess: result => {
-      setNewCVTitle("");
       setIsCreateDialogOpen(false);
       if (result?.id) navigate(`/cv/${result.id}`);
+    },
+    onError: err => {
+      toast.error(`Failed to create resume: ${err.message || String(err)}`);
     },
   });
 
   const duplicateMutation = trpc.cv.duplicate.useMutation({
     onSuccess: () => {
-      toast.success("CV duplicated successfully!");
+      toast.success("Resume duplicated successfully!");
       utils.cv.list.invalidate();
     },
     onError: () => {
-      toast.error("Failed to duplicate CV");
+      toast.error("Failed to duplicate resume");
     },
   });
 
   const deleteMutation = trpc.cv.delete.useMutation({
     onSuccess: () => {
-      toast.success("CV deleted successfully!");
+      toast.success("Resume deleted successfully!");
       utils.cv.list.invalidate();
     },
     onError: () => {
-      toast.error("Failed to delete CV");
+      toast.error("Failed to delete resume");
     },
   });
 
-  const handleCreateCV = () => {
-    if (newCVTitle.trim()) {
-      createMutation.mutate({ title: newCVTitle.trim() });
-    }
+  const handleCreateSubmit = (title: string) => {
+    createMutation.mutate({ title });
   };
 
   // Filtered CV list based on search query & template
@@ -384,40 +445,6 @@ export default function Home() {
   // =========================================================================
   // AUTHENTICATED DASHBOARD
   // =========================================================================
-  const CreateCVDialog = () => (
-    <DialogContent className="border border-neutral-200 rounded-2xl shadow-xl max-w-md">
-      <DialogHeader>
-        <DialogTitle className="text-lg font-bold text-neutral-900">
-          Create New Resume
-        </DialogTitle>
-      </DialogHeader>
-      <div className="space-y-4 pt-2">
-        <div>
-          <Label className="text-xs font-semibold text-neutral-600 uppercase tracking-wider">
-            Resume Title
-          </Label>
-          <Input
-            value={newCVTitle}
-            onChange={e => setNewCVTitle(e.target.value)}
-            placeholder="e.g. Senior Software Engineer - FAANG"
-            className="mt-1.5 border-neutral-300 focus:border-neutral-900"
-            onKeyDown={e => {
-              if (e.key === "Enter") handleCreateCV();
-            }}
-            autoFocus
-          />
-        </div>
-        <Button
-          onClick={handleCreateCV}
-          disabled={createMutation.isPending || !newCVTitle.trim()}
-          className="w-full bg-neutral-900 text-white hover:bg-neutral-800 rounded-xl h-10 font-semibold"
-        >
-          {createMutation.isPending ? "Creating..." : "Create & Start Editing"}
-        </Button>
-      </div>
-    </DialogContent>
-  );
-
   return (
     <div className="min-h-screen bg-neutral-50 flex flex-col">
       {/* Top Header */}
@@ -451,22 +478,15 @@ export default function Home() {
                 <span className="sm:hidden">Import</span>
               </Button>
 
-              {/* New CV Modal Trigger */}
-              <Dialog
-                open={isCreateDialogOpen}
-                onOpenChange={setIsCreateDialogOpen}
+              {/* New CV Button Trigger */}
+              <Button
+                size="sm"
+                onClick={() => setIsCreateDialogOpen(true)}
+                className="bg-neutral-900 text-white hover:bg-neutral-800 gap-1.5 rounded-lg text-xs font-semibold h-9 shadow-sm"
               >
-                <DialogTrigger asChild>
-                  <Button
-                    size="sm"
-                    className="bg-neutral-900 text-white hover:bg-neutral-800 gap-1.5 rounded-lg text-xs font-semibold h-9 shadow-sm"
-                  >
-                    <Plus className="w-3.5 h-3.5" />
-                    <span>New Resume</span>
-                  </Button>
-                </DialogTrigger>
-                <CreateCVDialog />
-              </Dialog>
+                <Plus className="w-3.5 h-3.5" />
+                <span>New Resume</span>
+              </Button>
 
               <Button
                 variant="ghost"
@@ -684,25 +704,20 @@ export default function Home() {
             })}
 
             {/* Quick Add Card */}
-            <Dialog
-              open={isCreateDialogOpen}
-              onOpenChange={setIsCreateDialogOpen}
+            <Card
+              onClick={() => setIsCreateDialogOpen(true)}
+              className="border-2 border-dashed border-neutral-300 bg-white hover:border-neutral-900 hover:bg-neutral-50/50 transition-all duration-150 cursor-pointer flex flex-col items-center justify-center p-8 min-h-[220px] rounded-2xl group text-center"
             >
-              <DialogTrigger asChild>
-                <Card className="border-2 border-dashed border-neutral-300 bg-white hover:border-neutral-900 hover:bg-neutral-50/50 transition-all duration-150 cursor-pointer flex flex-col items-center justify-center p-8 min-h-[220px] rounded-2xl group text-center">
-                  <div className="w-12 h-12 rounded-2xl bg-neutral-100 group-hover:bg-neutral-900 group-hover:text-white text-neutral-500 flex items-center justify-center mb-3 transition-colors shadow-2xs">
-                    <Plus className="w-6 h-6" />
-                  </div>
-                  <h4 className="text-sm font-bold text-neutral-800 group-hover:text-neutral-900">
-                    Create New Resume
-                  </h4>
-                  <p className="text-xs text-neutral-400 mt-1">
-                    Start from an empty template or scratch
-                  </p>
-                </Card>
-              </DialogTrigger>
-              <CreateCVDialog />
-            </Dialog>
+              <div className="w-12 h-12 rounded-2xl bg-neutral-100 group-hover:bg-neutral-900 group-hover:text-white text-neutral-500 flex items-center justify-center mb-3 transition-colors shadow-2xs">
+                <Plus className="w-6 h-6" />
+              </div>
+              <h4 className="text-sm font-bold text-neutral-800 group-hover:text-neutral-900">
+                Create New Resume
+              </h4>
+              <p className="text-xs text-neutral-400 mt-1">
+                Start from an empty template or scratch
+              </p>
+            </Card>
           </div>
         ) : (
           /* Empty Search / Empty List State */
@@ -728,22 +743,25 @@ export default function Home() {
                 Clear Search
               </Button>
             ) : (
-              <Dialog
-                open={isCreateDialogOpen}
-                onOpenChange={setIsCreateDialogOpen}
+              <Button
+                onClick={() => setIsCreateDialogOpen(true)}
+                className="bg-neutral-900 text-white hover:bg-neutral-800 gap-2 rounded-xl text-xs font-semibold h-10 shadow-sm"
               >
-                <DialogTrigger asChild>
-                  <Button className="bg-neutral-900 text-white hover:bg-neutral-800 gap-2 rounded-xl text-xs font-semibold h-10 shadow-sm">
-                    <Plus className="w-4 h-4" />
-                    Create Your First Resume
-                  </Button>
-                </DialogTrigger>
-                <CreateCVDialog />
-              </Dialog>
+                <Plus className="w-4 h-4" />
+                Create Your First Resume
+              </Button>
             )}
           </div>
         )}
       </main>
+
+      {/* Standalone Create Resume Dialog */}
+      <CreateResumeModal
+        isOpen={isCreateDialogOpen}
+        onClose={() => setIsCreateDialogOpen(false)}
+        onSubmit={handleCreateSubmit}
+        isPending={createMutation.isPending}
+      />
 
       {/* AI Resume Importer Modal */}
       <ImportResumeModal

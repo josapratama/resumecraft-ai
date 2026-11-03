@@ -103,22 +103,20 @@ export default function Login() {
             <button
               type="button"
               onClick={() => switchMode("login")}
-              className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all ${
-                mode === "login"
+              className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all ${mode === "login"
                   ? "bg-white text-neutral-900 shadow-xs"
                   : "text-neutral-500 hover:text-neutral-800"
-              }`}
+                }`}
             >
               Sign In
             </button>
             <button
               type="button"
               onClick={() => switchMode("register")}
-              className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all ${
-                mode === "register"
+              className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all ${mode === "register"
                   ? "bg-white text-neutral-900 shadow-xs"
                   : "text-neutral-500 hover:text-neutral-800"
-              }`}
+                }`}
             >
               Register
             </button>

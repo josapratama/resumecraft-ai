@@ -100,4 +100,59 @@ export function SectionTitle({
   );
 }
 
+export function LanguagesDisplay({
+  languages,
+  textColor = "text-gray-800",
+  subColor = "text-gray-500",
+}: {
+  languages?: FullCVData["languages"];
+  textColor?: string;
+  subColor?: string;
+}) {
+  if (!languages || languages.length === 0) return null;
+  return (
+    <div className="flex flex-wrap gap-x-4 gap-y-1.5 text-xs">
+      {languages.map(l => (
+        <span key={l.id} className="inline-flex items-center gap-1.5">
+          <strong className={textColor}>{l.language}</strong>
+          <span className={subColor}>({l.proficiency})</span>
+        </span>
+      ))}
+    </div>
+  );
+}
+
+export function CustomSectionsDisplay({
+  customSections,
+  headingColor = "text-gray-800",
+  subColor = "text-gray-500",
+  descColor = "text-gray-700",
+}: {
+  customSections?: FullCVData["customSections"];
+  headingColor?: string;
+  subColor?: string;
+  descColor?: string;
+}) {
+  if (!customSections || customSections.length === 0) return null;
+  return (
+    <div className="space-y-3">
+      {customSections.map(cs => (
+        <div key={cs.id} className="text-xs">
+          <div className="flex justify-between items-baseline">
+            <span className={`font-semibold ${headingColor}`}>
+              {cs.title} {cs.subtitle && <span className="font-normal opacity-75">· {cs.subtitle}</span>}
+            </span>
+            {cs.date && <span className={`text-[11px] ${subColor}`}>{cs.date}</span>}
+          </div>
+          {cs.description && (
+            <p className={`mt-0.5 leading-relaxed whitespace-pre-line ${descColor}`}>
+              {cs.description}
+            </p>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export type { FullCVData };

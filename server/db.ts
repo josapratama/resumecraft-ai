@@ -1,6 +1,9 @@
 import { eq, sql, inArray } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
+import { migrate } from "drizzle-orm/mysql2/migrator";
 import mysql from "mysql2/promise";
+import path from "path";
+import fs from "fs";
 import {
   users,
   cvs,
@@ -16,6 +19,10 @@ import {
   InsertProject,
   certifications,
   InsertCertification,
+  languages,
+  InsertLanguage,
+  customSections,
+  InsertCustomSection,
 } from "../drizzle/schema";
 
 // Pool-based connection — required for Drizzle transactions (which need a
@@ -35,6 +42,39 @@ export async function getDb() {
   }
   // eslint-disable-next-line @typescript-eslint/no-unsafe-return
   return _db as ReturnType<typeof drizzle> | null;
+}
+
+export async function runMigrations() {
+  if (!process.env.DATABASE_URL) {
+    console.warn("[Database] DATABASE_URL is not set; skipping migrations.");
+    return;
+  }
+
+  const migrationsFolder = path.resolve(process.cwd(), "drizzle");
+  if (!fs.existsSync(migrationsFolder)) {
+    console.warn(`[Database] Migrations folder not found at ${migrationsFolder}; skipping auto-migration.`);
+    return;
+  }
+
+  const maxRetries = 10;
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      console.log(`[Database] Checking and running migrations (attempt ${attempt}/${maxRetries})...`);
+      const db = await getDb();
+      if (!db) {
+        throw new Error("Database pool could not be initialized");
+      }
+      await migrate(db, { migrationsFolder });
+      console.log("[Database] Database migrations applied successfully!");
+      return;
+    } catch (err: any) {
+      console.warn(`[Database] Migration attempt ${attempt} failed: ${err.message || err}`);
+      if (attempt === maxRetries) {
+        throw err;
+      }
+      await new Promise(res => setTimeout(res, 2000));
+    }
+  }
 }
 
 // ─── User Operations ──────────────────────────────────────────────────────────
@@ -217,11 +257,40 @@ export async function getCVById(cvId: number) {
 
 export async function updateCV(
   cvId: number,
-  data: { title?: string; template?: TemplateId }
+  data: {
+    title?: string;
+    template?: TemplateId;
+    isPublic?: number;
+    shareSlug?: string | null;
+    viewsCount?: number;
+    accentColor?: string | null;
+    fontFamily?: string | null;
+    targetRole?: string | null;
+  }
 ) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   return db.update(cvs).set(data).where(eq(cvs.id, cvId));
+}
+
+export async function getCVByShareSlug(slug: string) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const result = await db
+    .select()
+    .from(cvs)
+    .where(eq(cvs.shareSlug, slug))
+    .limit(1);
+  return result[0];
+}
+
+export async function incrementCVViews(cvId: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  return db
+    .update(cvs)
+    .set({ viewsCount: sql`${cvs.viewsCount} + 1` })
+    .where(eq(cvs.id, cvId));
 }
 
 export async function deleteCV(cvId: number) {
@@ -230,6 +299,8 @@ export async function deleteCV(cvId: number) {
   // Run all deletes inside a transaction so a mid-flight crash
   // doesn't leave orphaned rows or a ghost CV entry.
   await db.transaction(async tx => {
+    await tx.delete(languages).where(eq(languages.cvId, cvId));
+    await tx.delete(customSections).where(eq(customSections.cvId, cvId));
     await tx.delete(certifications).where(eq(certifications.cvId, cvId));
     await tx.delete(projects).where(eq(projects.cvId, cvId));
     await tx.delete(skills).where(eq(skills.cvId, cvId));
@@ -245,6 +316,7 @@ export type DuplicateCVInput = {
   userId: number;
   newTitle: string;
   template: TemplateId;
+  targetRole?: string;
 };
 
 /**
@@ -261,6 +333,7 @@ export async function duplicateCV(input: DuplicateCVInput) {
       userId: input.userId,
       title: input.newTitle,
       template: input.template,
+      targetRole: input.targetRole ?? null,
     });
     const [newCV] = await tx
       .select()
@@ -307,6 +380,18 @@ export async function duplicateCV(input: DuplicateCVInput) {
       .from(certifications)
       .where(eq(certifications.cvId, input.sourceCvId))
       .orderBy(certifications.position);
+
+    const srcLangs = await tx
+      .select()
+      .from(languages)
+      .where(eq(languages.cvId, input.sourceCvId))
+      .orderBy(languages.position);
+
+    const srcCustoms = await tx
+      .select()
+      .from(customSections)
+      .where(eq(customSections.cvId, input.sourceCvId))
+      .orderBy(customSections.position);
 
     // 3. Copy personal info (atomic upsert)
     await tx
@@ -380,6 +465,27 @@ export async function duplicateCV(input: DuplicateCVInput) {
         issueDate: cert.issueDate,
         expiryDate: cert.expiryDate,
         link: cert.link,
+      });
+    }
+
+    for (const lang of srcLangs) {
+      await tx.insert(languages).values({
+        cvId: newCV.id,
+        position: lang.position,
+        language: lang.language,
+        proficiency: lang.proficiency,
+      });
+    }
+
+    for (const item of srcCustoms) {
+      await tx.insert(customSections).values({
+        cvId: newCV.id,
+        position: item.position,
+        category: item.category,
+        title: item.title,
+        subtitle: item.subtitle,
+        date: item.date,
+        description: item.description,
       });
     }
 
@@ -771,4 +877,336 @@ export async function reorderCertifications(cvId: number, ids: number[]) {
     .update(certifications)
     .set({ position: sql`CASE ${certifications.id} ${caseExpr} END` })
     .where(eq(certifications.cvId, cvId));
+}
+
+// ─── Languages ────────────────────────────────────────────────────────────────
+
+export async function getLanguages(cvId: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  return db
+    .select()
+    .from(languages)
+    .where(eq(languages.cvId, cvId))
+    .orderBy(languages.position);
+}
+
+export async function createLanguage(
+  cvId: number,
+  data: Omit<InsertLanguage, "cvId" | "position">
+) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const maxPosition = await db
+    .select({ max: sql<number>`MAX(position)` })
+    .from(languages)
+    .where(eq(languages.cvId, cvId));
+  const position = (maxPosition[0]?.max ?? -1) + 1;
+  await db.insert(languages).values({ ...data, cvId, position });
+  const rows = await db
+    .select()
+    .from(languages)
+    .where(eq(languages.cvId, cvId))
+    .orderBy(languages.position);
+  return rows[rows.length - 1];
+}
+
+export async function updateLanguage(
+  id: number,
+  data: Partial<InsertLanguage>
+) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  return db.update(languages).set(data).where(eq(languages.id, id));
+}
+
+export async function deleteLanguage(id: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  return db.delete(languages).where(eq(languages.id, id));
+}
+
+export async function reorderLanguages(cvId: number, ids: number[]) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  if (ids.length === 0) return;
+  const caseExpr = sql.join(
+    ids.map((id, i) => sql`WHEN ${id} THEN ${i}`),
+    sql` `
+  );
+  await db
+    .update(languages)
+    .set({ position: sql`CASE ${languages.id} ${caseExpr} END` })
+    .where(eq(languages.cvId, cvId));
+}
+
+// ─── Custom Sections (Awards, Volunteer, Publications, etc.) ─────────────────
+
+export async function getCustomSections(cvId: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  return db
+    .select()
+    .from(customSections)
+    .where(eq(customSections.cvId, cvId))
+    .orderBy(customSections.position);
+}
+
+export async function createCustomSection(
+  cvId: number,
+  data: Omit<InsertCustomSection, "cvId" | "position">
+) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const maxPosition = await db
+    .select({ max: sql<number>`MAX(position)` })
+    .from(customSections)
+    .where(eq(customSections.cvId, cvId));
+  const position = (maxPosition[0]?.max ?? -1) + 1;
+  await db.insert(customSections).values({ ...data, cvId, position });
+  const rows = await db
+    .select()
+    .from(customSections)
+    .where(eq(customSections.cvId, cvId))
+    .orderBy(customSections.position);
+  return rows[rows.length - 1];
+}
+
+export async function updateCustomSection(
+  id: number,
+  data: Partial<InsertCustomSection>
+) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  return db.update(customSections).set(data).where(eq(customSections.id, id));
+}
+
+export async function deleteCustomSection(id: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  return db.delete(customSections).where(eq(customSections.id, id));
+}
+
+export async function reorderCustomSections(cvId: number, ids: number[]) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  if (ids.length === 0) return;
+  const caseExpr = sql.join(
+    ids.map((id, i) => sql`WHEN ${id} THEN ${i}`),
+    sql` `
+  );
+  await db
+    .update(customSections)
+    .set({ position: sql`CASE ${customSections.id} ${caseExpr} END` })
+    .where(eq(customSections.cvId, cvId));
+}
+
+// ─── Bulk Create CV from AI Parsed Data ──────────────────────────────────────
+
+export interface ParsedResumePayload {
+  personalInfo?: {
+    fullName?: string;
+    email?: string;
+    phone?: string;
+    location?: string;
+    professionalSummary?: string;
+  };
+  workExperiences?: Array<{
+    jobTitle: string;
+    company: string;
+    location?: string;
+    startDate?: string;
+    endDate?: string;
+    description?: string;
+  }>;
+  educations?: Array<{
+    degree: string;
+    field: string;
+    school: string;
+    location?: string;
+    graduationDate?: string;
+    description?: string;
+  }>;
+  skills?: Array<{
+    category: string;
+    skillName: string;
+    proficiency?: "beginner" | "intermediate" | "advanced" | "expert";
+  }>;
+  projects?: Array<{
+    projectName: string;
+    description?: string;
+    technologies?: string;
+    link?: string;
+    startDate?: string;
+    endDate?: string;
+  }>;
+  certifications?: Array<{
+    certificationName: string;
+    issuer: string;
+    issueDate?: string;
+    expiryDate?: string;
+    link?: string;
+  }>;
+  languages?: Array<{
+    language: string;
+    proficiency?: string;
+  }>;
+  customSections?: Array<{
+    category: string;
+    title: string;
+    subtitle?: string;
+    date?: string;
+    description?: string;
+  }>;
+}
+
+export async function bulkCreateCVFromParsedData(
+  userId: number,
+  title: string,
+  template: TemplateId,
+  data: ParsedResumePayload
+) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  return db.transaction(async tx => {
+    // 1. Insert CV
+    await tx.insert(cvs).values({
+      userId,
+      title,
+      template,
+    });
+    const [newCV] = await tx
+      .select()
+      .from(cvs)
+      .where(eq(cvs.userId, userId))
+      .orderBy(sql`${cvs.id} DESC`)
+      .limit(1);
+
+    if (!newCV) throw new Error("Failed to create CV from parsed data");
+
+    // 2. Personal info
+    if (data.personalInfo) {
+      await tx.insert(personalInfos).values({
+        cvId: newCV.id,
+        fullName: data.personalInfo.fullName ?? null,
+        email: data.personalInfo.email ?? null,
+        phone: data.personalInfo.phone ?? null,
+        location: data.personalInfo.location ?? null,
+        professionalSummary: data.personalInfo.professionalSummary ?? null,
+      });
+    }
+
+    // 3. Work experiences
+    if (data.workExperiences && data.workExperiences.length > 0) {
+      for (let i = 0; i < data.workExperiences.length; i++) {
+        const exp = data.workExperiences[i];
+        await tx.insert(workExperiences).values({
+          cvId: newCV.id,
+          position: i,
+          jobTitle: exp.jobTitle,
+          company: exp.company,
+          location: exp.location ?? null,
+          startDate: exp.startDate ?? null,
+          endDate: exp.endDate ?? null,
+          description: exp.description ?? null,
+        });
+      }
+    }
+
+    // 4. Educations
+    if (data.educations && data.educations.length > 0) {
+      for (let i = 0; i < data.educations.length; i++) {
+        const edu = data.educations[i];
+        await tx.insert(educations).values({
+          cvId: newCV.id,
+          position: i,
+          degree: edu.degree,
+          field: edu.field,
+          school: edu.school,
+          location: edu.location ?? null,
+          graduationDate: edu.graduationDate ?? null,
+          description: edu.description ?? null,
+        });
+      }
+    }
+
+    // 5. Skills
+    if (data.skills && data.skills.length > 0) {
+      for (let i = 0; i < data.skills.length; i++) {
+        const s = data.skills[i];
+        await tx.insert(skills).values({
+          cvId: newCV.id,
+          position: i,
+          category: s.category || "General",
+          skillName: s.skillName,
+          proficiency: s.proficiency ?? null,
+        });
+      }
+    }
+
+    // 6. Projects
+    if (data.projects && data.projects.length > 0) {
+      for (let i = 0; i < data.projects.length; i++) {
+        const p = data.projects[i];
+        await tx.insert(projects).values({
+          cvId: newCV.id,
+          position: i,
+          projectName: p.projectName,
+          description: p.description ?? null,
+          technologies: p.technologies ?? null,
+          link: p.link ?? null,
+          startDate: p.startDate ?? null,
+          endDate: p.endDate ?? null,
+        });
+      }
+    }
+
+    // 7. Certifications
+    if (data.certifications && data.certifications.length > 0) {
+      for (let i = 0; i < data.certifications.length; i++) {
+        const c = data.certifications[i];
+        await tx.insert(certifications).values({
+          cvId: newCV.id,
+          position: i,
+          certificationName: c.certificationName,
+          issuer: c.issuer,
+          issueDate: c.issueDate ?? null,
+          expiryDate: c.expiryDate ?? null,
+          link: c.link ?? null,
+        });
+      }
+    }
+
+    // 8. Languages
+    if (data.languages && data.languages.length > 0) {
+      for (let i = 0; i < data.languages.length; i++) {
+        const l = data.languages[i];
+        await tx.insert(languages).values({
+          cvId: newCV.id,
+          position: i,
+          language: l.language,
+          proficiency: l.proficiency ?? "Professional Working",
+        });
+      }
+    }
+
+    // 9. Custom Sections
+    if (data.customSections && data.customSections.length > 0) {
+      for (let i = 0; i < data.customSections.length; i++) {
+        const cs = data.customSections[i];
+        await tx.insert(customSections).values({
+          cvId: newCV.id,
+          position: i,
+          category: cs.category || "Other",
+          title: cs.title,
+          subtitle: cs.subtitle ?? null,
+          date: cs.date ?? null,
+          description: cs.description ?? null,
+        });
+      }
+    }
+
+    return newCV;
+  });
 }

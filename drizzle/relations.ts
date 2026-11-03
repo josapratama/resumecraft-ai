@@ -8,6 +8,8 @@ import {
   skills,
   projects,
   certifications,
+  languages,
+  customSections,
 } from "./schema";
 
 export const usersRelations = relations(users, ({ many }) => ({
@@ -25,6 +27,8 @@ export const cvsRelations = relations(cvs, ({ one, many }) => ({
   skills: many(skills),
   projects: many(projects),
   certifications: many(certifications),
+  languages: many(languages),
+  customSections: many(customSections),
 }));
 
 export const personalInfosRelations = relations(personalInfos, ({ one }) => ({
@@ -52,4 +56,12 @@ export const projectsRelations = relations(projects, ({ one }) => ({
 
 export const certificationsRelations = relations(certifications, ({ one }) => ({
   cv: one(cvs, { fields: [certifications.cvId], references: [cvs.id] }),
+}));
+
+export const languagesRelations = relations(languages, ({ one }) => ({
+  cv: one(cvs, { fields: [languages.cvId], references: [cvs.id] }),
+}));
+
+export const customSectionsRelations = relations(customSections, ({ one }) => ({
+  cv: one(cvs, { fields: [customSections.cvId], references: [cvs.id] }),
 }));

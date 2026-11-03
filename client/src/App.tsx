@@ -7,6 +7,7 @@ import { ThemeProvider } from "./contexts/ThemeContext";
 import Home from "./pages/Home";
 import CVEditor from "./pages/CVEditor";
 import Login from "./pages/Login";
+import PublicCV from "./pages/PublicCV";
 
 function Router() {
   return (
@@ -14,6 +15,8 @@ function Router() {
       <Route path="/" component={Home} />
       <Route path="/login" component={Login} />
       <Route path="/cv/:cvId" component={CVEditor} />
+      <Route path="/p/:slug" component={PublicCV} />
+      <Route path="/share/:slug" component={PublicCV} />
       <Route path="/404" component={NotFound} />
       <Route component={NotFound} />
     </Switch>

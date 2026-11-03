@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
-import { protectedProcedure, router } from "./_core/trpc";
+import { protectedProcedure, publicProcedure, router } from "./_core/trpc";
 import {
   createCV,
   getCVsByUserId,
@@ -40,6 +40,18 @@ import {
   updateCertification,
   deleteCertification,
   reorderCertifications,
+  getLanguages,
+  createLanguage,
+  updateLanguage,
+  deleteLanguage,
+  reorderLanguages,
+  getCustomSections,
+  createCustomSection,
+  updateCustomSection,
+  deleteCustomSection,
+  reorderCustomSections,
+  getCVByShareSlug,
+  incrementCVViews,
 } from "./db";
 
 const templateEnum = z.enum([
@@ -603,6 +615,240 @@ export const cvRouter = router({
       }),
   }),
 
+  languages: router({
+    list: protectedProcedure
+      .input(z.object({ cvId: z.number() }))
+      .query(async ({ ctx, input }) => {
+        const cv = await getCVById(input.cvId);
+        if (!cv) throw new TRPCError({ code: "NOT_FOUND", message: "CV not found" });
+        if (cv.userId !== ctx.user.id) throw new TRPCError({ code: "FORBIDDEN", message: "Unauthorized" });
+        return getLanguages(input.cvId);
+      }),
+
+    create: protectedProcedure
+      .input(
+        z.object({
+          cvId: z.number(),
+          language: shortStr,
+          proficiency: z.string().trim().max(64).default("Professional Working"),
+        })
+      )
+      .mutation(async ({ ctx, input }) => {
+        const cv = await getCVById(input.cvId);
+        if (!cv) throw new TRPCError({ code: "NOT_FOUND", message: "CV not found" });
+        if (cv.userId !== ctx.user.id) throw new TRPCError({ code: "FORBIDDEN", message: "Unauthorized" });
+        return createLanguage(input.cvId, {
+          language: input.language,
+          proficiency: input.proficiency,
+        });
+      }),
+
+    update: protectedProcedure
+      .input(
+        z.object({
+          id: z.number(),
+          language: shortStr.optional(),
+          proficiency: z.string().trim().max(64).optional(),
+        })
+      )
+      .mutation(async ({ ctx, input }) => {
+        const { id, ...data } = input;
+        return updateLanguage(id, data);
+      }),
+
+    delete: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ ctx, input }) => {
+        return deleteLanguage(input.id);
+      }),
+
+    reorder: protectedProcedure
+      .input(z.object({ cvId: z.number(), ids: z.array(z.number()) }))
+      .mutation(async ({ ctx, input }) => {
+        const cv = await getCVById(input.cvId);
+        if (!cv) throw new TRPCError({ code: "NOT_FOUND", message: "CV not found" });
+        if (cv.userId !== ctx.user.id) throw new TRPCError({ code: "FORBIDDEN", message: "Unauthorized" });
+        return reorderLanguages(input.cvId, input.ids);
+      }),
+  }),
+
+  customSections: router({
+    list: protectedProcedure
+      .input(z.object({ cvId: z.number() }))
+      .query(async ({ ctx, input }) => {
+        const cv = await getCVById(input.cvId);
+        if (!cv) throw new TRPCError({ code: "NOT_FOUND", message: "CV not found" });
+        if (cv.userId !== ctx.user.id) throw new TRPCError({ code: "FORBIDDEN", message: "Unauthorized" });
+        return getCustomSections(input.cvId);
+      }),
+
+    create: protectedProcedure
+      .input(
+        z.object({
+          cvId: z.number(),
+          category: shortStr,
+          title: shortStr,
+          subtitle: shortStr.optional(),
+          date: z.string().trim().max(64).optional(),
+          description: longStr.optional(),
+        })
+      )
+      .mutation(async ({ ctx, input }) => {
+        const cv = await getCVById(input.cvId);
+        if (!cv) throw new TRPCError({ code: "NOT_FOUND", message: "CV not found" });
+        if (cv.userId !== ctx.user.id) throw new TRPCError({ code: "FORBIDDEN", message: "Unauthorized" });
+        return createCustomSection(input.cvId, {
+          category: input.category,
+          title: input.title,
+          subtitle: input.subtitle,
+          date: input.date,
+          description: input.description,
+        });
+      }),
+
+    update: protectedProcedure
+      .input(
+        z.object({
+          id: z.number(),
+          category: shortStr.optional(),
+          title: shortStr.optional(),
+          subtitle: shortStr.optional(),
+          date: z.string().trim().max(64).optional(),
+          description: longStr.optional(),
+        })
+      )
+      .mutation(async ({ ctx, input }) => {
+        const { id, ...data } = input;
+        return updateCustomSection(id, data);
+      }),
+
+    delete: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ ctx, input }) => {
+        return deleteCustomSection(input.id);
+      }),
+
+    reorder: protectedProcedure
+      .input(z.object({ cvId: z.number(), ids: z.array(z.number()) }))
+      .mutation(async ({ ctx, input }) => {
+        const cv = await getCVById(input.cvId);
+        if (!cv) throw new TRPCError({ code: "NOT_FOUND", message: "CV not found" });
+        if (cv.userId !== ctx.user.id) throw new TRPCError({ code: "FORBIDDEN", message: "Unauthorized" });
+        return reorderCustomSections(input.cvId, input.ids);
+      }),
+  }),
+
+  updateDesign: protectedProcedure
+    .input(
+      z.object({
+        cvId: z.number(),
+        accentColor: z.string().trim().max(32).optional(),
+        fontFamily: z.string().trim().max(64).optional(),
+        targetRole: z.string().trim().max(255).optional(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const cv = await getCVById(input.cvId);
+      if (!cv) throw new TRPCError({ code: "NOT_FOUND", message: "CV not found" });
+      if (cv.userId !== ctx.user.id) throw new TRPCError({ code: "FORBIDDEN", message: "Unauthorized" });
+      return updateCV(input.cvId, {
+        accentColor: input.accentColor,
+        fontFamily: input.fontFamily,
+        targetRole: input.targetRole,
+      });
+    }),
+
+  togglePublicShare: protectedProcedure
+    .input(
+      z.object({
+        cvId: z.number(),
+        isPublic: z.boolean(),
+        customSlug: z.string().trim().max(128).optional(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const cv = await getCVById(input.cvId);
+      if (!cv) throw new TRPCError({ code: "NOT_FOUND", message: "CV not found" });
+      if (cv.userId !== ctx.user.id) throw new TRPCError({ code: "FORBIDDEN", message: "Unauthorized" });
+
+      let slug = cv.shareSlug;
+      if (input.isPublic && !slug) {
+        // Generate a clean url-friendly slug
+        const randomPart = Math.random().toString(36).substring(2, 8);
+        const titleSlug = (cv.title || "cv")
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, "-")
+          .replace(/^-|-$/g, "");
+        slug = input.customSlug || `${titleSlug}-${randomPart}`;
+      } else if (input.customSlug) {
+        slug = input.customSlug;
+      }
+
+      await updateCV(input.cvId, {
+        isPublic: input.isPublic ? 1 : 0,
+        shareSlug: slug,
+      });
+
+      return {
+        isPublic: input.isPublic,
+        shareSlug: slug,
+      };
+    }),
+
+  getPublic: publicProcedure
+    .input(z.object({ identifier: z.string().trim() }))
+    .query(async ({ input }) => {
+      let cv = null;
+      const numericId = parseInt(input.identifier, 10);
+      if (!isNaN(numericId) && String(numericId) === input.identifier) {
+        cv = await getCVById(numericId);
+      } else {
+        cv = await getCVByShareSlug(input.identifier);
+      }
+
+      if (!cv || !cv.isPublic) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "This CV is private or does not exist",
+        });
+      }
+
+      // Increment views count silently
+      incrementCVViews(cv.id).catch(() => {});
+
+      const [
+        personalInfo,
+        workExperiences,
+        educations,
+        skills,
+        projects,
+        certifications,
+        langs,
+        customs,
+      ] = await Promise.all([
+        getOrCreatePersonalInfo(cv.id),
+        getWorkExperiences(cv.id),
+        getEducations(cv.id),
+        getSkills(cv.id),
+        getProjects(cv.id),
+        getCertifications(cv.id),
+        getLanguages(cv.id),
+        getCustomSections(cv.id),
+      ]);
+
+      return {
+        cv,
+        personalInfo,
+        workExperiences,
+        educations,
+        skills,
+        projects,
+        certifications,
+        languages: langs,
+        customSections: customs,
+      };
+    }),
+
   loadFull: protectedProcedure
     .input(z.object({ cvId: z.number() }))
     .query(async ({ ctx, input }) => {
@@ -619,6 +865,8 @@ export const cvRouter = router({
         skills,
         projects,
         certifications,
+        langs,
+        customs,
       ] = await Promise.all([
         getOrCreatePersonalInfo(input.cvId),
         getWorkExperiences(input.cvId),
@@ -626,6 +874,8 @@ export const cvRouter = router({
         getSkills(input.cvId),
         getProjects(input.cvId),
         getCertifications(input.cvId),
+        getLanguages(input.cvId),
+        getCustomSections(input.cvId),
       ]);
 
       return {
@@ -636,11 +886,19 @@ export const cvRouter = router({
         skills,
         projects,
         certifications,
+        languages: langs,
+        customSections: customs,
       };
     }),
 
   duplicate: protectedProcedure
-    .input(z.object({ cvId: z.number() }))
+    .input(
+      z.object({
+        cvId: z.number(),
+        newTitle: z.string().trim().optional(),
+        targetRole: z.string().trim().optional(),
+      })
+    )
     .mutation(async ({ ctx, input }) => {
       const cv = await getCVById(input.cvId);
       if (!cv)
@@ -652,8 +910,9 @@ export const cvRouter = router({
       return duplicateCV({
         sourceCvId: input.cvId,
         userId: ctx.user.id,
-        newTitle: `${cv.title} (Copy)`,
+        newTitle: input.newTitle || `${cv.title} (Copy)`,
         template: cv.template,
+        targetRole: input.targetRole,
       });
     }),
 });

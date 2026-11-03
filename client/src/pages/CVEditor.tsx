@@ -30,10 +30,27 @@ import EducationForm from "@/components/CVEditor/EducationForm";
 import SkillsForm from "@/components/CVEditor/SkillsForm";
 import ProjectsForm from "@/components/CVEditor/ProjectsForm";
 import CertificationsForm from "@/components/CVEditor/CertificationsForm";
+import LanguagesForm from "@/components/CVEditor/LanguagesForm";
+import CustomSectionsForm from "@/components/CVEditor/CustomSectionsForm";
+import ATSScoreModal from "@/components/CVEditor/ATSScoreModal";
+import CoverLetterModal from "@/components/CVEditor/CoverLetterModal";
+import InterviewPrepModal from "@/components/CVEditor/InterviewPrepModal";
+import TranslateCVModal from "@/components/CVEditor/TranslateCVModal";
+import SharePublicModal from "@/components/CVEditor/SharePublicModal";
+import StyleCustomizerModal from "@/components/CVEditor/StyleCustomizerModal";
 import CVPreview from "@/components/CVEditor/CVPreview";
 import { AIChatBox } from "@/components/AIChatBox";
 import { useAuth } from "@/_core/hooks/useAuth";
 import type { FullCVData, TemplateId } from "@/types/cv";
+import {
+  Sparkles,
+  Share2,
+  Palette,
+  FileText,
+  Target,
+  HelpCircle,
+  Languages as LanguagesIcon,
+} from "lucide-react";
 
 /** Narrows AIChatBox Message to the roles the AI endpoint actually accepts. */
 type ChatMessage = { role: "user" | "assistant"; content: string };
@@ -59,6 +76,18 @@ const SECTIONS = [
     label: "Certifications",
     shortLabel: "Certs",
     icon: "🏆",
+  },
+  {
+    id: "languages",
+    label: "Languages",
+    shortLabel: "Langs",
+    icon: "🌐",
+  },
+  {
+    id: "custom",
+    label: "Additional",
+    shortLabel: "Custom",
+    icon: "⭐",
   },
 ];
 
@@ -104,6 +133,15 @@ export default function CVEditor() {
   const [template, setTemplate] = useState<TemplateId>("modern");
   const [isExporting, setIsExporting] = useState(false);
   const [showAIChat, setShowAIChat] = useState(false);
+
+  // Career AI and utility modals
+  const [showATSModal, setShowATSModal] = useState(false);
+  const [showCoverLetterModal, setShowCoverLetterModal] = useState(false);
+  const [showInterviewModal, setShowInterviewModal] = useState(false);
+  const [showTranslateModal, setShowTranslateModal] = useState(false);
+  const [showShareModal, setShowShareModal] = useState(false);
+  const [showStyleModal, setShowStyleModal] = useState(false);
+
   // Only user/assistant messages — system prompt is injected server-side
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
 
@@ -301,7 +339,88 @@ export default function CVEditor() {
                 </p>
               </div>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
+              {/* AI Career Tools Dropdown */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="gap-2 border-indigo-600 text-indigo-700 bg-indigo-50/50 hover:bg-indigo-100"
+                  >
+                    <Sparkles className="w-3.5 h-3.5 text-indigo-600" />
+                    <span className="hidden sm:inline font-semibold">AI Tools</span>
+                    <ChevronDown className="w-3 h-3 opacity-60" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56">
+                  <DropdownMenuItem
+                    onClick={() => setShowATSModal(true)}
+                    className="gap-2.5 cursor-pointer font-medium"
+                  >
+                    <Target className="w-4 h-4 text-indigo-600" />
+                    <div>
+                      <p className="text-xs font-semibold">ATS Compatibility Score</p>
+                      <p className="text-[10px] text-gray-500">Match against job vacancies</p>
+                    </div>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={() => setShowCoverLetterModal(true)}
+                    className="gap-2.5 cursor-pointer font-medium"
+                  >
+                    <FileText className="w-4 h-4 text-blue-600" />
+                    <div>
+                      <p className="text-xs font-semibold">Generate Cover Letter</p>
+                      <p className="text-[10px] text-gray-500">Auto-tailored from this CV</p>
+                    </div>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={() => setShowInterviewModal(true)}
+                    className="gap-2.5 cursor-pointer font-medium"
+                  >
+                    <HelpCircle className="w-4 h-4 text-purple-600" />
+                    <div>
+                      <p className="text-xs font-semibold">Interview Question Prep</p>
+                      <p className="text-[10px] text-gray-500">STAR questions & tips</p>
+                    </div>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={() => setShowTranslateModal(true)}
+                    className="gap-2.5 cursor-pointer font-medium"
+                  >
+                    <LanguagesIcon className="w-4 h-4 text-emerald-600" />
+                    <div>
+                      <p className="text-xs font-semibold">Translate CV (EN ⇄ ID)</p>
+                      <p className="text-[10px] text-gray-500">Professional localization</p>
+                    </div>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+
+              {/* Theme & Style */}
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowStyleModal(true)}
+                className="gap-1.5 border-gray-300"
+                title="Customize Accent Color & Typography"
+              >
+                <Palette className="w-3.5 h-3.5 text-gray-700" />
+                <span className="hidden md:inline">Theme</span>
+              </Button>
+
+              {/* Share Public Link */}
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowShareModal(true)}
+                className="gap-1.5 border-gray-300"
+                title="Share Public Link"
+              >
+                <Share2 className="w-3.5 h-3.5 text-blue-600" />
+                <span className="hidden md:inline">Share</span>
+              </Button>
+
               <Button
                 variant="outline"
                 size="sm"
@@ -425,18 +544,20 @@ export default function CVEditor() {
               onValueChange={setActiveSection}
               className="w-full"
             >
-              <TabsList className="grid w-full grid-cols-6 mb-8 bg-white border border-black">
+              <TabsList className="grid w-full grid-cols-4 sm:grid-cols-8 mb-8 bg-white border border-black h-auto p-1">
                 {SECTIONS.map(section => (
                   <TabsTrigger
                     key={section.id}
                     value={section.id}
-                    className="text-xs data-[state=active]:bg-black data-[state=active]:text-white"
+                    className="text-xs py-2 data-[state=active]:bg-black data-[state=active]:text-white"
                   >
-                    <span className="hidden lg:inline">{section.label}</span>
-                    <span className="hidden md:inline lg:hidden">
+                    <span className="hidden xl:inline">{section.label}</span>
+                    <span className="hidden sm:inline xl:hidden">
                       {section.shortLabel}
                     </span>
-                    <span className="md:hidden">{section.icon}</span>
+                    <span className="sm:hidden flex items-center gap-1">
+                      {section.icon} <span className="text-[11px]">{section.shortLabel}</span>
+                    </span>
                   </TabsTrigger>
                 ))}
               </TabsList>
@@ -494,6 +615,24 @@ export default function CVEditor() {
                   }
                 />
               </TabsContent>
+
+              <TabsContent value="languages">
+                <LanguagesForm
+                  cvId={cvIdNum}
+                  initialData={cvData.languages}
+                  onDataChange={languages => handleDataChange({ languages })}
+                />
+              </TabsContent>
+
+              <TabsContent value="custom">
+                <CustomSectionsForm
+                  cvId={cvIdNum}
+                  initialData={cvData.customSections}
+                  onDataChange={customSections =>
+                    handleDataChange({ customSections })
+                  }
+                />
+              </TabsContent>
             </Tabs>
           </div>
 
@@ -530,6 +669,62 @@ export default function CVEditor() {
           </div>
         </div>
       </div>
+
+      {/* Career AI & Feature Modals */}
+      <ATSScoreModal
+        cvId={cvIdNum}
+        isOpen={showATSModal}
+        onClose={() => setShowATSModal(false)}
+        defaultRole={cvData.cv.targetRole || cvData.cv.title}
+      />
+
+      <CoverLetterModal
+        cvId={cvIdNum}
+        isOpen={showCoverLetterModal}
+        onClose={() => setShowCoverLetterModal(false)}
+        defaultRole={cvData.cv.targetRole || cvData.cv.title}
+      />
+
+      <InterviewPrepModal
+        cvId={cvIdNum}
+        isOpen={showInterviewModal}
+        onClose={() => setShowInterviewModal(false)}
+        defaultRole={cvData.cv.targetRole || cvData.cv.title}
+      />
+
+      <TranslateCVModal
+        cvId={cvIdNum}
+        isOpen={showTranslateModal}
+        onClose={() => setShowTranslateModal(false)}
+        currentTitle={cvData.cv.title}
+      />
+
+      <SharePublicModal
+        cvId={cvIdNum}
+        isOpen={showShareModal}
+        onClose={() => setShowShareModal(false)}
+        isPublic={cvData.cv.isPublic}
+        shareSlug={cvData.cv.shareSlug}
+        viewsCount={cvData.cv.viewsCount}
+      />
+
+      <StyleCustomizerModal
+        cvId={cvIdNum}
+        isOpen={showStyleModal}
+        onClose={() => setShowStyleModal(false)}
+        currentAccent={cvData.cv.accentColor}
+        currentFont={cvData.cv.fontFamily}
+        onStyleChange={style => {
+          setPreviewData(prev =>
+            prev
+              ? {
+                  ...prev,
+                  cv: { ...prev.cv, ...style },
+                }
+              : prev
+          );
+        }}
+      />
     </div>
   );
 }

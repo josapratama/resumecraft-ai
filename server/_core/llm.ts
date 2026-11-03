@@ -218,15 +218,13 @@ const normalizeToolChoice = (
 };
 
 const resolveApiUrl = () => {
-  if (!ENV.forgeApiUrl || ENV.forgeApiUrl.trim().length === 0) {
-    throw new Error("BUILT_IN_FORGE_API_URL is not configured");
-  }
-  return `${ENV.forgeApiUrl.replace(/\/$/, "")}/v1/chat/completions`;
+  const base = ENV.forgeApiUrl || "https://api.openai.com";
+  return `${base.replace(/\/$/, "")}/v1/chat/completions`;
 };
 
 const assertApiKey = () => {
   if (!ENV.forgeApiKey) {
-    throw new Error("OPENAI_API_KEY is not configured");
+    throw new Error("AI API Key (BUILT_IN_FORGE_API_KEY or OPENAI_API_KEY) is not configured");
   }
 };
 
@@ -365,11 +363,8 @@ export async function invokeLLM(params: InvokeParams): Promise<InvokeResult> {
 
   const payload: Record<string, unknown> = {
     messages: messages.map(normalizeMessage),
+    model: ENV.aiModel || model || "gpt-4o-mini",
   };
-
-  if (model) {
-    payload.model = model;
-  }
 
   if (tools && tools.length > 0) {
     payload.tools = tools;

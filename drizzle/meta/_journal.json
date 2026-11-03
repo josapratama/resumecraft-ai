@@ -36,6 +36,13 @@
       "when": 1783844666847,
       "tag": "0004_pink_cardiac",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "5",
+      "when": 1783950000000,
+      "tag": "0005_rich_features",
+      "breakpoints": true
     }
   ]
 }

@@ -57,6 +57,12 @@ export const cvs = mysqlTable("cvs", {
   ])
     .default("modern")
     .notNull(),
+  isPublic: int("isPublic").default(0).notNull(),
+  shareSlug: varchar("shareSlug", { length: 128 }),
+  viewsCount: int("viewsCount").default(0).notNull(),
+  accentColor: varchar("accentColor", { length: 32 }),
+  fontFamily: varchar("fontFamily", { length: 64 }),
+  targetRole: varchar("targetRole", { length: 255 }),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });
@@ -177,3 +183,38 @@ export const certifications = mysqlTable("certifications", {
 
 export type Certification = typeof certifications.$inferSelect;
 export type InsertCertification = typeof certifications.$inferInsert;
+
+export const languages = mysqlTable("languages", {
+  id: int("id").autoincrement().primaryKey(),
+  cvId: int("cvId")
+    .notNull()
+    .references(() => cvs.id),
+  position: int("position").notNull(),
+  language: varchar("language", { length: 128 }).notNull(),
+  proficiency: varchar("proficiency", { length: 64 })
+    .default("Professional Working")
+    .notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type Language = typeof languages.$inferSelect;
+export type InsertLanguage = typeof languages.$inferInsert;
+
+export const customSections = mysqlTable("customSections", {
+  id: int("id").autoincrement().primaryKey(),
+  cvId: int("cvId")
+    .notNull()
+    .references(() => cvs.id),
+  position: int("position").notNull(),
+  category: varchar("category", { length: 128 }).notNull(),
+  title: varchar("title", { length: 255 }).notNull(),
+  subtitle: varchar("subtitle", { length: 255 }),
+  date: varchar("date", { length: 64 }),
+  description: text("description"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type CustomSection = typeof customSections.$inferSelect;
+export type InsertCustomSection = typeof customSections.$inferInsert;

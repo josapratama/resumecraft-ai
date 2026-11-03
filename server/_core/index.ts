@@ -8,11 +8,12 @@ import { registerStorageProxy } from "./storageProxy";
 import { appRouter } from "../routers";
 import { createContext } from "./context";
 import { serveStatic, setupVite } from "./vite";
+import { runMigrations } from "../db";
 
 function isPortAvailable(port: number): Promise<boolean> {
   return new Promise(resolve => {
     const server = net.createServer();
-    server.listen(port, () => {
+    server.listen(port, "0.0.0.0", () => {
       server.close(() => resolve(true));
     });
     server.on("error", () => resolve(false));
@@ -28,10 +29,20 @@ async function findAvailablePort(startPort: number = 3000): Promise<number> {
 
 async function startServer() {
   const app = express();
+  // Trust proxy for production reverse proxies (Nginx, Traefik, Caddy, Cloudflare)
+  app.set("trust proxy", 1);
+
   const server = createServer(app);
 
   app.use(express.json({ limit: "50mb" }));
   app.use(express.urlencoded({ limit: "50mb", extended: true }));
+
+  // Auto-run DB migrations before registering services
+  try {
+    await runMigrations();
+  } catch (err) {
+    console.error("[Database] Migration error during startup:", err);
+  }
 
   registerStorageProxy(app);
   registerAuthRoutes(app);
@@ -48,13 +59,14 @@ async function startServer() {
   }
 
   const preferredPort = parseInt(process.env.PORT || "3000");
+  const host = process.env.HOST || "0.0.0.0";
   const port = await findAvailablePort(preferredPort);
   if (port !== preferredPort) {
     console.log(`Port ${preferredPort} is busy, using port ${port} instead`);
   }
 
-  server.listen(port, () => {
-    console.log(`Server running on http://localhost:${port}/`);
+  server.listen(port, host, () => {
+    console.log(`Server running on http://${host}:${port}/ (environment: ${process.env.NODE_ENV || "development"})`);
   });
 }
 

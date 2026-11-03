@@ -1,15 +1,42 @@
 services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: cv_app
+    restart: unless-stopped
+    ports:
+      - "${APP_PORT:-3000}:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - HOST=0.0.0.0
+      - DATABASE_URL=mysql://${DB_USER:-cv_user}:${DB_PASSWORD:-cv_password}@mysql:3306/${DB_NAME:-cv_builder}
+      - JWT_SECRET=${JWT_SECRET:-super_secret_jwt_key_please_change_me}
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      - OPENAI_BASE_URL=${OPENAI_BASE_URL:-}
+      - AI_MODEL=${AI_MODEL:-gpt-4o-mini}
+      - BUILT_IN_FORGE_API_URL=${BUILT_IN_FORGE_API_URL:-}
+      - BUILT_IN_FORGE_API_KEY=${BUILT_IN_FORGE_API_KEY:-}
+      - VITE_ANALYTICS_ENDPOINT=${VITE_ANALYTICS_ENDPOINT:-}
+      - VITE_ANALYTICS_WEBSITE_ID=${VITE_ANALYTICS_WEBSITE_ID:-}
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - cv_network
+
   mysql:
     image: mysql:8.4
     container_name: cv_mysql
     restart: unless-stopped
     environment:
-      MYSQL_ROOT_PASSWORD: rootpassword
-      MYSQL_DATABASE: cv_builder
-      MYSQL_USER: cv_user
-      MYSQL_PASSWORD: cv_password
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-rootpassword}
+      MYSQL_DATABASE: ${DB_NAME:-cv_builder}
+      MYSQL_USER: ${DB_USER:-cv_user}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-cv_password}
     ports:
-      - "3306:3306"
+      - "${DB_PORT:-127.0.0.1:3306}:3306"
     volumes:
       - cv_mysql_data:/var/lib/mysql
       - ./docker/mysql-init:/docker-entrypoint-initdb.d:ro
@@ -23,12 +50,14 @@ services:
           "localhost",
           "-u",
           "root",
-          "-prootpassword",
+          "-p${DB_ROOT_PASSWORD:-rootpassword}",
         ]
       interval: 10s
       timeout: 5s
       retries: 5
       start_period: 30s
+    networks:
+      - cv_network
 
   # Optional: phpMyAdmin for visual DB management
   phpmyadmin:
@@ -42,10 +71,15 @@ services:
       PMA_HOST: mysql
       PMA_PORT: 3306
       PMA_USER: root
-      PMA_PASSWORD: rootpassword
+      PMA_PASSWORD: ${DB_ROOT_PASSWORD:-rootpassword}
     ports:
-      - "8080:80"
+      - "${PMA_PORT:-127.0.0.1:8080}:80"
+    networks:
+      - cv_network
+
+networks:
+  cv_network:
+    driver: bridge
 
 volumes:
   cv_mysql_data:
-    driver: local

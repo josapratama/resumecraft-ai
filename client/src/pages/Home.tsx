@@ -15,8 +15,9 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Spinner } from "@/components/ui/spinner";
-import { Copy, Trash2, Plus, Clock, FileText, Layers } from "lucide-react";
+import { Copy, Trash2, Plus, Clock, FileText, Layers, Sparkles, Upload } from "lucide-react";
 import { toast } from "sonner";
+import ImportResumeModal from "@/components/ImportResumeModal";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -89,6 +90,7 @@ export default function Home() {
   const { user, isAuthenticated, loading, logout } = useAuth();
   const [, navigate] = useLocation();
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const [isImportDialogOpen, setIsImportDialogOpen] = useState(false);
   const [newCVTitle, setNewCVTitle] = useState("");
 
   // Get utils at component scope — not inside callbacks
@@ -362,7 +364,17 @@ export default function Home() {
                 </p>
               </div>
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 sm:gap-3">
+              <Button
+                variant="outline"
+                onClick={() => setIsImportDialogOpen(true)}
+                className="gap-2 border-indigo-600 text-indigo-700 bg-indigo-50/50 hover:bg-indigo-100"
+              >
+                <Sparkles className="w-4 h-4 text-indigo-600" />
+                <span className="hidden sm:inline">Import Resume (AI)</span>
+                <span className="sm:hidden">Import</span>
+              </Button>
+
               <Dialog
                 open={isCreateDialogOpen}
                 onOpenChange={setIsCreateDialogOpen}
@@ -573,6 +585,11 @@ export default function Home() {
           </div>
         )}
       </div>
+
+      <ImportResumeModal
+        isOpen={isImportDialogOpen}
+        onClose={() => setIsImportDialogOpen(false)}
+      />
     </div>
   );
 }

@@ -138,6 +138,23 @@ export default function ModernTemplate({ cvData }: ModernTemplateProps) {
             </div>
           </div>
         )}
+
+        {/* Languages */}
+        {cvData.languages && cvData.languages.length > 0 && (
+          <div className="min-w-0">
+            <h2 className="text-xs font-bold uppercase tracking-widest text-red-400 mb-3">
+              Languages
+            </h2>
+            <div className="space-y-1.5 min-w-0">
+              {cvData.languages.map(l => (
+                <div key={l.id} className="flex justify-between text-xs">
+                  <span className="text-white font-medium">{l.language}</span>
+                  <span className="text-gray-400 text-[11px]">{l.proficiency}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* RIGHT MAIN */}
@@ -273,6 +290,38 @@ export default function ModernTemplate({ cvData }: ModernTemplateProps) {
                         </span>
                       ))}
                     </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Custom Sections / Achievements / Organizations */}
+        {cvData.customSections && cvData.customSections.length > 0 && (
+          <div className="min-w-0">
+            <h2 className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">
+              Achievements & Additional Sections
+            </h2>
+            <div className="w-8 h-0.5 bg-red-600 mb-4" />
+            <div className="space-y-4 min-w-0">
+              {cvData.customSections.map(item => (
+                <div key={item.id} className="relative pl-4 border-l-2 border-gray-200 min-w-0">
+                  <div className="flex flex-col sm:flex-row sm:justify-between sm:items-baseline gap-0.5">
+                    <p className="text-xs font-bold text-gray-900 break-words">
+                      {item.title} {item.subtitle && <span className="font-normal text-gray-600">· {item.subtitle}</span>}
+                    </p>
+                    {item.date && (
+                      <span className="text-[11px] text-gray-500">{item.date}</span>
+                    )}
+                  </div>
+                  <span className="text-[10px] uppercase font-semibold text-red-600 tracking-wider">
+                    {item.category}
+                  </span>
+                  {item.description && (
+                    <p className="text-xs text-gray-700 leading-relaxed mt-1 break-words whitespace-pre-line">
+                      {item.description}
+                    </p>
                   )}
                 </div>
               ))}

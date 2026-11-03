@@ -5,7 +5,8 @@ import { exportCVToPDF } from "@/lib/pdfExport";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { Spinner } from "@/components/ui/spinner";
 import {
   Download,
@@ -16,12 +17,31 @@ import {
   Layout,
   Pencil,
   Check,
+  User,
+  Briefcase,
+  GraduationCap,
+  Wrench,
+  FolderGit2,
+  Award,
+  Globe,
+  Layers,
+  Sparkles,
+  Share2,
+  Palette,
+  FileText,
+  Target,
+  HelpCircle,
+  Languages as LanguagesIcon,
+  Eye,
+  SlidersHorizontal,
+  Bot,
 } from "lucide-react";
 import { toast } from "sonner";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import PersonalInfoForm from "@/components/CVEditor/PersonalInfoForm";
@@ -42,15 +62,6 @@ import CVPreview from "@/components/CVEditor/CVPreview";
 import { AIChatBox } from "@/components/AIChatBox";
 import { useAuth } from "@/_core/hooks/useAuth";
 import type { FullCVData, TemplateId } from "@/types/cv";
-import {
-  Sparkles,
-  Share2,
-  Palette,
-  FileText,
-  Target,
-  HelpCircle,
-  Languages as LanguagesIcon,
-} from "lucide-react";
 
 /** Narrows AIChatBox Message to the roles the AI endpoint actually accepts. */
 type ChatMessage = { role: "user" | "assistant"; content: string };
@@ -60,34 +71,49 @@ const SECTIONS = [
     id: "personal",
     label: "Personal Info",
     shortLabel: "Personal",
-    icon: "👤",
+    icon: User,
   },
   {
     id: "experience",
     label: "Work Experience",
     shortLabel: "Experience",
-    icon: "💼",
+    icon: Briefcase,
   },
-  { id: "education", label: "Education", shortLabel: "Education", icon: "🎓" },
-  { id: "skills", label: "Skills", shortLabel: "Skills", icon: "⚡" },
-  { id: "projects", label: "Projects", shortLabel: "Projects", icon: "🚀" },
+  {
+    id: "education",
+    label: "Education",
+    shortLabel: "Education",
+    icon: GraduationCap,
+  },
+  {
+    id: "skills",
+    label: "Skills",
+    shortLabel: "Skills",
+    icon: Wrench,
+  },
+  {
+    id: "projects",
+    label: "Projects",
+    shortLabel: "Projects",
+    icon: FolderGit2,
+  },
   {
     id: "certifications",
     label: "Certifications",
     shortLabel: "Certs",
-    icon: "🏆",
+    icon: Award,
   },
   {
     id: "languages",
     label: "Languages",
-    shortLabel: "Langs",
-    icon: "🌐",
+    shortLabel: "Languages",
+    icon: Globe,
   },
   {
     id: "custom",
-    label: "Additional",
-    shortLabel: "Custom",
-    icon: "⭐",
+    label: "Additional Sections",
+    shortLabel: "Additional",
+    icon: Layers,
   },
 ];
 
@@ -134,6 +160,9 @@ export default function CVEditor() {
   const [isExporting, setIsExporting] = useState(false);
   const [showAIChat, setShowAIChat] = useState(false);
 
+  // Responsive mobile/tablet view switcher: "editor" | "preview" | "chat"
+  const [mobileTab, setMobileTab] = useState<"editor" | "preview" | "chat">("editor");
+
   // Career AI and utility modals
   const [showATSModal, setShowATSModal] = useState(false);
   const [showCoverLetterModal, setShowCoverLetterModal] = useState(false);
@@ -150,8 +179,6 @@ export default function CVEditor() {
   const [titleDraft, setTitleDraft] = useState("");
 
   // Live preview state — updated whenever any form saves.
-  // Seeded from cvData only once on first non-null load (ref guard prevents
-  // re-seeding on background refetches, which would wipe user-typed changes).
   const [previewData, setPreviewData] = useState<FullCVData | null>(null);
   const seeded = useRef(false);
 
@@ -205,9 +232,7 @@ export default function CVEditor() {
     },
   });
 
-  // Seed template + preview from DB exactly once — on first successful load.
-  // Using a ref guard instead of [cvData] dependency prevents the effect from
-  // overwriting live preview data whenever React Query does a background refetch.
+  // Seed template + preview from DB exactly once on first successful load
   useEffect(() => {
     if (cvData && !seeded.current) {
       seeded.current = true;
@@ -230,28 +255,28 @@ export default function CVEditor() {
       { role: "user", content },
     ];
     setChatMessages(newMessages);
-    // Pass cvId so server can inject the user's CV data into the system prompt
     chatMutation.mutate({ cvId: cvIdNum, messages: newMessages });
   };
 
   if (authLoading || isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <Spinner />
+      <div className="flex flex-col items-center justify-center min-h-screen gap-3 bg-neutral-50">
+        <Spinner className="w-8 h-8 text-neutral-900" />
+        <p className="text-xs font-medium text-neutral-500">Loading CV Studio...</p>
       </div>
     );
   }
 
   if (error || !cvData) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen gap-4">
-        <Card className="p-8 text-center">
+      <div className="flex flex-col items-center justify-center min-h-screen gap-4 bg-neutral-50 p-4">
+        <Card className="p-8 text-center max-w-md w-full shadow-sm border border-neutral-200">
           <p className="text-red-600 font-semibold mb-4">
             {error ? "Failed to load CV. Please try again." : "CV not found"}
           </p>
           <Button
             onClick={() => navigate("/")}
-            className="gap-2 bg-black text-white hover:bg-gray-800"
+            className="gap-2 bg-neutral-900 text-white hover:bg-neutral-800 w-full"
           >
             <ArrowLeft className="w-4 h-4" />
             Back to Dashboard
@@ -263,25 +288,39 @@ export default function CVEditor() {
 
   const displayData = previewData || cvData;
 
+  // Helper count badge per section
+  const sectionCounts: Record<string, number> = {
+    personal: displayData.personalInfo?.fullName ? 1 : 0,
+    experience: displayData.workExperiences?.length || 0,
+    education: displayData.educations?.length || 0,
+    skills: displayData.skills?.length || 0,
+    projects: displayData.projects?.length || 0,
+    certifications: displayData.certifications?.length || 0,
+    languages: displayData.languages?.length || 0,
+    custom: displayData.customSections?.length || 0,
+  };
+
   return (
-    <div className="min-h-screen bg-white">
-      {/* Header */}
-      <div className="border-b border-black">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
+    <div className="min-h-screen bg-neutral-50 flex flex-col">
+      {/* Top Header Navigation */}
+      <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-neutral-200 shadow-xs">
+        <div className="container mx-auto px-4 py-3">
+          <div className="flex items-center justify-between gap-3">
+            {/* Left: Back & Title */}
+            <div className="flex items-center gap-3 min-w-0">
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => navigate("/")}
-                className="gap-2 text-gray-600 hover:text-black"
+                className="gap-1.5 text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100 h-9 px-2.5 rounded-lg flex-shrink-0"
               >
                 <ArrowLeft className="w-4 h-4" />
-                <span className="hidden sm:inline">Dashboard</span>
+                <span className="hidden sm:inline font-medium text-xs">Dashboard</span>
               </Button>
-              <div>
+
+              <div className="min-w-0">
                 {isEditingTitle ? (
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1.5">
                     <Input
                       value={titleDraft}
                       onChange={e => setTitleDraft(e.target.value)}
@@ -289,7 +328,7 @@ export default function CVEditor() {
                         if (e.key === "Enter") handleTitleSave();
                         if (e.key === "Escape") setIsEditingTitle(false);
                       }}
-                      className="h-8 text-base font-bold border-black w-48"
+                      className="h-7 text-sm font-bold border-neutral-300 w-36 sm:w-56"
                       autoFocus
                     />
                     <Button
@@ -297,175 +336,190 @@ export default function CVEditor() {
                       variant="ghost"
                       onClick={handleTitleSave}
                       disabled={renameMutation.isPending}
-                      className="h-8 w-8 p-0"
+                      className="h-7 w-7 p-0 text-emerald-600 hover:bg-emerald-50"
                     >
                       {renameMutation.isPending ? (
                         <Spinner className="w-3.5 h-3.5" />
                       ) : (
-                        <Check className="w-3.5 h-3.5 text-green-600" />
+                        <Check className="w-3.5 h-3.5" />
                       )}
                     </Button>
                     <Button
                       size="sm"
                       variant="ghost"
                       onClick={() => setIsEditingTitle(false)}
-                      className="h-8 w-8 p-0"
+                      className="h-7 w-7 p-0 text-neutral-400 hover:text-neutral-600"
                     >
-                      <X className="w-3.5 h-3.5 text-gray-400" />
+                      <X className="w-3.5 h-3.5" />
                     </Button>
                   </div>
                 ) : (
                   <div className="flex items-center gap-1.5 group">
-                    <h1 className="text-2xl font-bold text-black">
+                    <h1 className="text-sm sm:text-base font-bold text-neutral-900 truncate max-w-[140px] sm:max-w-xs md:max-w-md">
                       {cvData.cv.title}
                     </h1>
-                    <Button
-                      size="sm"
-                      variant="ghost"
+                    <button
                       onClick={() => {
                         setTitleDraft(cvData.cv.title);
                         setIsEditingTitle(true);
                       }}
-                      className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
-                      title="Rename CV"
+                      className="h-6 w-6 inline-flex items-center justify-center rounded text-neutral-400 hover:text-neutral-700 hover:bg-neutral-100 transition-colors"
+                      title="Rename Resume"
                     >
-                      <Pencil className="w-3 h-3 text-gray-400" />
-                    </Button>
+                      <Pencil className="w-3 h-3" />
+                    </button>
                   </div>
                 )}
-                <p className="text-xs text-gray-500">
-                  Last updated{" "}
-                  {new Date(cvData.cv.updatedAt).toLocaleDateString()}
-                </p>
+                <div className="flex items-center gap-2 text-[11px] text-neutral-500">
+                  <span className="hidden sm:inline">
+                    Updated {new Date(cvData.cv.updatedAt).toLocaleDateString()}
+                  </span>
+                  {cvData.cv.isPublic && (
+                    <Badge variant="outline" className="text-[10px] py-0 px-1 border-emerald-300 text-emerald-700 bg-emerald-50">
+                      Public
+                    </Badge>
+                  )}
+                </div>
               </div>
             </div>
-            <div className="flex flex-wrap items-center gap-2">
+
+            {/* Right: Actions & Tools */}
+            <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
               {/* AI Career Tools Dropdown */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
                     variant="outline"
                     size="sm"
-                    className="gap-2 border-indigo-600 text-indigo-700 bg-indigo-50/50 hover:bg-indigo-100"
+                    className="gap-1.5 border-indigo-200 text-indigo-700 bg-indigo-50/70 hover:bg-indigo-100 h-8 sm:h-9 px-2 sm:px-3 rounded-lg"
                   >
                     <Sparkles className="w-3.5 h-3.5 text-indigo-600" />
-                    <span className="hidden sm:inline font-semibold">AI Tools</span>
+                    <span className="hidden md:inline font-semibold text-xs">AI Tools</span>
                     <ChevronDown className="w-3 h-3 opacity-60" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56">
+                <DropdownMenuContent align="end" className="w-64 rounded-xl shadow-lg border-neutral-200 p-1.5">
+                  <div className="px-2 py-1.5 text-[11px] font-bold uppercase tracking-wider text-neutral-400">
+                    AI Career Suite
+                  </div>
                   <DropdownMenuItem
                     onClick={() => setShowATSModal(true)}
-                    className="gap-2.5 cursor-pointer font-medium"
+                    className="gap-2.5 p-2 rounded-lg cursor-pointer hover:bg-indigo-50"
                   >
-                    <Target className="w-4 h-4 text-indigo-600" />
+                    <div className="w-7 h-7 rounded-md bg-indigo-100 text-indigo-700 flex items-center justify-center flex-shrink-0">
+                      <Target className="w-4 h-4" />
+                    </div>
                     <div>
-                      <p className="text-xs font-semibold">ATS Compatibility Score</p>
-                      <p className="text-[10px] text-gray-500">Match against job vacancies</p>
+                      <p className="text-xs font-semibold text-neutral-900">ATS Match Score</p>
+                      <p className="text-[10px] text-neutral-500">Benchmark against job vacancy</p>
                     </div>
                   </DropdownMenuItem>
+
                   <DropdownMenuItem
                     onClick={() => setShowCoverLetterModal(true)}
-                    className="gap-2.5 cursor-pointer font-medium"
+                    className="gap-2.5 p-2 rounded-lg cursor-pointer hover:bg-blue-50"
                   >
-                    <FileText className="w-4 h-4 text-blue-600" />
+                    <div className="w-7 h-7 rounded-md bg-blue-100 text-blue-700 flex items-center justify-center flex-shrink-0">
+                      <FileText className="w-4 h-4" />
+                    </div>
                     <div>
-                      <p className="text-xs font-semibold">Generate Cover Letter</p>
-                      <p className="text-[10px] text-gray-500">Auto-tailored from this CV</p>
+                      <p className="text-xs font-semibold text-neutral-900">Cover Letter Generator</p>
+                      <p className="text-[10px] text-neutral-500">Tailored letter from this resume</p>
                     </div>
                   </DropdownMenuItem>
+
                   <DropdownMenuItem
                     onClick={() => setShowInterviewModal(true)}
-                    className="gap-2.5 cursor-pointer font-medium"
+                    className="gap-2.5 p-2 rounded-lg cursor-pointer hover:bg-purple-50"
                   >
-                    <HelpCircle className="w-4 h-4 text-purple-600" />
+                    <div className="w-7 h-7 rounded-md bg-purple-100 text-purple-700 flex items-center justify-center flex-shrink-0">
+                      <HelpCircle className="w-4 h-4" />
+                    </div>
                     <div>
-                      <p className="text-xs font-semibold">Interview Question Prep</p>
-                      <p className="text-[10px] text-gray-500">STAR questions & tips</p>
+                      <p className="text-xs font-semibold text-neutral-900">Interview Prep Coach</p>
+                      <p className="text-[10px] text-neutral-500">STAR questions & role hints</p>
                     </div>
                   </DropdownMenuItem>
+
                   <DropdownMenuItem
                     onClick={() => setShowTranslateModal(true)}
-                    className="gap-2.5 cursor-pointer font-medium"
+                    className="gap-2.5 p-2 rounded-lg cursor-pointer hover:bg-emerald-50"
                   >
-                    <LanguagesIcon className="w-4 h-4 text-emerald-600" />
+                    <div className="w-7 h-7 rounded-md bg-emerald-100 text-emerald-700 flex items-center justify-center flex-shrink-0">
+                      <LanguagesIcon className="w-4 h-4" />
+                    </div>
                     <div>
-                      <p className="text-xs font-semibold">Translate CV (EN ⇄ ID)</p>
-                      <p className="text-[10px] text-gray-500">Professional localization</p>
+                      <p className="text-xs font-semibold text-neutral-900">Translate Resume</p>
+                      <p className="text-[10px] text-neutral-500">EN ↔ ID Professional localized copy</p>
                     </div>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
 
-              {/* Theme & Style */}
+              {/* Theme & Typography Customizer */}
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() => setShowStyleModal(true)}
-                className="gap-1.5 border-gray-300"
+                className="gap-1.5 border-neutral-200 text-neutral-700 hover:bg-neutral-100 h-8 sm:h-9 px-2 sm:px-3 rounded-lg"
                 title="Customize Accent Color & Typography"
               >
-                <Palette className="w-3.5 h-3.5 text-gray-700" />
-                <span className="hidden md:inline">Theme</span>
+                <Palette className="w-3.5 h-3.5 text-neutral-600" />
+                <span className="hidden lg:inline text-xs">Theme</span>
               </Button>
 
-              {/* Share Public Link */}
+              {/* Share Public Modal */}
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() => setShowShareModal(true)}
-                className="gap-1.5 border-gray-300"
-                title="Share Public Link"
+                className="gap-1.5 border-neutral-200 text-neutral-700 hover:bg-neutral-100 h-8 sm:h-9 px-2 sm:px-3 rounded-lg"
+                title="Share Public Link for Recruiters"
               >
                 <Share2 className="w-3.5 h-3.5 text-blue-600" />
-                <span className="hidden md:inline">Share</span>
+                <span className="hidden lg:inline text-xs">Share</span>
               </Button>
 
+              {/* Desktop AI Assistant Toggle */}
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => setShowAIChat(v => !v)}
-                className="gap-2 border-black"
+                onClick={() => {
+                  setShowAIChat(v => !v);
+                  if (mobileTab === "chat") setMobileTab("editor");
+                }}
+                className={`hidden lg:inline-flex gap-1.5 h-9 px-3 rounded-lg border-neutral-200 ${
+                  showAIChat ? "bg-neutral-900 text-white hover:bg-neutral-800" : "text-neutral-700 hover:bg-neutral-100"
+                }`}
               >
-                {showAIChat ? (
-                  <X className="w-4 h-4" />
-                ) : (
-                  <MessageSquare className="w-4 h-4" />
-                )}
-                <span className="hidden sm:inline">AI Chat</span>
+                {showAIChat ? <X className="w-3.5 h-3.5" /> : <Bot className="w-3.5 h-3.5" />}
+                <span className="text-xs font-medium">AI Chat</span>
               </Button>
+
+              {/* Template Picker Dropdown */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
                     variant="outline"
                     size="sm"
-                    className="gap-2 border-black min-w-[130px] justify-between"
+                    className="gap-1.5 border-neutral-200 text-neutral-700 hover:bg-neutral-100 h-8 sm:h-9 px-2 sm:px-3 rounded-lg max-w-[130px] sm:max-w-none"
                   >
-                    <span className="flex items-center gap-1.5">
-                      <Layout className="w-3.5 h-3.5" />
-                      {ALL_TEMPLATES.find(t => t.id === template)?.label ??
-                        template}
+                    <Layout className="w-3.5 h-3.5 text-neutral-600 flex-shrink-0" />
+                    <span className="truncate text-xs font-medium">
+                      {ALL_TEMPLATES.find(t => t.id === template)?.label ?? template}
                     </span>
-                    <ChevronDown className="w-3.5 h-3.5 opacity-60" />
+                    <ChevronDown className="w-3 h-3 opacity-50 flex-shrink-0" />
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent
                   align="end"
-                  className="w-48 max-h-80 overflow-y-auto"
+                  className="w-52 max-h-80 overflow-y-auto rounded-xl p-1 shadow-lg border-neutral-200"
                 >
-                  {[
-                    "Classic",
-                    "Professional",
-                    "Stylish",
-                    "Creative",
-                    "Unique",
-                  ].map(cat => {
-                    const catTemplates = ALL_TEMPLATES.filter(
-                      t => t.category === cat
-                    );
+                  {["Classic", "Professional", "Stylish", "Creative", "Unique"].map(cat => {
+                    const catTemplates = ALL_TEMPLATES.filter(t => t.category === cat);
                     return (
                       <div key={cat}>
-                        <div className="px-2 py-1 text-xs font-bold uppercase tracking-widest text-gray-400 border-t border-gray-100 first:border-t-0 mt-1 first:mt-0">
+                        <div className="px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-neutral-400 mt-1 first:mt-0">
                           {cat}
                         </div>
                         {catTemplates.map(t => (
@@ -478,12 +532,14 @@ export default function CVEditor() {
                                 template: t.id,
                               });
                             }}
-                            className={`cursor-pointer pl-4 ${template === t.id ? "font-semibold bg-gray-50" : ""}`}
+                            className={`cursor-pointer rounded-md text-xs py-1.5 px-2.5 flex items-center justify-between ${
+                              template === t.id ? "font-semibold bg-neutral-100 text-neutral-900" : "text-neutral-600"
+                            }`}
                           >
+                            <span>{t.label}</span>
                             {template === t.id && (
-                              <span className="mr-1.5 text-red-600">✓</span>
+                              <Check className="w-3.5 h-3.5 text-red-600 ml-2" />
                             )}
-                            {t.label}
                           </DropdownMenuItem>
                         ))}
                       </div>
@@ -491,78 +547,143 @@ export default function CVEditor() {
                   })}
                 </DropdownMenuContent>
               </DropdownMenu>
+
+              {/* PDF Export Button */}
               <Button
                 onClick={async () => {
                   try {
                     setIsExporting(true);
                     await exportCVToPDF(
                       "cv-preview-content",
-                      `${cvData.cv.title}.pdf`
+                      `${cvData.cv.title || "resume"}.pdf`
                     );
-                    // Print window opened successfully — inform user to use Save as PDF
-                    toast.info(
-                      "Print dialog opened. Select 'Save as PDF' to download.",
-                      {
-                        duration: 5000,
-                      }
-                    );
-                  } catch (err) {
-                    const msg =
-                      err instanceof Error
-                        ? err.message +
-                          (err.cause
-                            ? ` (${(err.cause as Error)?.message ?? err.cause})`
-                            : "")
-                        : String(err);
-                    console.error("Export failed:", err);
-                    toast.error(`Export failed: ${msg}`);
+                    toast.info("Print dialog opened. Select 'Save as PDF' to download.", {
+                      duration: 5000,
+                    });
+                  } catch (err: any) {
+                    toast.error(`Export failed: ${err.message || String(err)}`);
                   } finally {
                     setIsExporting(false);
                   }
                 }}
                 disabled={isExporting}
-                className="gap-2 bg-black text-white hover:bg-gray-800"
                 size="sm"
+                className="gap-1.5 bg-neutral-900 text-white hover:bg-neutral-800 h-8 sm:h-9 px-3 sm:px-4 rounded-lg shadow-sm"
               >
-                <Download className="w-4 h-4" />
-                {isExporting ? "Exporting..." : "Export PDF"}
+                <Download className="w-3.5 h-3.5" />
+                <span className="font-semibold text-xs">
+                  {isExporting ? "Exporting..." : "PDF"}
+                </span>
               </Button>
             </div>
           </div>
-        </div>
-      </div>
 
-      {/* Body */}
-      <div className="container mx-auto px-4 py-8">
-        <div
-          className={`grid gap-8 ${showAIChat ? "grid-cols-5" : "grid-cols-3"}`}
-        >
-          {/* Editor — takes 2 cols in both layouts */}
-          <div className="col-span-2">
-            <Tabs
-              value={activeSection}
-              onValueChange={setActiveSection}
-              className="w-full"
+          {/* Mobile / Tablet Segmented View Switcher */}
+          <div className="lg:hidden mt-2.5 pt-2 border-t border-neutral-100 flex items-center justify-center gap-1">
+            <button
+              onClick={() => setMobileTab("editor")}
+              className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 text-xs font-semibold rounded-lg transition-colors ${
+                mobileTab === "editor"
+                  ? "bg-neutral-900 text-white shadow-xs"
+                  : "text-neutral-600 hover:bg-neutral-100"
+              }`}
             >
-              <TabsList className="grid w-full grid-cols-4 sm:grid-cols-8 mb-8 bg-white border border-black h-auto p-1">
-                {SECTIONS.map(section => (
-                  <TabsTrigger
-                    key={section.id}
-                    value={section.id}
-                    className="text-xs py-2 data-[state=active]:bg-black data-[state=active]:text-white"
-                  >
-                    <span className="hidden xl:inline">{section.label}</span>
-                    <span className="hidden sm:inline xl:hidden">
-                      {section.shortLabel}
-                    </span>
-                    <span className="sm:hidden flex items-center gap-1">
-                      {section.icon} <span className="text-[11px]">{section.shortLabel}</span>
-                    </span>
-                  </TabsTrigger>
-                ))}
-              </TabsList>
+              <Pencil className="w-3.5 h-3.5" />
+              <span>Form Editor</span>
+            </button>
 
-              <TabsContent value="personal">
+            <button
+              onClick={() => setMobileTab("preview")}
+              className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 text-xs font-semibold rounded-lg transition-colors ${
+                mobileTab === "preview"
+                  ? "bg-neutral-900 text-white shadow-xs"
+                  : "text-neutral-600 hover:bg-neutral-100"
+              }`}
+            >
+              <Eye className="w-3.5 h-3.5" />
+              <span>Live Preview</span>
+            </button>
+
+            <button
+              onClick={() => setMobileTab("chat")}
+              className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 text-xs font-semibold rounded-lg transition-colors ${
+                mobileTab === "chat"
+                  ? "bg-indigo-600 text-white shadow-xs"
+                  : "text-indigo-700 bg-indigo-50 hover:bg-indigo-100"
+              }`}
+            >
+              <Bot className="w-3.5 h-3.5" />
+              <span>AI Chat</span>
+            </button>
+          </div>
+        </div>
+      </header>
+
+      {/* Main Studio Body */}
+      <div className="container mx-auto px-4 py-6 flex-1">
+        {/*
+          Responsive Grid:
+          - Desktop (lg): Side-by-side Editor (7 cols) + Sticky Preview (5 cols), or 5/3/4 when AI Chat open
+          - Mobile / Tablet (< lg): Driven by mobileTab switcher (only one visible at a time)
+        */}
+        <div
+          className={`grid gap-6 ${
+            showAIChat
+              ? "grid-cols-1 lg:grid-cols-12"
+              : "grid-cols-1 lg:grid-cols-12"
+          }`}
+        >
+          {/* ========================================================================= */}
+          {/* LEFT: FORM EDITOR                                                         */}
+          {/* ========================================================================= */}
+          <div
+            className={`transition-all ${
+              mobileTab !== "editor" ? "hidden lg:block" : "block"
+            } ${
+              showAIChat
+                ? "lg:col-span-5"
+                : "lg:col-span-7 xl:col-span-7"
+            }`}
+          >
+            {/* Section Horizontal Pill Selector with Counts */}
+            <div className="mb-5 overflow-x-auto pb-1.5 no-scrollbar">
+              <div className="flex items-center gap-1.5 min-w-max p-1 bg-neutral-200/60 rounded-xl">
+                {SECTIONS.map(section => {
+                  const Icon = section.icon;
+                  const count = sectionCounts[section.id] || 0;
+                  const isActive = activeSection === section.id;
+                  return (
+                    <button
+                      key={section.id}
+                      onClick={() => setActiveSection(section.id)}
+                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                        isActive
+                          ? "bg-white text-neutral-900 shadow-xs font-semibold"
+                          : "text-neutral-600 hover:text-neutral-900 hover:bg-white/50"
+                      }`}
+                    >
+                      <Icon className={`w-3.5 h-3.5 ${isActive ? "text-red-600" : "text-neutral-500"}`} />
+                      <span>{section.shortLabel}</span>
+                      {count > 0 && (
+                        <span
+                          className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${
+                            isActive
+                              ? "bg-neutral-100 text-neutral-900"
+                              : "bg-neutral-300/70 text-neutral-700"
+                          }`}
+                        >
+                          {count}
+                        </span>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Form Panels */}
+            <div className="space-y-4">
+              {activeSection === "personal" && (
                 <PersonalInfoForm
                   cvId={cvIdNum}
                   initialData={cvData.personalInfo}
@@ -570,9 +691,9 @@ export default function CVEditor() {
                     handleDataChange({ personalInfo })
                   }
                 />
-              </TabsContent>
+              )}
 
-              <TabsContent value="experience">
+              {activeSection === "experience" && (
                 <WorkExperienceForm
                   cvId={cvIdNum}
                   initialData={cvData.workExperiences}
@@ -580,33 +701,33 @@ export default function CVEditor() {
                     handleDataChange({ workExperiences })
                   }
                 />
-              </TabsContent>
+              )}
 
-              <TabsContent value="education">
+              {activeSection === "education" && (
                 <EducationForm
                   cvId={cvIdNum}
                   initialData={cvData.educations}
                   onDataChange={educations => handleDataChange({ educations })}
                 />
-              </TabsContent>
+              )}
 
-              <TabsContent value="skills">
+              {activeSection === "skills" && (
                 <SkillsForm
                   cvId={cvIdNum}
                   initialData={cvData.skills}
                   onDataChange={skills => handleDataChange({ skills })}
                 />
-              </TabsContent>
+              )}
 
-              <TabsContent value="projects">
+              {activeSection === "projects" && (
                 <ProjectsForm
                   cvId={cvIdNum}
                   initialData={cvData.projects}
                   onDataChange={projects => handleDataChange({ projects })}
                 />
-              </TabsContent>
+              )}
 
-              <TabsContent value="certifications">
+              {activeSection === "certifications" && (
                 <CertificationsForm
                   cvId={cvIdNum}
                   initialData={cvData.certifications}
@@ -614,17 +735,17 @@ export default function CVEditor() {
                     handleDataChange({ certifications })
                   }
                 />
-              </TabsContent>
+              )}
 
-              <TabsContent value="languages">
+              {activeSection === "languages" && (
                 <LanguagesForm
                   cvId={cvIdNum}
                   initialData={cvData.languages}
                   onDataChange={languages => handleDataChange({ languages })}
                 />
-              </TabsContent>
+              )}
 
-              <TabsContent value="custom">
+              {activeSection === "custom" && (
                 <CustomSectionsForm
                   cvId={cvIdNum}
                   initialData={cvData.customSections}
@@ -632,36 +753,70 @@ export default function CVEditor() {
                     handleDataChange({ customSections })
                   }
                 />
-              </TabsContent>
-            </Tabs>
+              )}
+            </div>
           </div>
 
-          {/* AI Chat Panel — takes 2 cols, only visible in 5-col layout */}
-          {showAIChat && (
-            <div className="col-span-2">
-              <h2 className="text-lg font-bold text-black mb-4">
-                AI Assistant
-              </h2>
-              <AIChatBox
-                messages={chatMessages}
-                onSendMessage={handleSendChatMessage}
-                isLoading={chatMutation.isPending}
-                height="calc(100vh - 220px)"
-                emptyStateMessage="Ask me anything about your CV"
-                suggestedPrompts={[
-                  "Review my professional summary",
-                  "Suggest better action verbs",
-                  "How can I improve my skills section?",
-                  "Make my job descriptions more impactful",
-                ]}
-              />
+          {/* ========================================================================= */}
+          {/* MIDDLE: AI CHAT ASSISTANT                                                 */}
+          {/* ========================================================================= */}
+          {((showAIChat && mobileTab !== "preview") || mobileTab === "chat") && (
+            <div
+              className={`transition-all ${
+                mobileTab === "chat" ? "block lg:hidden" : "hidden lg:block lg:col-span-3"
+              }`}
+            >
+              <Card className="p-3.5 border border-neutral-200 bg-white rounded-2xl shadow-xs">
+                <div className="flex items-center justify-between pb-3 mb-3 border-b border-neutral-100">
+                  <div className="flex items-center gap-2">
+                    <div className="w-6 h-6 rounded-md bg-indigo-100 text-indigo-700 flex items-center justify-center">
+                      <Bot className="w-3.5 h-3.5" />
+                    </div>
+                    <span className="text-xs font-bold text-neutral-900">AI Assistant</span>
+                  </div>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => {
+                      setShowAIChat(false);
+                      if (mobileTab === "chat") setMobileTab("editor");
+                    }}
+                    className="h-6 w-6 p-0 text-neutral-400 hover:text-neutral-700"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </Button>
+                </div>
+
+                <AIChatBox
+                  messages={chatMessages}
+                  onSendMessage={handleSendChatMessage}
+                  isLoading={chatMutation.isPending}
+                  height="calc(100vh - 250px)"
+                  emptyStateMessage="Ask me anything about tailoring or improving your CV"
+                  suggestedPrompts={[
+                    "Review my professional summary",
+                    "Suggest high-impact action verbs",
+                    "How can I improve my skills section?",
+                    "Make my job descriptions quantifiable",
+                  ]}
+                />
+              </Card>
             </div>
           )}
 
-          {/* Preview */}
-          <div className="col-span-1">
-            <div className="sticky top-8">
-              <h2 className="text-lg font-bold text-black mb-4">Preview</h2>
+          {/* ========================================================================= */}
+          {/* RIGHT: LIVE PREVIEW                                                       */}
+          {/* ========================================================================= */}
+          <div
+            className={`transition-all ${
+              mobileTab !== "preview" ? "hidden lg:block" : "block"
+            } ${
+              showAIChat
+                ? "lg:col-span-4"
+                : "lg:col-span-5 xl:col-span-5"
+            }`}
+          >
+            <div className="sticky top-20">
               <div id="cv-preview-content">
                 <CVPreview template={template} cvData={displayData} />
               </div>
@@ -719,7 +874,11 @@ export default function CVEditor() {
             prev
               ? {
                   ...prev,
-                  cv: { ...prev.cv, ...style },
+                  cv: {
+                    ...prev.cv,
+                    ...(style.accentColor ? { accentColor: style.accentColor } : {}),
+                    ...(style.fontFamily ? { fontFamily: style.fontFamily } : {}),
+                  },
                 }
               : prev
           );

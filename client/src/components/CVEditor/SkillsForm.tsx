@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
 import {
   Select,
   SelectContent,
@@ -28,7 +29,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Trash2, Plus, Pencil } from "lucide-react";
+import { Trash2, Plus, Pencil, Wrench, Sparkles } from "lucide-react";
 import { Spinner } from "@/components/ui/spinner";
 import type { Skill } from "@/types/cv";
 import { toast } from "sonner";
@@ -49,10 +50,10 @@ const PROFICIENCY_OPTIONS = [
 ] as const;
 
 const PROFICIENCY_COLORS: Record<string, string> = {
-  beginner: "bg-gray-100 text-gray-600",
-  intermediate: "bg-blue-50 text-blue-700",
-  advanced: "bg-green-50 text-green-700",
-  expert: "bg-purple-50 text-purple-700",
+  beginner: "bg-neutral-100 text-neutral-600 border-neutral-200",
+  intermediate: "bg-blue-50 text-blue-700 border-blue-200",
+  advanced: "bg-emerald-50 text-emerald-700 border-emerald-200",
+  expert: "bg-purple-50 text-purple-700 border-purple-200",
 };
 
 type ProficiencyValue =
@@ -61,6 +62,16 @@ type ProficiencyValue =
   | "intermediate"
   | "advanced"
   | "expert";
+
+const COMMON_CATEGORIES = [
+  "Technical Skills",
+  "Programming Languages",
+  "Frameworks & Libraries",
+  "Tools & Platforms",
+  "Cloud & DevOps",
+  "Leadership & Management",
+  "Soft Skills",
+];
 
 export default function SkillsForm({
   cvId,
@@ -73,7 +84,7 @@ export default function SkillsForm({
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [formData, setFormData] = useState({
     skillName: "",
-    category: "",
+    category: "Technical Skills",
     proficiency: "none" as ProficiencyValue,
   });
 
@@ -125,14 +136,14 @@ export default function SkillsForm({
   });
 
   const handleReorder = (newOrder: number[]) => {
-    const reordered = newOrder.map(id => skills.find(s => s.id === id)!);
+    const reordered = newOrder.map(id => skills.find(e => e.id === id)!);
     setSkills(reordered);
     onDataChange?.(reordered);
     reorderMutation.mutate({ cvId, ids: newOrder });
   };
 
   const resetForm = () => {
-    setFormData({ skillName: "", category: "", proficiency: "none" });
+    setFormData({ skillName: "", category: "Technical Skills", proficiency: "none" });
     setEditingId(null);
   };
 
@@ -142,8 +153,8 @@ export default function SkillsForm({
       return;
     }
     const payload = {
-      skillName: formData.skillName,
-      category: formData.category,
+      skillName: formData.skillName.trim(),
+      category: formData.category.trim(),
       ...(formData.proficiency !== "none"
         ? { proficiency: formData.proficiency }
         : {}),
@@ -164,20 +175,19 @@ export default function SkillsForm({
 
   const isSaving = createMutation.isPending || updateMutation.isPending;
 
-  // Group skills by category for display
-  const grouped = skills.reduce(
-    (acc, skill) => {
-      (acc[skill.category] = acc[skill.category] || []).push(skill);
-      return acc;
-    },
-    {} as Record<string, Skill[]>
-  );
-
   return (
-    <Card className="p-6 border border-black">
+    <Card className="p-5 sm:p-6 border border-neutral-200 bg-white rounded-2xl shadow-xs">
       <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <h3 className="text-lg font-bold text-black">Skills</h3>
+        <div className="flex items-center justify-between pb-3 border-b border-neutral-100">
+          <div>
+            <h3 className="text-base font-bold text-neutral-900 leading-tight">
+              Skills & Competencies
+            </h3>
+            <p className="text-xs text-neutral-500 mt-0.5">
+              Highlight key technologies, tools, and professional strengths
+            </p>
+          </div>
+
           <Dialog
             open={isDialogOpen}
             onOpenChange={open => {
@@ -188,22 +198,24 @@ export default function SkillsForm({
             <DialogTrigger asChild>
               <Button
                 onClick={() => resetForm()}
-                className="gap-2 bg-black text-white hover:bg-gray-800"
+                className="gap-1.5 bg-neutral-900 text-white hover:bg-neutral-800 rounded-xl text-xs font-semibold h-8 sm:h-9 px-3 shadow-xs"
                 size="sm"
               >
-                <Plus className="w-4 h-4" />
-                Add
+                <Plus className="w-3.5 h-3.5" />
+                <span>Add Skill</span>
               </Button>
             </DialogTrigger>
-            <DialogContent className="border border-black max-w-md">
+
+            <DialogContent className="border border-neutral-200 max-w-md rounded-2xl">
               <DialogHeader>
-                <DialogTitle>
+                <DialogTitle className="text-base font-bold text-neutral-900">
                   {editingId ? "Edit Skill" : "Add Skill"}
                 </DialogTitle>
               </DialogHeader>
+
               <div className="space-y-4 pt-1">
                 <div>
-                  <Label className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                  <Label className="text-xs font-semibold text-neutral-600 uppercase tracking-wider">
                     Skill Name *
                   </Label>
                   <Input
@@ -211,12 +223,14 @@ export default function SkillsForm({
                     onChange={e =>
                       setFormData({ ...formData, skillName: e.target.value })
                     }
-                    placeholder="e.g., TypeScript, Leadership"
-                    className="mt-1.5 border-gray-300 focus:border-black"
+                    placeholder="e.g. React.js, Kubernetes, System Design"
+                    className="mt-1.5 border-neutral-200 focus:border-neutral-900 rounded-xl"
+                    autoFocus
                   />
                 </div>
+
                 <div>
-                  <Label className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                  <Label className="text-xs font-semibold text-neutral-600 uppercase tracking-wider">
                     Category *
                   </Label>
                   <Input
@@ -224,13 +238,31 @@ export default function SkillsForm({
                     onChange={e =>
                       setFormData({ ...formData, category: e.target.value })
                     }
-                    placeholder="e.g., Programming, Soft Skills"
-                    className="mt-1.5 border-gray-300 focus:border-black"
+                    placeholder="e.g. Programming, Tools, Cloud"
+                    className="mt-1.5 border-neutral-200 focus:border-neutral-900 rounded-xl"
                   />
+                  {/* Quick category pills */}
+                  <div className="flex flex-wrap gap-1.5 mt-2">
+                    {COMMON_CATEGORIES.map(cat => (
+                      <button
+                        key={cat}
+                        type="button"
+                        onClick={() => setFormData(prev => ({ ...prev, category: cat }))}
+                        className={`text-[10px] px-2 py-0.5 rounded-full border transition-colors ${
+                          formData.category === cat
+                            ? "bg-neutral-900 text-white border-neutral-900"
+                            : "bg-neutral-50 text-neutral-600 border-neutral-200 hover:bg-neutral-100"
+                        }`}
+                      >
+                        {cat}
+                      </button>
+                    ))}
+                  </div>
                 </div>
+
                 <div>
-                  <Label className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                    Proficiency
+                  <Label className="text-xs font-semibold text-neutral-600 uppercase tracking-wider">
+                    Proficiency (Optional)
                   </Label>
                   <Select
                     value={formData.proficiency}
@@ -241,23 +273,24 @@ export default function SkillsForm({
                       })
                     }
                   >
-                    <SelectTrigger className="mt-1.5 border-gray-300">
+                    <SelectTrigger className="mt-1.5 border-neutral-200 rounded-xl">
                       <SelectValue placeholder="Select level" />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="rounded-xl border-neutral-200">
                       {PROFICIENCY_OPTIONS.map(opt => (
-                        <SelectItem key={opt.value} value={opt.value}>
+                        <SelectItem key={opt.value} value={opt.value} className="text-xs">
                           {opt.label}
                         </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
                 </div>
-                <div className="flex items-center gap-3 pt-1">
+
+                <div className="flex items-center gap-2 pt-2 border-t border-neutral-100">
                   <Button
                     onClick={handleSave}
                     disabled={isSaving}
-                    className="flex-1 bg-black text-white hover:bg-gray-800"
+                    className="flex-1 bg-neutral-900 text-white hover:bg-neutral-800 rounded-xl font-semibold text-xs h-9"
                   >
                     {isSaving ? (
                       <>
@@ -265,44 +298,41 @@ export default function SkillsForm({
                         Saving...
                       </>
                     ) : (
-                      "Save"
+                      "Save Skill"
                     )}
                   </Button>
+
                   {editingId && (
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
                         <Button
                           variant="ghost"
                           size="sm"
-                          className="text-red-500 hover:text-red-600 hover:bg-red-50 gap-1.5 px-3"
+                          className="text-red-500 hover:text-red-600 hover:bg-red-50 h-9 px-3 rounded-xl text-xs font-semibold"
                           disabled={deleteMutation.isPending}
                         >
-                          {deleteMutation.isPending ? (
-                            <Spinner className="w-3.5 h-3.5" />
-                          ) : (
-                            <Trash2 className="w-3.5 h-3.5" />
-                          )}
+                          <Trash2 className="w-3.5 h-3.5 mr-1" />
                           Delete
                         </Button>
                       </AlertDialogTrigger>
-                      <AlertDialogContent className="border border-black">
+                      <AlertDialogContent className="border border-neutral-200 rounded-2xl">
                         <AlertDialogHeader>
-                          <AlertDialogTitle>
+                          <AlertDialogTitle className="text-base font-bold text-neutral-900">
                             Delete "{formData.skillName}"?
                           </AlertDialogTitle>
-                          <AlertDialogDescription>
-                            This skill will be permanently removed.
+                          <AlertDialogDescription className="text-xs text-neutral-600">
+                            This skill will be removed from your resume.
                           </AlertDialogDescription>
                         </AlertDialogHeader>
-                        <div className="flex gap-2">
-                          <AlertDialogCancel className="border-black">
+                        <div className="flex justify-end gap-2 pt-2">
+                          <AlertDialogCancel className="border-neutral-200 text-xs font-semibold">
                             Cancel
                           </AlertDialogCancel>
                           <AlertDialogAction
                             onClick={() =>
                               deleteMutation.mutate({ id: editingId })
                             }
-                            className="bg-red-600 hover:bg-red-700"
+                            className="bg-red-600 hover:bg-red-700 text-white text-xs font-semibold"
                           >
                             Delete
                           </AlertDialogAction>
@@ -322,27 +352,32 @@ export default function SkillsForm({
             onReorder={handleReorder}
             droppableId="skills"
             renderItem={skill => (
-              <div className="flex items-center justify-between gap-3 flex-1 min-w-0">
+              <div className="flex items-center justify-between gap-3 flex-1 min-w-0 py-1">
                 <div className="flex items-center gap-2 flex-wrap min-w-0">
-                  <span className="font-medium text-black text-sm">
+                  <span className="font-bold text-neutral-900 text-sm">
                     {skill.skillName}
                   </span>
-                  <span className="text-xs text-gray-400">
+                  <span className="text-[11px] text-neutral-500 bg-neutral-100 px-2 py-0.5 rounded-md font-medium">
                     {skill.category}
                   </span>
                   {skill.proficiency && (
-                    <span
-                      className={`text-xs px-2 py-0.5 rounded-full capitalize font-medium ${PROFICIENCY_COLORS[skill.proficiency] || "bg-gray-100 text-gray-600"}`}
+                    <Badge
+                      variant="outline"
+                      className={`text-[10px] py-0 px-2 rounded-full capitalize font-semibold border ${
+                        PROFICIENCY_COLORS[skill.proficiency] || "bg-neutral-50 text-neutral-600"
+                      }`}
                     >
                       {skill.proficiency}
-                    </span>
+                    </Badge>
                   )}
                 </div>
+
                 <Button
                   onClick={() => handleEdit(skill)}
                   variant="ghost"
                   size="sm"
-                  className="h-8 w-8 p-0 flex-shrink-0 text-gray-400 hover:text-black hover:bg-gray-100"
+                  className="h-8 w-8 p-0 text-neutral-400 hover:text-neutral-900 hover:bg-neutral-100 rounded-lg flex-shrink-0"
+                  title="Edit skill"
                 >
                   <Pencil className="w-3.5 h-3.5" />
                 </Button>
@@ -350,10 +385,11 @@ export default function SkillsForm({
             )}
           />
         ) : (
-          <div className="text-center py-8 border-2 border-dashed border-gray-200 rounded-lg">
-            <p className="text-sm text-gray-400">No skills yet</p>
-            <p className="text-xs text-gray-300 mt-1">
-              Click "Add" to get started
+          <div className="text-center py-8 border border-dashed border-neutral-200 rounded-xl bg-neutral-50/50">
+            <Wrench className="w-8 h-8 text-neutral-300 mx-auto mb-2" />
+            <p className="text-xs font-bold text-neutral-700">No skills added yet</p>
+            <p className="text-[11px] text-neutral-400 mt-0.5">
+              List your hard skills, tools, and technical proficiencies.
             </p>
           </div>
         )}

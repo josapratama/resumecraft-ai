@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
 import {
   Select,
   SelectContent,
@@ -29,7 +30,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Trash2, Plus, Pencil, Award } from "lucide-react";
+import { Trash2, Plus, Pencil, Layers, Calendar } from "lucide-react";
 import { Spinner } from "@/components/ui/spinner";
 import type { CustomSection } from "@/types/cv";
 import { toast } from "sonner";
@@ -73,10 +74,10 @@ export default function CustomSectionsForm({
       setSections(updated);
       onDataChange?.(updated);
       utils.cv.loadFull.invalidate({ cvId });
-      toast.success("Section item added!");
+      toast.success("Item added!");
       resetForm();
     },
-    onError: () => toast.error("Failed to add section item"),
+    onError: () => toast.error("Failed to add item"),
   });
 
   const updateMutation = trpc.cv.customSections.update.useMutation({
@@ -87,10 +88,10 @@ export default function CustomSectionsForm({
       setSections(updated);
       onDataChange?.(updated);
       utils.cv.loadFull.invalidate({ cvId });
-      toast.success("Section item updated!");
+      toast.success("Item updated!");
       resetForm();
     },
-    onError: () => toast.error("Failed to update section item"),
+    onError: () => toast.error("Failed to update item"),
   });
 
   const deleteMutation = trpc.cv.customSections.delete.useMutation({
@@ -99,14 +100,14 @@ export default function CustomSectionsForm({
       setSections(updated);
       onDataChange?.(updated);
       utils.cv.loadFull.invalidate({ cvId });
-      toast.success("Section item removed!");
+      toast.success("Item removed!");
     },
-    onError: () => toast.error("Failed to remove section item"),
+    onError: () => toast.error("Failed to remove item"),
   });
 
   const reorderMutation = trpc.cv.customSections.reorder.useMutation({
     onError: () => {
-      toast.error("Failed to save section order");
+      toast.error("Failed to save order");
       utils.cv.loadFull.invalidate({ cvId });
     },
   });
@@ -168,206 +169,227 @@ export default function CustomSectionsForm({
   const isSaving = createMutation.isPending || updateMutation.isPending;
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-xl font-bold text-black flex items-center gap-2">
-            <Award className="w-5 h-5" /> Additional Sections
-          </h2>
-          <p className="text-sm text-gray-500">
-            Awards, volunteer work, publications, or organizations
-          </p>
+    <Card className="p-5 sm:p-6 border border-neutral-200 bg-white rounded-2xl shadow-xs">
+      <div className="space-y-4">
+        <div className="flex items-center justify-between pb-3 border-b border-neutral-100">
+          <div>
+            <h3 className="text-base font-bold text-neutral-900 leading-tight">
+              Additional Sections
+            </h3>
+            <p className="text-xs text-neutral-500 mt-0.5">
+              Awards, volunteer work, research publications, or speaking engagements
+            </p>
+          </div>
+
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <DialogTrigger asChild>
+              <Button
+                onClick={() => handleOpenDialog()}
+                className="gap-1.5 bg-neutral-900 text-white hover:bg-neutral-800 rounded-xl text-xs font-semibold h-8 sm:h-9 px-3 shadow-xs"
+                size="sm"
+              >
+                <Plus className="w-3.5 h-3.5" />
+                <span>Add Item</span>
+              </Button>
+            </DialogTrigger>
+
+            <DialogContent className="border border-neutral-200 sm:max-w-md rounded-2xl">
+              <DialogHeader>
+                <DialogTitle className="text-base font-bold text-neutral-900">
+                  {editingId ? "Edit Section Item" : "Add Section Item"}
+                </DialogTitle>
+              </DialogHeader>
+
+              <form onSubmit={handleSubmit} className="space-y-4 pt-1">
+                <div>
+                  <Label htmlFor="category" className="text-xs font-semibold text-neutral-600 uppercase tracking-wider">
+                    Category
+                  </Label>
+                  <Select
+                    value={formData.category}
+                    onValueChange={val => setFormData({ ...formData, category: val })}
+                  >
+                    <SelectTrigger id="category" className="mt-1.5 border-neutral-200 rounded-xl">
+                      <SelectValue placeholder="Select Category" />
+                    </SelectTrigger>
+                    <SelectContent className="rounded-xl border-neutral-200">
+                      {CATEGORY_PRESETS.map(cat => (
+                        <SelectItem key={cat} value={cat} className="text-xs">
+                          {cat}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div>
+                  <Label htmlFor="itemTitle" className="text-xs font-semibold text-neutral-600 uppercase tracking-wider">
+                    Title / Award / Role *
+                  </Label>
+                  <Input
+                    id="itemTitle"
+                    placeholder="e.g. 1st Place National Hackathon or Volunteer Team Lead"
+                    value={formData.title}
+                    onChange={e => setFormData({ ...formData, title: e.target.value })}
+                    className="mt-1.5 border-neutral-200 focus:border-neutral-900 rounded-xl"
+                    required
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="itemSub" className="text-xs font-semibold text-neutral-600 uppercase tracking-wider">
+                      Issuer / Organization
+                    </Label>
+                    <Input
+                      id="itemSub"
+                      placeholder="e.g. Google, IEEE, Red Cross"
+                      value={formData.subtitle}
+                      onChange={e =>
+                        setFormData({ ...formData, subtitle: e.target.value })
+                      }
+                      className="mt-1.5 border-neutral-200 focus:border-neutral-900 rounded-xl"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="itemDate" className="text-xs font-semibold text-neutral-600 uppercase tracking-wider">
+                      Date / Year
+                    </Label>
+                    <Input
+                      id="itemDate"
+                      placeholder="e.g. 2024, Aug 2023"
+                      value={formData.date}
+                      onChange={e =>
+                        setFormData({ ...formData, date: e.target.value })
+                      }
+                      className="mt-1.5 border-neutral-200 focus:border-neutral-900 rounded-xl"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <Label htmlFor="itemDesc" className="text-xs font-semibold text-neutral-600 uppercase tracking-wider">
+                    Description / Impact (Optional)
+                  </Label>
+                  <Textarea
+                    id="itemDesc"
+                    placeholder="Briefly describe the significance, competition scale, or key contributions..."
+                    value={formData.description}
+                    onChange={e =>
+                      setFormData({ ...formData, description: e.target.value })
+                    }
+                    className="mt-1.5 border-neutral-200 focus:border-neutral-900 rounded-xl min-h-[80px] text-xs sm:text-sm leading-relaxed"
+                  />
+                </div>
+
+                <div className="flex items-center gap-2 pt-2 border-t border-neutral-100">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={resetForm}
+                    disabled={isSaving}
+                    className="border-neutral-200 text-xs rounded-xl"
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    type="submit"
+                    disabled={isSaving}
+                    className="flex-1 bg-neutral-900 text-white hover:bg-neutral-800 rounded-xl font-semibold text-xs h-9"
+                  >
+                    {isSaving && <Spinner className="w-4 h-4 mr-2" />}
+                    {editingId ? "Save Changes" : "Add Item"}
+                  </Button>
+                </div>
+              </form>
+            </DialogContent>
+          </Dialog>
         </div>
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogTrigger asChild>
-            <Button
-              onClick={() => handleOpenDialog()}
-              size="sm"
-              className="gap-2 bg-black text-white hover:bg-gray-800"
-            >
-              <Plus className="w-4 h-4" /> Add Item
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="sm:max-w-[500px]">
-            <DialogHeader>
-              <DialogTitle>
-                {editingId ? "Edit Item" : "Add Section Item"}
-              </DialogTitle>
-            </DialogHeader>
-            <form onSubmit={handleSubmit} className="space-y-4 pt-4">
-              <div className="space-y-2">
-                <Label htmlFor="category">Category</Label>
-                <Select
-                  value={formData.category}
-                  onValueChange={val => setFormData({ ...formData, category: val })}
-                >
-                  <SelectTrigger id="category">
-                    <SelectValue placeholder="Select Category" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {CATEGORY_PRESETS.map(cat => (
-                      <SelectItem key={cat} value={cat}>
-                        {cat}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="itemTitle">Title / Award / Role *</Label>
-                <Input
-                  id="itemTitle"
-                  placeholder="e.g. 1st Place National Hackathon, Volunteer Lead"
-                  value={formData.title}
-                  onChange={e => setFormData({ ...formData, title: e.target.value })}
-                  required
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="itemSub">Issuer / Organization</Label>
-                  <Input
-                    id="itemSub"
-                    placeholder="e.g. Google, Red Cross, IEEE"
-                    value={formData.subtitle}
-                    onChange={e =>
-                      setFormData({ ...formData, subtitle: e.target.value })
-                    }
-                  />
+        {sections.length === 0 ? (
+          <div className="text-center py-8 border border-dashed border-neutral-200 rounded-xl bg-neutral-50/50">
+            <Layers className="w-8 h-8 text-neutral-300 mx-auto mb-2" />
+            <p className="text-xs font-bold text-neutral-700">No additional sections added yet</p>
+            <p className="text-[11px] text-neutral-400 mt-0.5">
+              Highlight awards, volunteer work, publications, or campus organizations.
+            </p>
+          </div>
+        ) : (
+          <DraggableList
+            items={sections}
+            onReorder={handleReorder}
+            droppableId="custom-sections"
+            renderItem={item => (
+              <div className="flex items-start justify-between gap-3 flex-1 min-w-0 py-1">
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="font-bold text-neutral-900 text-sm leading-tight">
+                      {item.title}
+                    </span>
+                    <Badge variant="outline" className="text-[10px] py-0 px-2 font-medium border-neutral-200 text-neutral-600 bg-neutral-50">
+                      {item.category}
+                    </Badge>
+                  </div>
+                  {item.subtitle && (
+                    <p className="text-xs text-neutral-600 mt-0.5 font-medium">
+                      {item.subtitle}
+                    </p>
+                  )}
+                  {item.date && (
+                    <div className="flex items-center gap-1.5 text-[11px] text-neutral-400 mt-1">
+                      <Calendar className="w-3 h-3" />
+                      <span>{item.date}</span>
+                    </div>
+                  )}
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="itemDate">Date / Year</Label>
-                  <Input
-                    id="itemDate"
-                    placeholder="e.g. 2024, Aug 2023"
-                    value={formData.date}
-                    onChange={e =>
-                      setFormData({ ...formData, date: e.target.value })
-                    }
-                  />
+
+                <div className="flex items-center gap-1">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => handleOpenDialog(item)}
+                    className="h-8 w-8 p-0 text-neutral-400 hover:text-neutral-900 hover:bg-neutral-100 rounded-lg flex-shrink-0"
+                  >
+                    <Pencil className="w-3.5 h-3.5" />
+                  </Button>
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-8 w-8 p-0 text-neutral-400 hover:text-red-600 hover:bg-red-50 rounded-lg flex-shrink-0"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent className="border border-neutral-200 rounded-2xl">
+                      <AlertDialogHeader>
+                        <AlertDialogTitle className="text-base font-bold text-neutral-900">
+                          Delete Section Item?
+                        </AlertDialogTitle>
+                        <AlertDialogDescription className="text-xs text-neutral-600">
+                          Are you sure you want to remove "{item.title}"?
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <div className="flex justify-end gap-2 pt-2">
+                        <AlertDialogCancel className="border-neutral-200 text-xs font-semibold">
+                          Cancel
+                        </AlertDialogCancel>
+                        <AlertDialogAction
+                          onClick={() => deleteMutation.mutate({ id: item.id })}
+                          className="bg-red-600 hover:bg-red-700 text-white text-xs font-semibold"
+                        >
+                          Delete
+                        </AlertDialogAction>
+                      </div>
+                    </AlertDialogContent>
+                  </AlertDialog>
                 </div>
               </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="itemDesc">Description (Optional)</Label>
-                <Textarea
-                  id="itemDesc"
-                  placeholder="Briefly describe the significance or key contributions..."
-                  value={formData.description}
-                  onChange={e =>
-                    setFormData({ ...formData, description: e.target.value })
-                  }
-                  rows={3}
-                />
-              </div>
-
-              <div className="flex justify-end gap-2 pt-4">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={resetForm}
-                  disabled={isSaving}
-                >
-                  Cancel
-                </Button>
-                <Button
-                  type="submit"
-                  disabled={isSaving}
-                  className="bg-black text-white hover:bg-gray-800"
-                >
-                  {isSaving && <Spinner className="w-4 h-4 mr-2" />}
-                  {editingId ? "Save Changes" : "Add Item"}
-                </Button>
-              </div>
-            </form>
-          </DialogContent>
-        </Dialog>
+            )}
+          />
+        )}
       </div>
-
-      {sections.length === 0 ? (
-        <Card className="p-8 text-center border-dashed">
-          <Award className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-          <p className="text-gray-500 font-medium">No custom items added yet</p>
-          <p className="text-xs text-gray-400 mb-4">
-            Highlight awards, volunteer work, publications, or campus organizations
-          </p>
-          <Button
-            onClick={() => handleOpenDialog()}
-            variant="outline"
-            size="sm"
-            className="gap-2"
-          >
-            <Plus className="w-4 h-4" /> Add Item
-          </Button>
-        </Card>
-      ) : (
-        <DraggableList
-          items={sections}
-          onReorder={handleReorder}
-          droppableId="customSections"
-          renderItem={item => (
-            <div className="flex items-center justify-between flex-1 min-w-0">
-              <div>
-                <div className="flex items-center gap-2">
-                  <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-gray-100 text-gray-700">
-                    {item.category}
-                  </span>
-                  <h4 className="font-semibold text-black text-sm">
-                    {item.title}
-                  </h4>
-                </div>
-                <p className="text-xs text-gray-500 mt-0.5">
-                  {item.subtitle && `${item.subtitle} `}
-                  {item.date && `· ${item.date}`}
-                </p>
-                {item.description && (
-                  <p className="text-xs text-gray-600 line-clamp-1 mt-1">
-                    {item.description}
-                  </p>
-                )}
-              </div>
-              <div className="flex items-center gap-1">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => handleOpenDialog(item)}
-                  className="h-8 w-8 p-0"
-                >
-                  <Pencil className="w-3.5 h-3.5 text-gray-600" />
-                </Button>
-                <AlertDialog>
-                  <AlertDialogTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="h-8 w-8 p-0 hover:text-red-600"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </Button>
-                  </AlertDialogTrigger>
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>Delete Item?</AlertDialogTitle>
-                      <AlertDialogDescription>
-                        Are you sure you want to remove &quot;{item.title}&quot;?
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogAction
-                      onClick={() => deleteMutation.mutate({ id: item.id })}
-                      className="bg-red-600 hover:bg-red-700"
-                    >
-                      Delete
-                    </AlertDialogAction>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                  </AlertDialogContent>
-                </AlertDialog>
-              </div>
-            </div>
-          )}
-        />
-      )}
-    </div>
+    </Card>
   );
 }

@@ -4,7 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useLocation } from "wouter";
 import { trpc } from "@/lib/trpc";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import {
   Dialog,
   DialogContent,
@@ -15,7 +15,26 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Spinner } from "@/components/ui/spinner";
-import { Copy, Trash2, Plus, Clock, FileText, Layers, Sparkles, Upload } from "lucide-react";
+import {
+  Copy,
+  Trash2,
+  Plus,
+  Clock,
+  FileText,
+  Layers,
+  Sparkles,
+  Upload,
+  Search,
+  CheckCircle2,
+  TrendingUp,
+  Layout,
+  ArrowRight,
+  ExternalLink,
+  Target,
+  FileCheck,
+  ShieldCheck,
+  Bot,
+} from "lucide-react";
 import { toast } from "sonner";
 import ImportResumeModal from "@/components/ImportResumeModal";
 import {
@@ -56,16 +75,16 @@ function completionInfo(cv: {
 const TEMPLATE_COLORS: Record<string, string> = {
   // Classic
   modern: "bg-red-600",
-  classic: "bg-black",
-  minimal: "bg-gray-400",
+  classic: "bg-neutral-900",
+  minimal: "bg-neutral-400",
   swiss: "bg-red-700",
-  monochrome: "bg-gray-700",
+  monochrome: "bg-neutral-700",
   // Professional
   executive: "bg-[#0a1628]",
   corporate: "bg-[#1e3a5f]",
-  academic: "bg-gray-800",
-  compact: "bg-gray-600",
-  "two-page": "bg-gray-500",
+  academic: "bg-neutral-800",
+  compact: "bg-neutral-600",
+  "two-page": "bg-neutral-500",
   // Stylish
   elegant: "bg-[#c9a87c]",
   nordic: "bg-[#2d9b8a]",
@@ -73,18 +92,26 @@ const TEMPLATE_COLORS: Record<string, string> = {
   "sidebar-light": "bg-[#7c5cbf]",
   gradient: "bg-indigo-600",
   // Creative
-  tech: "bg-green-700",
+  tech: "bg-emerald-600",
   creative: "bg-violet-600",
   bold: "bg-red-600",
   infographic: "bg-rose-600",
-  portfolio: "bg-gray-900",
+  portfolio: "bg-neutral-900",
   // Unique
   timeline: "bg-blue-600",
-  newspaper: "bg-gray-800",
+  newspaper: "bg-neutral-800",
   retro: "bg-amber-700",
-  stealth: "bg-gray-950",
+  stealth: "bg-neutral-950",
   brutalist: "bg-black",
 };
+
+const SHOWCASE_TEMPLATES = [
+  { id: "modern", name: "Modern", category: "Classic", desc: "Clean dual-column layout with accent bar" },
+  { id: "executive", name: "Executive", category: "Professional", desc: "Corporate header tailored for senior leaders" },
+  { id: "nordic", name: "Nordic", category: "Stylish", desc: "Minimalist Scandinavian typography and spacing" },
+  { id: "tech", name: "Tech", category: "Creative", desc: "Developer-focused skills matrix and project showcase" },
+  { id: "timeline", name: "Timeline", category: "Unique", desc: "Visual career progression journey" },
+];
 
 export default function Home() {
   const { user, isAuthenticated, loading, logout } = useAuth();
@@ -92,8 +119,9 @@ export default function Home() {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isImportDialogOpen, setIsImportDialogOpen] = useState(false);
   const [newCVTitle, setNewCVTitle] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedTemplateFilter, setSelectedTemplateFilter] = useState("all");
 
-  // Get utils at component scope — not inside callbacks
   const utils = trpc.useUtils();
 
   const { data: cvs, isLoading } = trpc.cv.list.useQuery(undefined, {
@@ -130,149 +158,184 @@ export default function Home() {
 
   const handleCreateCV = () => {
     if (newCVTitle.trim()) {
-      createMutation.mutate({ title: newCVTitle });
+      createMutation.mutate({ title: newCVTitle.trim() });
     }
   };
 
-  // Show loading state while auth is being determined
+  // Filtered CV list based on search query & template
+  const filteredCVs = useMemo(() => {
+    if (!cvs) return [];
+    return cvs.filter(cv => {
+      const matchesSearch =
+        cv.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        cv.template.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesTemplate =
+        selectedTemplateFilter === "all" || cv.template === selectedTemplateFilter;
+      return matchesSearch && matchesTemplate;
+    });
+  }, [cvs, searchQuery, selectedTemplateFilter]);
+
+  // Dashboard Stats summary
+  const stats = useMemo(() => {
+    if (!cvs || cvs.length === 0) {
+      return { total: 0, avgPct: 0, publicCount: 0 };
+    }
+    const total = cvs.length;
+    const totalPct = cvs.reduce((acc, cv) => acc + completionInfo(cv as any).pct, 0);
+    const avgPct = Math.round(totalPct / total);
+    const publicCount = cvs.filter(c => c.isPublic).length;
+    return { total, avgPct, publicCount };
+  }, [cvs]);
+
+  // Loading state while auth is being determined
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Spinner />
+      <div className="min-h-screen flex flex-col items-center justify-center gap-3 bg-neutral-50">
+        <Spinner className="w-8 h-8 text-neutral-900" />
+        <p className="text-xs text-neutral-500 font-medium">Preparing dashboard...</p>
       </div>
     );
   }
 
+  // =========================================================================
+  // UNAUTHENTICATED LANDING PAGE
+  // =========================================================================
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-white flex flex-col">
-        {/* Nav */}
-        <nav className="border-b border-black px-8 py-4 flex items-center justify-between">
+      <div className="min-h-screen bg-neutral-50 flex flex-col">
+        {/* Navigation */}
+        <nav className="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-neutral-200 px-6 sm:px-10 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-6 h-6 bg-red-600" />
-            <span className="font-bold text-black tracking-tight">
-              ResumeAI
-            </span>
-          </div>
-          <Button
-            onClick={() => navigate("/login")}
-            variant="outline"
-            className="border-black text-black hover:bg-black hover:text-white"
-          >
-            Sign In
-          </Button>
-        </nav>
-
-        {/* Hero */}
-        <div className="flex-1 flex flex-col lg:flex-row items-center justify-center gap-16 px-8 py-16 max-w-6xl mx-auto w-full">
-          {/* Left — copy */}
-          <div className="flex-1 space-y-8 max-w-lg">
-            <div className="inline-flex items-center gap-2 bg-red-50 border border-red-200 rounded-full px-3 py-1">
-              <div className="w-2 h-2 bg-red-600 rounded-full" />
-              <span className="text-xs font-semibold text-red-700 uppercase tracking-wide">
-                AI-Powered
+            <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-red-600 via-rose-500 to-amber-500 flex items-center justify-center shadow-xs">
+              <Sparkles className="w-4 h-4 text-white" />
+            </div>
+            <div>
+              <span className="font-extrabold text-neutral-950 tracking-tight text-lg">
+                ResumeCraft <span className="text-red-600">AI</span>
               </span>
             </div>
-            <h1 className="text-5xl font-bold text-black leading-tight">
-              Build your perfect
-              <br />
-              <span className="text-red-600">CV in minutes</span>
+          </div>
+          <div className="flex items-center gap-3">
+            <Button
+              onClick={() => navigate("/login")}
+              variant="outline"
+              className="border-neutral-300 text-neutral-800 hover:bg-neutral-100 font-medium text-xs sm:text-sm"
+            >
+              Sign In
+            </Button>
+            <Button
+              onClick={() => navigate("/login")}
+              className="bg-neutral-900 text-white hover:bg-neutral-800 font-semibold text-xs sm:text-sm shadow-sm"
+            >
+              Get Started Free
+            </Button>
+          </div>
+        </nav>
+
+        {/* Hero Section */}
+        <div className="flex-1 flex flex-col lg:flex-row items-center justify-center gap-12 lg:gap-16 px-6 sm:px-12 py-12 lg:py-20 max-w-7xl mx-auto w-full">
+          {/* Left: Headline & Pitch */}
+          <div className="flex-1 space-y-6 max-w-xl text-center lg:text-left">
+            <div className="inline-flex items-center gap-2 bg-red-50 border border-red-200 rounded-full px-3.5 py-1 shadow-xs">
+              <div className="w-2 h-2 bg-red-600 rounded-full animate-pulse" />
+              <span className="text-xs font-bold text-red-700 uppercase tracking-wider">
+                Next-Gen Career Intelligence
+              </span>
+            </div>
+
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-neutral-950 leading-[1.1] tracking-tight">
+              Build your ATS-beating resume in{" "}
+              <span className="bg-gradient-to-r from-red-600 via-rose-600 to-amber-600 bg-clip-text text-transparent">
+                minutes.
+              </span>
             </h1>
-            <p className="text-lg text-gray-600 leading-relaxed">
-              Professional templates, AI writing assistance, and instant PDF
-              export. Everything you need to land your next role.
+
+            <p className="text-base sm:text-lg text-neutral-600 leading-relaxed">
+              25 professionally designed templates, intelligent ATS scoring benchmarked against live job vacancies, one-click PDF export, and instant multilingual translation.
             </p>
 
-            {/* Feature list */}
-            <div className="space-y-3">
+            {/* Feature Pills */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
               {[
-                "25 professionally designed templates",
-                "AI assistant to improve every section",
-                "6 structured sections with drag-to-reorder",
-                "Export to PDF with one click",
-              ].map(feature => (
-                <div key={feature} className="flex items-center gap-3">
-                  <div className="w-5 h-5 bg-black rounded-full flex items-center justify-center flex-shrink-0">
-                    <svg
-                      className="w-3 h-3 text-white"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      strokeWidth={3}
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M5 13l4 4L19 7"
-                      />
-                    </svg>
-                  </div>
-                  <span className="text-sm text-gray-700">{feature}</span>
+                "25 Curated ATS-Friendly Templates",
+                "Instant ATS Compatibility Score",
+                "AI Cover Letter & Interview Prep",
+                "Verified Recruiter Public Sharing Link",
+              ].map(feat => (
+                <div key={feat} className="flex items-center gap-2.5 text-xs font-semibold text-neutral-700 bg-white border border-neutral-200/80 rounded-xl p-2.5 shadow-2xs">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0" />
+                  <span>{feat}</span>
                 </div>
               ))}
             </div>
 
-            <Button
-              size="lg"
-              onClick={() => navigate("/login")}
-              className="bg-black text-white hover:bg-gray-800 text-base px-8 py-6"
-            >
-              Get Started — it's free
-            </Button>
+            <div className="pt-4 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3">
+              <Button
+                size="lg"
+                onClick={() => navigate("/login")}
+                className="w-full sm:w-auto bg-neutral-900 text-white hover:bg-neutral-800 text-sm font-bold px-8 py-6 rounded-xl shadow-md gap-2"
+              >
+                Start Crafting Free
+                <ArrowRight className="w-4 h-4" />
+              </Button>
+              <Button
+                size="lg"
+                variant="outline"
+                onClick={() => navigate("/login")}
+                className="w-full sm:w-auto border-neutral-300 text-neutral-700 hover:bg-white text-sm font-semibold px-6 py-6 rounded-xl"
+              >
+                View Live Demo
+              </Button>
+            </div>
           </div>
 
-          {/* Right — CV mockup preview */}
-          <div className="flex-1 max-w-md w-full">
+          {/* Right: Mockup Card */}
+          <div className="flex-1 max-w-lg w-full">
             <div className="relative">
-              {/* Shadow card behind */}
-              <div className="absolute inset-0 translate-x-3 translate-y-3 bg-red-600 rounded" />
-              {/* Main mockup */}
-              <div className="relative bg-white border-2 border-black rounded p-6 shadow-xl">
-                {/* Mockup header */}
-                <div className="flex items-start justify-between mb-5 pb-4 border-b-2 border-black">
-                  <div>
-                    <div className="h-4 w-32 bg-black rounded mb-2" />
-                    <div className="h-2.5 w-24 bg-gray-300 rounded mb-1" />
-                    <div className="h-2 w-40 bg-gray-200 rounded" />
+              <div className="absolute -inset-1 bg-gradient-to-r from-red-600 to-amber-600 rounded-2xl blur-lg opacity-25" />
+              <div className="relative bg-white border border-neutral-200 rounded-2xl p-6 sm:p-8 shadow-xl">
+                <div className="flex items-center justify-between pb-4 border-b border-neutral-100 mb-5">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-red-600 text-white flex items-center justify-center font-black text-sm">
+                      JD
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-neutral-900 text-sm leading-tight">Johnathan Doe</h4>
+                      <p className="text-xs text-neutral-500">Principal Software Engineer</p>
+                    </div>
                   </div>
-                  <div className="w-10 h-10 bg-red-600 flex-shrink-0" />
+                  <Badge className="bg-emerald-50 text-emerald-700 border-emerald-200 font-semibold text-xs">
+                    95% ATS Match
+                  </Badge>
                 </div>
-                {/* Summary */}
-                <div className="mb-4">
-                  <div className="h-2 w-28 bg-gray-800 rounded mb-2" />
-                  <div className="space-y-1">
-                    <div className="h-2 w-full bg-gray-200 rounded" />
-                    <div className="h-2 w-5/6 bg-gray-200 rounded" />
-                    <div className="h-2 w-4/6 bg-gray-200 rounded" />
-                  </div>
-                </div>
-                {/* Experience */}
-                <div className="mb-4">
-                  <div className="h-2 w-24 bg-gray-800 rounded mb-2" />
-                  <div className="space-y-2">
-                    {[1, 2].map(i => (
-                      <div key={i} className="border-l-2 border-red-600 pl-3">
-                        <div className="flex justify-between mb-1">
-                          <div className="h-2.5 w-28 bg-gray-700 rounded" />
-                          <div className="h-2 w-16 bg-gray-300 rounded" />
-                        </div>
-                        <div className="h-2 w-20 bg-gray-400 rounded mb-1" />
-                        <div className="h-2 w-full bg-gray-200 rounded" />
+
+                <div className="space-y-4">
+                  <div className="space-y-1.5">
+                    <div className="text-[11px] font-bold text-neutral-400 uppercase tracking-wider">
+                      Work Experience
+                    </div>
+                    <div className="p-3 bg-neutral-50 rounded-xl border border-neutral-100">
+                      <div className="flex justify-between items-center mb-1">
+                        <span className="text-xs font-bold text-neutral-800">Lead Distributed Systems Engineer</span>
+                        <span className="text-[10px] text-neutral-500">2022 - Present</span>
                       </div>
-                    ))}
+                      <p className="text-[11px] text-neutral-600 line-clamp-2">
+                        Architected high-throughput microservices handling 120M+ daily events with 99.99% uptime.
+                      </p>
+                    </div>
                   </div>
-                </div>
-                {/* Skills */}
-                <div>
-                  <div className="h-2 w-14 bg-gray-800 rounded mb-2" />
-                  <div className="flex flex-wrap gap-1.5">
-                    {[60, 80, 48, 72, 56, 88, 44].map(w => (
-                      <div
-                        key={w}
-                        className="h-5 bg-gray-100 border border-gray-300 rounded-full"
-                        style={{ width: w }}
-                      />
-                    ))}
+
+                  <div className="space-y-1.5">
+                    <div className="text-[11px] font-bold text-neutral-400 uppercase tracking-wider">
+                      Featured Skills
+                    </div>
+                    <div className="flex flex-wrap gap-1.5">
+                      {["TypeScript", "Go", "Kubernetes", "PostgreSQL", "Kafka", "AWS"].map(skill => (
+                        <span key={skill} className="px-2.5 py-1 bg-white border border-neutral-200 text-neutral-700 rounded-md text-[11px] font-medium shadow-2xs">
+                          {skill}
+                        </span>
+                      ))}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -280,312 +343,409 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Template strip */}
-        <div className="border-t border-black bg-gray-50 py-10 px-8">
-          <p className="text-center text-xs font-bold uppercase tracking-widest text-gray-500 mb-6">
-            Choose from 3 templates
-          </p>
-          <div className="flex justify-center gap-6 max-w-3xl mx-auto">
-            {[
-              {
-                name: "Modern",
-                color: "bg-red-600",
-                desc: "Two-column sidebar layout",
-              },
-              {
-                name: "Classic",
-                color: "bg-black",
-                desc: "Traditional formal style",
-              },
-              {
-                name: "Minimal",
-                color: "bg-gray-400",
-                desc: "Clean, distraction-free",
-              },
-            ].map(t => (
+        {/* Template Showcase Strip */}
+        <div className="border-t border-neutral-200 bg-white py-12 px-6 sm:px-12">
+          <div className="max-w-6xl mx-auto text-center space-y-4 mb-8">
+            <h3 className="text-2xl sm:text-3xl font-black text-neutral-900 tracking-tight">
+              25 Handcrafted ATS-Friendly Styles
+            </h3>
+            <p className="text-sm text-neutral-500 max-w-xl mx-auto">
+              From corporate executives to creative tech portfolios, select from battle-tested layouts engineered to pass applicant tracking systems.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 max-w-6xl mx-auto">
+            {SHOWCASE_TEMPLATES.map(t => (
               <div
-                key={t.name}
-                className="flex-1 border-2 border-black bg-white p-4 text-center cursor-pointer hover:shadow-md transition-shadow"
+                key={t.id}
+                onClick={() => navigate("/login")}
+                className="group border border-neutral-200 hover:border-neutral-900 rounded-2xl bg-neutral-50/50 p-4 transition-all duration-150 cursor-pointer hover:shadow-md hover:-translate-y-0.5"
               >
-                <div className={`w-8 h-8 ${t.color} mx-auto mb-2`} />
-                <p className="font-bold text-sm text-black">{t.name}</p>
-                <p className="text-xs text-gray-500 mt-1">{t.desc}</p>
+                <div className={`w-8 h-8 rounded-lg ${TEMPLATE_COLORS[t.id] ?? "bg-neutral-800"} mb-3 shadow-xs`} />
+                <h4 className="font-bold text-sm text-neutral-900 group-hover:text-red-600 transition-colors">
+                  {t.name}
+                </h4>
+                <p className="text-xs text-neutral-500 mt-1 line-clamp-2">
+                  {t.desc}
+                </p>
               </div>
             ))}
           </div>
         </div>
+
+        {/* Footer */}
+        <footer className="border-t border-neutral-200 py-6 text-center text-xs text-neutral-400">
+          © {new Date().getFullYear()} ResumeCraft AI. Engineered for career excellence.
+        </footer>
       </div>
     );
   }
 
+  // =========================================================================
+  // AUTHENTICATED DASHBOARD
+  // =========================================================================
   const CreateCVDialog = () => (
-    <DialogContent className="border border-black">
+    <DialogContent className="border border-neutral-200 rounded-2xl shadow-xl max-w-md">
       <DialogHeader>
-        <DialogTitle>Create New CV</DialogTitle>
+        <DialogTitle className="text-lg font-bold text-neutral-900">
+          Create New Resume
+        </DialogTitle>
       </DialogHeader>
-      <div className="space-y-4">
+      <div className="space-y-4 pt-2">
         <div>
-          <Label className="text-black font-semibold">CV Title</Label>
+          <Label className="text-xs font-semibold text-neutral-600 uppercase tracking-wider">
+            Resume Title
+          </Label>
           <Input
             value={newCVTitle}
             onChange={e => setNewCVTitle(e.target.value)}
-            placeholder="e.g., Software Engineer CV"
-            className="mt-2 border-black"
+            placeholder="e.g. Senior Software Engineer - FAANG"
+            className="mt-1.5 border-neutral-300 focus:border-neutral-900"
             onKeyDown={e => {
               if (e.key === "Enter") handleCreateCV();
             }}
+            autoFocus
           />
         </div>
         <Button
           onClick={handleCreateCV}
           disabled={createMutation.isPending || !newCVTitle.trim()}
-          className="w-full bg-black text-white hover:bg-gray-800"
+          className="w-full bg-neutral-900 text-white hover:bg-neutral-800 rounded-xl h-10 font-semibold"
         >
-          {createMutation.isPending ? "Creating..." : "Create CV"}
+          {createMutation.isPending ? "Creating..." : "Create & Start Editing"}
         </Button>
       </div>
     </DialogContent>
   );
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white border-b border-black">
-        <div className="container mx-auto px-6 py-5">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <div className="w-8 h-8 bg-red-600" />
+    <div className="min-h-screen bg-neutral-50 flex flex-col">
+      {/* Top Header */}
+      <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-neutral-200 shadow-xs">
+        <div className="container mx-auto px-4 sm:px-6 py-3.5">
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-red-600 to-amber-500 flex items-center justify-center shadow-xs">
+                <Sparkles className="w-4 h-4 text-white" />
+              </div>
               <div>
-                <h1 className="text-xl font-bold text-black leading-none">
-                  ResumeAI
+                <h1 className="text-base sm:text-lg font-bold text-neutral-900 leading-tight">
+                  ResumeCraft <span className="text-red-600">AI</span>
                 </h1>
-                <p className="text-xs text-gray-500 mt-0.5">
-                  Welcome back, {user?.name}
+                <p className="text-[11px] text-neutral-500">
+                  Welcome back, <span className="font-semibold text-neutral-700">{user?.name || "Professional"}</span>
                 </p>
               </div>
             </div>
+
             <div className="flex items-center gap-2 sm:gap-3">
+              {/* Import Resume with AI */}
               <Button
                 variant="outline"
+                size="sm"
                 onClick={() => setIsImportDialogOpen(true)}
-                className="gap-2 border-indigo-600 text-indigo-700 bg-indigo-50/50 hover:bg-indigo-100"
+                className="gap-1.5 border-indigo-200 text-indigo-700 bg-indigo-50/60 hover:bg-indigo-100 rounded-lg text-xs font-semibold h-9"
               >
-                <Sparkles className="w-4 h-4 text-indigo-600" />
-                <span className="hidden sm:inline">Import Resume (AI)</span>
+                <Sparkles className="w-3.5 h-3.5 text-indigo-600" />
+                <span className="hidden sm:inline">Import Resume</span>
                 <span className="sm:hidden">Import</span>
               </Button>
 
+              {/* New CV Modal Trigger */}
               <Dialog
                 open={isCreateDialogOpen}
                 onOpenChange={setIsCreateDialogOpen}
               >
                 <DialogTrigger asChild>
-                  <Button className="bg-black text-white hover:bg-gray-800 gap-2">
-                    <Plus className="w-4 h-4" />
-                    New CV
+                  <Button
+                    size="sm"
+                    className="bg-neutral-900 text-white hover:bg-neutral-800 gap-1.5 rounded-lg text-xs font-semibold h-9 shadow-sm"
+                  >
+                    <Plus className="w-3.5 h-3.5" />
+                    <span>New Resume</span>
                   </Button>
                 </DialogTrigger>
                 <CreateCVDialog />
               </Dialog>
+
               <Button
-                variant="outline"
+                variant="ghost"
+                size="sm"
                 onClick={logout}
-                className="border-black text-sm"
+                className="text-neutral-500 hover:text-neutral-900 text-xs h-9 px-2.5 rounded-lg"
               >
                 Sign Out
               </Button>
             </div>
           </div>
         </div>
-      </div>
+      </header>
 
-      <div className="container mx-auto px-6 py-10">
-        {/* Page title row */}
-        <div className="flex items-end justify-between mb-8">
-          <div>
-            <h2 className="text-2xl font-bold text-black">My CVs</h2>
-            {cvs && (
-              <p className="text-sm text-gray-500 mt-1">
-                {cvs.length} {cvs.length === 1 ? "document" : "documents"}
-              </p>
-            )}
+      {/* Main Dashboard Content */}
+      <main className="container mx-auto px-4 sm:px-6 py-8 flex-1">
+        {/* Quick Stats Overview Banner */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-4 mb-8">
+          <div className="bg-white p-4 rounded-2xl border border-neutral-200 shadow-xs">
+            <div className="flex items-center gap-2.5 text-neutral-500 text-xs font-semibold mb-1">
+              <FileText className="w-4 h-4 text-blue-600" />
+              <span>Total Resumes</span>
+            </div>
+            <div className="text-2xl font-black text-neutral-900">{stats.total}</div>
+          </div>
+
+          <div className="bg-white p-4 rounded-2xl border border-neutral-200 shadow-xs">
+            <div className="flex items-center gap-2.5 text-neutral-500 text-xs font-semibold mb-1">
+              <TrendingUp className="w-4 h-4 text-emerald-600" />
+              <span>Avg Profile Strength</span>
+            </div>
+            <div className="text-2xl font-black text-neutral-900">{stats.avgPct}%</div>
+          </div>
+
+          <div className="bg-white p-4 rounded-2xl border border-neutral-200 shadow-xs">
+            <div className="flex items-center gap-2.5 text-neutral-500 text-xs font-semibold mb-1">
+              <Layout className="w-4 h-4 text-purple-600" />
+              <span>Ready Templates</span>
+            </div>
+            <div className="text-2xl font-black text-neutral-900">25 Styles</div>
+          </div>
+
+          <div className="bg-white p-4 rounded-2xl border border-neutral-200 shadow-xs">
+            <div className="flex items-center gap-2.5 text-neutral-500 text-xs font-semibold mb-1">
+              <ExternalLink className="w-4 h-4 text-amber-600" />
+              <span>Public Resumes</span>
+            </div>
+            <div className="text-2xl font-black text-neutral-900">{stats.publicCount} Active</div>
           </div>
         </div>
 
-        {isLoading ? (
-          <div className="flex justify-center py-16">
-            <Spinner />
+        {/* Search & Filter Toolbar */}
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 mb-6">
+          <div className="relative flex-1 max-w-md">
+            <Search className="w-4 h-4 text-neutral-400 absolute left-3 top-1/2 -translate-y-1/2" />
+            <Input
+              value={searchQuery}
+              onChange={e => setSearchQuery(e.target.value)}
+              placeholder="Search resumes by title or template..."
+              className="pl-9 h-9 text-xs sm:text-sm bg-white border-neutral-200 rounded-xl"
+            />
           </div>
-        ) : cvs && cvs.length > 0 ? (
+
+          {/* Quick count indicator */}
+          <div className="text-xs text-neutral-500 font-medium">
+            Showing <span className="font-bold text-neutral-800">{filteredCVs.length}</span> of {cvs?.length || 0} resumes
+          </div>
+        </div>
+
+        {/* CV Grid or Empty State */}
+        {isLoading ? (
+          <div className="flex flex-col items-center justify-center py-20 gap-3">
+            <Spinner className="w-8 h-8 text-neutral-900" />
+            <p className="text-xs text-neutral-500 font-medium">Loading your resumes...</p>
+          </div>
+        ) : filteredCVs && filteredCVs.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-            {cvs.map(cv => {
+            {filteredCVs.map(cv => {
               const { filled, total, pct } = completionInfo(cv as any);
-              const accentColor = TEMPLATE_COLORS[cv.template] ?? "bg-gray-400";
+              const accentColor = TEMPLATE_COLORS[cv.template] ?? "bg-neutral-800";
               return (
                 <Card
                   key={cv.id}
-                  className="border-2 border-black bg-white hover:shadow-lg transition-shadow cursor-pointer group overflow-hidden"
+                  className="border border-neutral-200 bg-white hover:border-neutral-400 hover:shadow-md transition-all duration-150 cursor-pointer group overflow-hidden rounded-2xl flex flex-col justify-between"
                   onClick={() => navigate(`/cv/${cv.id}`)}
                 >
-                  {/* Top accent stripe */}
-                  <div className={`h-1 w-full ${accentColor}`} />
+                  <div>
+                    {/* Top Accent Strip */}
+                    <div className={`h-1.5 w-full ${accentColor}`} />
 
-                  <div className="p-5">
-                    {/* Title row */}
-                    <div className="flex items-start justify-between mb-3">
-                      <h3 className="text-base font-bold text-black leading-tight flex-1 pr-2 group-hover:text-red-600 transition-colors">
-                        {cv.title}
-                      </h3>
-                      <Badge
-                        variant="outline"
-                        className="border-black text-xs capitalize flex-shrink-0"
-                      >
-                        {cv.template}
-                      </Badge>
-                    </div>
-
-                    {/* Completion bar */}
-                    <div className="mb-4">
-                      <div className="flex items-center justify-between mb-1.5">
-                        <span className="text-xs text-gray-500 flex items-center gap-1">
-                          <Layers className="w-3 h-3" />
-                          {filled}/{total} sections filled
-                        </span>
-                        <span className="text-xs font-semibold text-black">
-                          {pct}%
-                        </span>
+                    <div className="p-5">
+                      {/* Header Row */}
+                      <div className="flex items-start justify-between gap-2 mb-3">
+                        <h3 className="text-base font-bold text-neutral-900 leading-snug group-hover:text-red-600 transition-colors line-clamp-1">
+                          {cv.title}
+                        </h3>
+                        <Badge
+                          variant="outline"
+                          className="text-[11px] py-0.5 px-2 capitalize border-neutral-200 font-semibold text-neutral-700 bg-neutral-50"
+                        >
+                          {cv.template}
+                        </Badge>
                       </div>
-                      <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden border border-gray-200">
-                        <div
-                          className={`h-full rounded-full transition-all ${pct === 100 ? "bg-green-500" : pct > 50 ? "bg-black" : "bg-red-600"}`}
-                          style={{ width: `${Math.max(pct, 4)}%` }}
-                        />
+
+                      {/* Completion Progress Bar */}
+                      <div className="mb-4">
+                        <div className="flex items-center justify-between text-xs mb-1.5">
+                          <span className="text-neutral-500 flex items-center gap-1 text-[11px]">
+                            <Layers className="w-3 h-3 text-neutral-400" />
+                            {filled}/{total} sections completed
+                          </span>
+                          <span className="font-bold text-neutral-800 text-[11px]">
+                            {pct}%
+                          </span>
+                        </div>
+                        <div className="h-1.5 bg-neutral-100 rounded-full overflow-hidden border border-neutral-200/60">
+                          <div
+                            className={`h-full rounded-full transition-all duration-300 ${
+                              pct === 100
+                                ? "bg-emerald-500"
+                                : pct > 50
+                                ? "bg-neutral-900"
+                                : "bg-red-500"
+                            }`}
+                            style={{ width: `${Math.max(pct, 4)}%` }}
+                          />
+                        </div>
+                      </div>
+
+                      {/* Meta Information */}
+                      <div className="flex items-center justify-between text-[11px] text-neutral-400 pt-1 border-t border-neutral-100">
+                        <div className="flex items-center gap-1">
+                          <Clock className="w-3 h-3" />
+                          <span>
+                            {new Date(cv.updatedAt).toLocaleDateString(undefined, {
+                              day: "numeric",
+                              month: "short",
+                              year: "numeric",
+                            })}
+                          </span>
+                        </div>
+
+                        {cv.isPublic && (
+                          <span className="flex items-center gap-1 text-emerald-600 font-medium">
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                            Public ({cv.viewsCount || 0} views)
+                          </span>
+                        )}
                       </div>
                     </div>
+                  </div>
 
-                    {/* Meta */}
-                    <div className="flex items-center gap-1 text-xs text-gray-400 mb-4">
-                      <Clock className="w-3 h-3" />
-                      Updated{" "}
-                      {new Date(cv.updatedAt).toLocaleDateString(undefined, {
-                        day: "numeric",
-                        month: "short",
-                        year: "numeric",
-                      })}
-                    </div>
-
-                    {/* Actions */}
-                    <div
-                      className="flex gap-2"
-                      onClick={e => e.stopPropagation()}
+                  {/* Actions Footer */}
+                  <div
+                    className="p-3 bg-neutral-50/60 border-t border-neutral-100 flex items-center gap-2"
+                    onClick={e => e.stopPropagation()}
+                  >
+                    <Button
+                      onClick={() => navigate(`/cv/${cv.id}`)}
+                      size="sm"
+                      className="flex-1 bg-neutral-900 text-white hover:bg-neutral-800 text-xs font-semibold h-8 rounded-lg"
                     >
-                      <Button
-                        onClick={() => navigate(`/cv/${cv.id}`)}
-                        className="flex-1 bg-black text-white hover:bg-gray-800 text-sm h-8"
-                      >
-                        <FileText className="w-3 h-3 mr-1.5" />
-                        Edit
-                      </Button>
-                      <Button
-                        onClick={() =>
-                          duplicateMutation.mutate({ cvId: cv.id })
-                        }
-                        disabled={duplicateMutation.isPending}
-                        variant="outline"
-                        size="sm"
-                        className="border-black h-8"
-                        title="Duplicate"
-                      >
-                        <Copy className="w-3.5 h-3.5" />
-                      </Button>
-                      <AlertDialog>
-                        <AlertDialogTrigger asChild>
-                          <Button
-                            variant="destructive"
-                            size="sm"
-                            className="h-8"
-                            title="Delete"
+                      <FileText className="w-3 h-3 mr-1.5" />
+                      Open Studio
+                    </Button>
+
+                    <Button
+                      onClick={() => duplicateMutation.mutate({ cvId: cv.id })}
+                      disabled={duplicateMutation.isPending}
+                      variant="outline"
+                      size="sm"
+                      className="border-neutral-200 text-neutral-700 hover:bg-neutral-100 h-8 px-2.5 rounded-lg"
+                      title="Duplicate Resume"
+                    >
+                      <Copy className="w-3.5 h-3.5" />
+                    </Button>
+
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-8 px-2 text-neutral-400 hover:text-red-600 hover:bg-red-50 rounded-lg"
+                          title="Delete Resume"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent className="border border-neutral-200 rounded-2xl">
+                        <AlertDialogHeader>
+                          <AlertDialogTitle className="text-base font-bold text-neutral-900">
+                            Delete Resume
+                          </AlertDialogTitle>
+                          <AlertDialogDescription className="text-xs text-neutral-600">
+                            Are you sure you want to permanently delete "{cv.title}"? This action cannot be undone.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <div className="flex justify-end gap-2 pt-2">
+                          <AlertDialogCancel className="border-neutral-200 text-xs font-semibold">
+                            Cancel
+                          </AlertDialogCancel>
+                          <AlertDialogAction
+                            onClick={() => deleteMutation.mutate({ cvId: cv.id })}
+                            disabled={deleteMutation.isPending}
+                            className="bg-red-600 hover:bg-red-700 text-white text-xs font-semibold"
                           >
-                            <Trash2 className="w-3.5 h-3.5" />
-                          </Button>
-                        </AlertDialogTrigger>
-                        <AlertDialogContent className="border border-black">
-                          <AlertDialogHeader>
-                            <AlertDialogTitle>Delete CV</AlertDialogTitle>
-                            <AlertDialogDescription>
-                              Are you sure you want to delete "{cv.title}"? This
-                              action cannot be undone.
-                            </AlertDialogDescription>
-                          </AlertDialogHeader>
-                          <div className="flex gap-2">
-                            <AlertDialogCancel className="border-black">
-                              Cancel
-                            </AlertDialogCancel>
-                            <AlertDialogAction
-                              onClick={() =>
-                                deleteMutation.mutate({ cvId: cv.id })
-                              }
-                              disabled={deleteMutation.isPending}
-                              className="bg-red-600 hover:bg-red-700"
-                            >
-                              {deleteMutation.isPending
-                                ? "Deleting..."
-                                : "Delete"}
-                            </AlertDialogAction>
-                          </div>
-                        </AlertDialogContent>
-                      </AlertDialog>
-                    </div>
+                            {deleteMutation.isPending ? "Deleting..." : "Delete Permanently"}
+                          </AlertDialogAction>
+                        </div>
+                      </AlertDialogContent>
+                    </AlertDialog>
                   </div>
                 </Card>
               );
             })}
 
-            {/* Create new card */}
+            {/* Quick Add Card */}
             <Dialog
               open={isCreateDialogOpen}
               onOpenChange={setIsCreateDialogOpen}
             >
               <DialogTrigger asChild>
-                <Card className="border-2 border-dashed border-gray-300 bg-white hover:border-black hover:shadow-md transition-all cursor-pointer flex items-center justify-center min-h-[180px] group">
-                  <div className="text-center">
-                    <div className="w-10 h-10 rounded-full border-2 border-dashed border-gray-300 group-hover:border-black flex items-center justify-center mx-auto mb-2 transition-colors">
-                      <Plus className="w-5 h-5 text-gray-400 group-hover:text-black transition-colors" />
-                    </div>
-                    <p className="text-sm font-medium text-gray-400 group-hover:text-black transition-colors">
-                      New CV
-                    </p>
+                <Card className="border-2 border-dashed border-neutral-300 bg-white hover:border-neutral-900 hover:bg-neutral-50/50 transition-all duration-150 cursor-pointer flex flex-col items-center justify-center p-8 min-h-[220px] rounded-2xl group text-center">
+                  <div className="w-12 h-12 rounded-2xl bg-neutral-100 group-hover:bg-neutral-900 group-hover:text-white text-neutral-500 flex items-center justify-center mb-3 transition-colors shadow-2xs">
+                    <Plus className="w-6 h-6" />
                   </div>
+                  <h4 className="text-sm font-bold text-neutral-800 group-hover:text-neutral-900">
+                    Create New Resume
+                  </h4>
+                  <p className="text-xs text-neutral-400 mt-1">
+                    Start from an empty template or scratch
+                  </p>
                 </Card>
               </DialogTrigger>
               <CreateCVDialog />
             </Dialog>
           </div>
         ) : (
-          <div className="flex flex-col items-center justify-center py-24 text-center">
-            <div className="w-16 h-16 bg-gray-100 border-2 border-dashed border-gray-300 rounded flex items-center justify-center mb-4">
-              <FileText className="w-7 h-7 text-gray-400" />
+          /* Empty Search / Empty List State */
+          <div className="flex flex-col items-center justify-center py-20 text-center max-w-sm mx-auto">
+            <div className="w-16 h-16 rounded-2xl bg-neutral-100 flex items-center justify-center mb-4">
+              <FileText className="w-8 h-8 text-neutral-400" />
             </div>
-            <h3 className="text-lg font-bold text-black mb-1">No CVs yet</h3>
-            <p className="text-sm text-gray-500 mb-6 max-w-xs">
-              Create your first CV and start crafting your professional story.
+            <h3 className="text-base font-bold text-neutral-900 mb-1">
+              {searchQuery ? "No matching resumes found" : "No resumes crafted yet"}
+            </h3>
+            <p className="text-xs text-neutral-500 mb-6">
+              {searchQuery
+                ? `No resumes found matching "${searchQuery}". Try clearing search.`
+                : "Create your first ATS-ready resume and take the next step in your career."}
             </p>
-            <Dialog
-              open={isCreateDialogOpen}
-              onOpenChange={setIsCreateDialogOpen}
-            >
-              <DialogTrigger asChild>
-                <Button className="bg-black text-white hover:bg-gray-800 gap-2">
-                  <Plus className="w-4 h-4" />
-                  Create Your First CV
-                </Button>
-              </DialogTrigger>
-              <CreateCVDialog />
-            </Dialog>
+            {searchQuery ? (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setSearchQuery("")}
+                className="text-xs rounded-xl"
+              >
+                Clear Search
+              </Button>
+            ) : (
+              <Dialog
+                open={isCreateDialogOpen}
+                onOpenChange={setIsCreateDialogOpen}
+              >
+                <DialogTrigger asChild>
+                  <Button className="bg-neutral-900 text-white hover:bg-neutral-800 gap-2 rounded-xl text-xs font-semibold h-10 shadow-sm">
+                    <Plus className="w-4 h-4" />
+                    Create Your First Resume
+                  </Button>
+                </DialogTrigger>
+                <CreateCVDialog />
+              </Dialog>
+            )}
           </div>
         )}
-      </div>
+      </main>
 
+      {/* AI Resume Importer Modal */}
       <ImportResumeModal
         isOpen={isImportDialogOpen}
         onClose={() => setIsImportDialogOpen(false)}

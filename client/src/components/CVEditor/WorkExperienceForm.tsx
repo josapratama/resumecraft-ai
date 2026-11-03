@@ -25,7 +25,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import AIAssistant from "./AIAssistant";
-import { Trash2, Plus, Wand2, Pencil, MapPin, Calendar } from "lucide-react";
+import { Trash2, Plus, Wand2, Pencil, MapPin, Calendar, Briefcase } from "lucide-react";
 import { Spinner } from "@/components/ui/spinner";
 import type { WorkExperience } from "@/types/cv";
 import { toast } from "sonner";
@@ -37,7 +37,7 @@ interface WorkExperienceFormProps {
   onDataChange?: (workExperiences: WorkExperience[]) => void;
 }
 
-/** Format "2026-01" → "Jan 2026", pass through anything else */
+/** Format "2026-01" -> "Jan 2026", pass through anything else */
 function fmtMonth(val: string | null | undefined): string {
   if (!val) return "";
   const [year, month] = val.split("-");
@@ -77,11 +77,11 @@ export default function WorkExperienceForm({
           : String(data.improvedText);
       setFormData(prev => ({ ...prev, description: improved }));
       setIsImprovingText(false);
-      toast.success("Text improved!");
+      toast.success("Description enhanced with AI!");
     },
     onError: () => {
       setIsImprovingText(false);
-      toast.error("Failed to improve text");
+      toast.error("Failed to improve description");
     },
   });
 
@@ -189,11 +189,19 @@ export default function WorkExperienceForm({
   const isSaving = createMutation.isPending || updateMutation.isPending;
 
   return (
-    <Card className="p-6 border border-black">
+    <Card className="p-5 sm:p-6 border border-neutral-200 bg-white rounded-2xl shadow-xs">
       <div className="space-y-4">
         {/* Header */}
-        <div className="flex items-center justify-between">
-          <h3 className="text-lg font-bold text-black">Work Experience</h3>
+        <div className="flex items-center justify-between pb-3 border-b border-neutral-100">
+          <div>
+            <h3 className="text-base font-bold text-neutral-900 leading-tight">
+              Work Experience
+            </h3>
+            <p className="text-xs text-neutral-500 mt-0.5">
+              Drag to reorder your career history chronologically
+            </p>
+          </div>
+
           <Dialog
             open={isDialogOpen}
             onOpenChange={open => {
@@ -204,26 +212,26 @@ export default function WorkExperienceForm({
             <DialogTrigger asChild>
               <Button
                 onClick={() => resetForm()}
-                className="gap-2 bg-black text-white hover:bg-gray-800"
+                className="gap-1.5 bg-neutral-900 text-white hover:bg-neutral-800 rounded-xl text-xs font-semibold h-8 sm:h-9 px-3 shadow-xs"
                 size="sm"
               >
-                <Plus className="w-4 h-4" />
-                Add
+                <Plus className="w-3.5 h-3.5" />
+                <span>Add Role</span>
               </Button>
             </DialogTrigger>
 
-            <DialogContent className="border border-black max-w-2xl">
+            <DialogContent className="border border-neutral-200 max-w-xl rounded-2xl max-h-[90vh] overflow-y-auto">
               <DialogHeader>
-                <DialogTitle>
+                <DialogTitle className="text-base font-bold text-neutral-900">
                   {editingId ? "Edit Work Experience" : "Add Work Experience"}
                 </DialogTitle>
               </DialogHeader>
 
               <div className="space-y-4 pt-1">
                 {/* Job title + Company */}
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <Label className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                    <Label className="text-xs font-semibold text-neutral-600 uppercase tracking-wider">
                       Job Title *
                     </Label>
                     <Input
@@ -231,12 +239,12 @@ export default function WorkExperienceForm({
                       onChange={e =>
                         setFormData({ ...formData, jobTitle: e.target.value })
                       }
-                      placeholder="e.g., Senior Engineer"
-                      className="mt-1.5 border-gray-300 focus:border-black"
+                      placeholder="e.g. Senior Backend Engineer"
+                      className="mt-1.5 border-neutral-200 focus:border-neutral-900 rounded-xl"
                     />
                   </div>
                   <div>
-                    <Label className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                    <Label className="text-xs font-semibold text-neutral-600 uppercase tracking-wider">
                       Company *
                     </Label>
                     <Input
@@ -244,15 +252,15 @@ export default function WorkExperienceForm({
                       onChange={e =>
                         setFormData({ ...formData, company: e.target.value })
                       }
-                      placeholder="e.g., Tech Corp"
-                      className="mt-1.5 border-gray-300 focus:border-black"
+                      placeholder="e.g. Acme Corporation"
+                      className="mt-1.5 border-neutral-200 focus:border-neutral-900 rounded-xl"
                     />
                   </div>
                 </div>
 
                 {/* Location */}
                 <div>
-                  <Label className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                  <Label className="text-xs font-semibold text-neutral-600 uppercase tracking-wider">
                     Location
                   </Label>
                   <Input
@@ -260,15 +268,15 @@ export default function WorkExperienceForm({
                     onChange={e =>
                       setFormData({ ...formData, location: e.target.value })
                     }
-                    placeholder="e.g., San Francisco, CA"
-                    className="mt-1.5 border-gray-300 focus:border-black"
+                    placeholder="e.g. San Francisco, CA (or Remote)"
+                    className="mt-1.5 border-neutral-200 focus:border-neutral-900 rounded-xl"
                   />
                 </div>
 
                 {/* Dates */}
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <Label className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                    <Label className="text-xs font-semibold text-neutral-600 uppercase tracking-wider">
                       Start Date
                     </Label>
                     <Input
@@ -277,11 +285,11 @@ export default function WorkExperienceForm({
                       onChange={e =>
                         setFormData({ ...formData, startDate: e.target.value })
                       }
-                      className="mt-1.5 border-gray-300 focus:border-black"
+                      className="mt-1.5 border-neutral-200 focus:border-neutral-900 rounded-xl"
                     />
                   </div>
                   <div>
-                    <Label className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                    <Label className="text-xs font-semibold text-neutral-600 uppercase tracking-wider">
                       End Date
                     </Label>
                     <Input
@@ -291,13 +299,13 @@ export default function WorkExperienceForm({
                         setFormData({ ...formData, endDate: e.target.value })
                       }
                       disabled={isCurrent}
-                      className="mt-1.5 border-gray-300 focus:border-black disabled:opacity-40 disabled:bg-gray-50"
+                      className="mt-1.5 border-neutral-200 focus:border-neutral-900 rounded-xl disabled:opacity-40 disabled:bg-neutral-50"
                     />
                   </div>
                 </div>
 
                 {/* Current role checkbox */}
-                <div className="flex items-center gap-2.5 -mt-1">
+                <div className="flex items-center gap-2 -mt-1">
                   <Checkbox
                     id="current-role"
                     checked={isCurrent}
@@ -309,17 +317,17 @@ export default function WorkExperienceForm({
                   />
                   <Label
                     htmlFor="current-role"
-                    className="text-sm text-gray-600 cursor-pointer font-normal"
+                    className="text-xs text-neutral-600 cursor-pointer font-medium"
                   >
-                    I currently work here
+                    I currently work in this role
                   </Label>
                 </div>
 
                 {/* Description */}
                 <div>
                   <div className="flex items-center justify-between mb-1.5">
-                    <Label className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                      Description
+                    <Label className="text-xs font-semibold text-neutral-600 uppercase tracking-wider">
+                      Key Responsibilities & Achievements
                     </Label>
                     <div className="flex gap-1.5">
                       <Button
@@ -327,7 +335,7 @@ export default function WorkExperienceForm({
                         size="sm"
                         onClick={() => {
                           if (!formData.description.trim()) {
-                            toast.error("Write a description first");
+                            toast.error("Write a description first before improving");
                             return;
                           }
                           setIsImprovingText(true);
@@ -340,14 +348,14 @@ export default function WorkExperienceForm({
                         disabled={
                           isImprovingText || !formData.description.trim()
                         }
-                        className="h-7 gap-1.5 text-xs border-gray-300"
+                        className="h-7 gap-1.5 text-xs border-neutral-200 text-neutral-700 hover:bg-neutral-100 rounded-lg px-2"
                       >
                         {isImprovingText ? (
                           <Spinner className="w-3 h-3" />
                         ) : (
-                          <Wand2 className="w-3 h-3" />
+                          <Wand2 className="w-3 h-3 text-indigo-600" />
                         )}
-                        Improve
+                        <span>Improve</span>
                       </Button>
                       <AIAssistant
                         cvId={cvId}
@@ -363,17 +371,17 @@ export default function WorkExperienceForm({
                     onChange={e =>
                       setFormData({ ...formData, description: e.target.value })
                     }
-                    placeholder="Describe your key responsibilities and achievements..."
-                    className="border-gray-300 focus:border-black min-h-[96px] resize-none"
+                    placeholder="• Spearheaded the migration to microservices, reducing p99 latency by 42%&#10;• Mentored 5 junior engineers and established automated CI/CD pipelines"
+                    className="border-neutral-200 focus:border-neutral-900 rounded-xl min-h-[110px] text-xs sm:text-sm leading-relaxed"
                   />
                 </div>
 
                 {/* Action row */}
-                <div className="flex items-center gap-3 pt-1">
+                <div className="flex items-center gap-2 pt-2 border-t border-neutral-100">
                   <Button
                     onClick={handleSave}
                     disabled={isSaving}
-                    className="flex-1 bg-black text-white hover:bg-gray-800"
+                    className="flex-1 bg-neutral-900 text-white hover:bg-neutral-800 rounded-xl font-semibold text-xs h-9"
                   >
                     {isSaving ? (
                       <>
@@ -381,7 +389,7 @@ export default function WorkExperienceForm({
                         Saving...
                       </>
                     ) : (
-                      "Save"
+                      "Save Experience"
                     )}
                   </Button>
 
@@ -391,36 +399,31 @@ export default function WorkExperienceForm({
                         <Button
                           variant="ghost"
                           size="sm"
-                          className="text-red-500 hover:text-red-600 hover:bg-red-50 gap-1.5 px-3"
+                          className="text-red-500 hover:text-red-600 hover:bg-red-50 h-9 px-3 rounded-xl text-xs font-semibold"
                           disabled={deleteMutation.isPending}
                         >
-                          {deleteMutation.isPending ? (
-                            <Spinner className="w-3.5 h-3.5" />
-                          ) : (
-                            <Trash2 className="w-3.5 h-3.5" />
-                          )}
+                          <Trash2 className="w-3.5 h-3.5 mr-1" />
                           Delete
                         </Button>
                       </AlertDialogTrigger>
-                      <AlertDialogContent className="border border-black">
+                      <AlertDialogContent className="border border-neutral-200 rounded-2xl">
                         <AlertDialogHeader>
-                          <AlertDialogTitle>
+                          <AlertDialogTitle className="text-base font-bold text-neutral-900">
                             Delete this experience?
                           </AlertDialogTitle>
-                          <AlertDialogDescription>
-                            "{formData.jobTitle}" at {formData.company} will be
-                            permanently removed.
+                          <AlertDialogDescription className="text-xs text-neutral-600">
+                            "{formData.jobTitle}" at {formData.company} will be permanently removed.
                           </AlertDialogDescription>
                         </AlertDialogHeader>
-                        <div className="flex gap-2">
-                          <AlertDialogCancel className="border-black">
+                        <div className="flex justify-end gap-2 pt-2">
+                          <AlertDialogCancel className="border-neutral-200 text-xs font-semibold">
                             Cancel
                           </AlertDialogCancel>
                           <AlertDialogAction
                             onClick={() =>
                               deleteMutation.mutate({ id: editingId })
                             }
-                            className="bg-red-600 hover:bg-red-700"
+                            className="bg-red-600 hover:bg-red-700 text-white text-xs font-semibold"
                           >
                             Delete
                           </AlertDialogAction>
@@ -441,38 +444,39 @@ export default function WorkExperienceForm({
             onReorder={handleReorder}
             droppableId="work-experience"
             renderItem={exp => (
-              <div className="flex items-start justify-between gap-3 flex-1 min-w-0">
+              <div className="flex items-start justify-between gap-3 flex-1 min-w-0 py-1">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
-                    <span className="font-semibold text-black text-sm leading-tight">
+                    <span className="font-bold text-neutral-900 text-sm leading-tight">
                       {exp.jobTitle}
                     </span>
                     {!exp.endDate && (
                       <Badge
                         variant="outline"
-                        className="text-xs border-green-500 text-green-700 py-0"
+                        className="text-[10px] py-0 px-1.5 border-emerald-300 text-emerald-700 bg-emerald-50 font-semibold"
                       >
                         Current
                       </Badge>
                     )}
                   </div>
-                  <p className="text-sm text-gray-600 mt-0.5">
+                  <p className="text-xs text-neutral-600 mt-0.5 font-medium">
                     {exp.company}
-                    {exp.location ? ` · ${exp.location}` : ""}
+                    {exp.location ? ` • ${exp.location}` : ""}
                   </p>
-                  <div className="flex items-center gap-1 text-xs text-gray-400 mt-1">
+                  <div className="flex items-center gap-1.5 text-[11px] text-neutral-400 mt-1">
                     <Calendar className="w-3 h-3" />
                     <span>
-                      {fmtMonth(exp.startDate)} –{" "}
-                      {exp.endDate ? fmtMonth(exp.endDate) : "Present"}
+                      {fmtMonth(exp.startDate)} - {exp.endDate ? fmtMonth(exp.endDate) : "Present"}
                     </span>
                   </div>
                 </div>
+
                 <Button
-                  onClick={() => handleEdit(exp)}
                   variant="ghost"
                   size="sm"
-                  className="h-8 w-8 p-0 flex-shrink-0 text-gray-400 hover:text-black hover:bg-gray-100"
+                  onClick={() => handleEdit(exp)}
+                  className="h-8 w-8 p-0 text-neutral-400 hover:text-neutral-900 hover:bg-neutral-100 rounded-lg flex-shrink-0"
+                  title="Edit this role"
                 >
                   <Pencil className="w-3.5 h-3.5" />
                 </Button>
@@ -480,10 +484,11 @@ export default function WorkExperienceForm({
             )}
           />
         ) : (
-          <div className="text-center py-8 border-2 border-dashed border-gray-200 rounded-lg">
-            <p className="text-sm text-gray-400">No work experience yet</p>
-            <p className="text-xs text-gray-300 mt-1">
-              Click "Add" to get started
+          <div className="text-center py-8 border border-dashed border-neutral-200 rounded-xl bg-neutral-50/50">
+            <Briefcase className="w-8 h-8 text-neutral-300 mx-auto mb-2" />
+            <p className="text-xs font-bold text-neutral-700">No work experience added yet</p>
+            <p className="text-[11px] text-neutral-400 mt-0.5">
+              Add your past roles and achievements to boost your ATS match score.
             </p>
           </div>
         )}

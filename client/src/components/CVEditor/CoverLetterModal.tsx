@@ -18,7 +18,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Spinner } from "@/components/ui/spinner";
-import { FileText, Copy, Check, Sparkles, Printer } from "lucide-react";
+import { FileText, Copy, Check, Sparkles, Printer, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 
 interface CoverLetterModalProps {
@@ -70,7 +70,7 @@ export default function CoverLetterModal({
     const textToCopy = `Subject: ${generatedLetter.subject}\n\n${generatedLetter.coverLetter}`;
     navigator.clipboard.writeText(textToCopy);
     setCopied(true);
-    toast.success("Cover Letter copied to clipboard!");
+    toast.success("Cover letter copied to clipboard!");
     setTimeout(() => setCopied(false), 2000);
   };
 
@@ -100,81 +100,93 @@ export default function CoverLetterModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={open => !open && onClose()}>
-      <DialogContent className="sm:max-w-[700px] max-h-[85vh] overflow-y-auto">
+      <DialogContent className="border border-neutral-200 sm:max-w-[650px] max-h-[90vh] overflow-y-auto rounded-2xl">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2 text-xl font-bold">
+          <DialogTitle className="flex items-center gap-2 text-base font-bold text-neutral-900">
             <FileText className="w-5 h-5 text-blue-600" />
-            AI Cover Letter Generator
+            <span>AI Cover Letter Generator</span>
           </DialogTitle>
         </DialogHeader>
 
         {!generatedLetter ? (
-          <div className="space-y-4 pt-2">
-            <p className="text-sm text-gray-600">
-              Generate an impactful, targeted cover letter based directly on your CV achievements and tailored for the company and job role.
+          <div className="space-y-4 pt-1">
+            <p className="text-xs text-neutral-600 leading-relaxed">
+              Generate an impactful, targeted cover letter based directly on your resume achievements and tailored specifically for the target employer.
             </p>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="companyName">Target Company *</Label>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="companyName" className="text-xs font-semibold text-neutral-600 uppercase tracking-wider">
+                  Target Company *
+                </Label>
                 <Input
                   id="companyName"
-                  placeholder="e.g. Tokopedia, GoTo, Google, Bank Mandiri"
+                  placeholder="e.g. Tokopedia, Stripe, Google"
                   value={companyName}
                   onChange={e => setCompanyName(e.target.value)}
+                  className="mt-1.5 border-neutral-200 focus:border-neutral-900 rounded-xl"
+                  autoFocus
                   required
                 />
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="targetJob">Job Position *</Label>
+              <div>
+                <Label htmlFor="targetJob" className="text-xs font-semibold text-neutral-600 uppercase tracking-wider">
+                  Job Position / Role *
+                </Label>
                 <Input
                   id="targetJob"
-                  placeholder="e.g. Full Stack Developer"
+                  placeholder="e.g. Senior Software Engineer"
                   value={jobTitle}
                   onChange={e => setJobTitle(e.target.value)}
+                  className="mt-1.5 border-neutral-200 focus:border-neutral-900 rounded-xl"
                   required
                 />
               </div>
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="tone">Tone of Voice</Label>
+            <div>
+              <Label htmlFor="tone" className="text-xs font-semibold text-neutral-600 uppercase tracking-wider">
+                Tone of Voice
+              </Label>
               <Select
                 value={tone}
                 onValueChange={(val: any) => setTone(val)}
               >
-                <SelectTrigger id="tone">
+                <SelectTrigger id="tone" className="mt-1.5 border-neutral-200 rounded-xl">
                   <SelectValue placeholder="Select tone" />
                 </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="professional">Professional & Balanced</SelectItem>
-                  <SelectItem value="confident">Confident & High-Impact</SelectItem>
-                  <SelectItem value="enthusiastic">Enthusiastic & Passionate</SelectItem>
-                  <SelectItem value="concise">Concise & Direct (Under 250 words)</SelectItem>
+                <SelectContent className="rounded-xl border-neutral-200">
+                  <SelectItem value="professional" className="text-xs">Professional & Balanced</SelectItem>
+                  <SelectItem value="confident" className="text-xs">Confident & Metric-Driven</SelectItem>
+                  <SelectItem value="enthusiastic" className="text-xs">Enthusiastic & Passionate</SelectItem>
+                  <SelectItem value="concise" className="text-xs">Concise & Direct (&lt; 250 words)</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="clJd">Job Requirements / Key Duties (Optional)</Label>
+            <div>
+              <Label htmlFor="clJd" className="text-xs font-semibold text-neutral-600 uppercase tracking-wider">
+                Key Requirements or Company Values (Optional)
+              </Label>
               <Textarea
                 id="clJd"
-                placeholder="Paste key responsibilities or values of the target role..."
+                placeholder="Paste key responsibilities or special requirements to tailor the pitch..."
                 rows={4}
                 value={jobDescription}
                 onChange={e => setJobDescription(e.target.value)}
+                className="mt-1.5 border-neutral-200 focus:border-neutral-900 rounded-xl text-xs sm:text-sm leading-relaxed"
               />
             </div>
 
-            <div className="flex justify-end gap-2 pt-2">
-              <Button variant="outline" onClick={onClose}>
+            <div className="flex justify-end gap-2 pt-2 border-t border-neutral-100">
+              <Button variant="outline" onClick={onClose} className="border-neutral-200 text-xs rounded-xl">
                 Cancel
               </Button>
               <Button
                 onClick={handleGenerate}
                 disabled={generateMutation.isPending}
-                className="gap-2 bg-blue-600 hover:bg-blue-700 text-white"
+                className="gap-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-semibold h-9 px-4 shadow-xs"
               >
                 {generateMutation.isPending ? (
                   <>
@@ -189,14 +201,16 @@ export default function CoverLetterModal({
             </div>
           </div>
         ) : (
-          <div className="space-y-4 pt-2">
-            <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg text-xs space-y-1">
+          <div className="space-y-4 pt-1">
+            <div className="p-3 bg-blue-50 border border-blue-200 rounded-xl text-xs space-y-1">
               <span className="font-semibold text-blue-900">Email Subject Line:</span>
-              <p className="font-mono text-gray-800">{generatedLetter.subject}</p>
+              <p className="font-mono text-neutral-800">{generatedLetter.subject}</p>
             </div>
 
-            <div className="space-y-2">
-              <Label>Cover Letter Content (Editable)</Label>
+            <div className="space-y-1.5">
+              <Label className="text-xs font-semibold text-neutral-600 uppercase tracking-wider">
+                Cover Letter Content (Editable)
+              </Label>
               <Textarea
                 value={generatedLetter.coverLetter}
                 onChange={e =>
@@ -205,18 +219,19 @@ export default function CoverLetterModal({
                     coverLetter: e.target.value,
                   })
                 }
-                rows={14}
-                className="font-serif leading-relaxed text-sm text-gray-800"
+                rows={12}
+                className="border-neutral-200 focus:border-neutral-900 rounded-xl font-serif leading-relaxed text-xs sm:text-sm text-neutral-800 p-4"
               />
             </div>
 
-            <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t">
+            <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-neutral-100">
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => setGeneratedLetter(null)}
+                className="text-xs text-neutral-500 hover:text-neutral-900"
               >
-                ← Generate Again
+                <ArrowLeft className="w-3.5 h-3.5 mr-1" /> Generate Again
               </Button>
 
               <div className="flex items-center gap-2">
@@ -224,22 +239,25 @@ export default function CoverLetterModal({
                   variant="outline"
                   size="sm"
                   onClick={handlePrint}
-                  className="gap-1.5"
+                  className="border-neutral-200 text-xs rounded-xl gap-1.5 h-8 px-3"
                 >
-                  <Printer className="w-4 h-4" /> Print / Save PDF
+                  <Printer className="w-3.5 h-3.5" />
+                  <span>Print</span>
                 </Button>
                 <Button
                   size="sm"
                   onClick={handleCopy}
-                  className="gap-1.5 bg-black text-white hover:bg-gray-800"
+                  className="bg-neutral-900 text-white hover:bg-neutral-800 text-xs rounded-xl gap-1.5 h-8 px-3.5 font-semibold"
                 >
                   {copied ? (
                     <>
-                      <Check className="w-4 h-4 text-emerald-400" /> Copied!
+                      <Check className="w-3.5 h-3.5 text-emerald-400" />
+                      <span>Copied!</span>
                     </>
                   ) : (
                     <>
-                      <Copy className="w-4 h-4" /> Copy Letter
+                      <Copy className="w-3.5 h-3.5" />
+                      <span>Copy Letter</span>
                     </>
                   )}
                 </Button>
@@ -251,4 +269,3 @@ export default function CoverLetterModal({
     </Dialog>
   );
 }
-

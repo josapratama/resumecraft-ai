@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
 import {
   Select,
   SelectContent,
@@ -43,9 +44,21 @@ interface LanguagesFormProps {
 const PROFICIENCY_OPTIONS = [
   "Native / Bilingual",
   "Professional Working",
+  "Full Professional",
   "Fluent",
   "Intermediate",
   "Elementary",
+];
+
+const COMMON_LANGUAGES = [
+  "English",
+  "Indonesian",
+  "Mandarin Chinese",
+  "Japanese",
+  "Spanish",
+  "German",
+  "French",
+  "Arabic",
 ];
 
 export default function LanguagesForm({
@@ -154,159 +167,191 @@ export default function LanguagesForm({
   const isSaving = createMutation.isPending || updateMutation.isPending;
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-xl font-bold text-black flex items-center gap-2">
-            <Globe className="w-5 h-5" /> Languages
-          </h2>
-          <p className="text-sm text-gray-500">
-            Languages you speak and your proficiency level
-          </p>
-        </div>
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogTrigger asChild>
-            <Button
-              onClick={() => handleOpenDialog()}
-              size="sm"
-              className="gap-2 bg-black text-white hover:bg-gray-800"
-            >
-              <Plus className="w-4 h-4" /> Add Language
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="sm:max-w-[425px]">
-            <DialogHeader>
-              <DialogTitle>
-                {editingId ? "Edit Language" : "Add Language"}
-              </DialogTitle>
-            </DialogHeader>
-            <form onSubmit={handleSubmit} className="space-y-4 pt-4">
-              <div className="space-y-2">
-                <Label htmlFor="langName">Language Name *</Label>
-                <Input
-                  id="langName"
-                  placeholder="e.g. English, Indonesian, Japanese"
-                  value={formData.language}
-                  onChange={e =>
-                    setFormData({ ...formData, language: e.target.value })
-                  }
-                  required
-                />
-              </div>
+    <Card className="p-5 sm:p-6 border border-neutral-200 bg-white rounded-2xl shadow-xs">
+      <div className="space-y-4">
+        <div className="flex items-center justify-between pb-3 border-b border-neutral-100">
+          <div>
+            <h3 className="text-base font-bold text-neutral-900 leading-tight">
+              Languages
+            </h3>
+            <p className="text-xs text-neutral-500 mt-0.5">
+              Languages you speak and your proficiency level
+            </p>
+          </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="langProf">Proficiency Level</Label>
-                <Select
-                  value={formData.proficiency}
-                  onValueChange={val =>
-                    setFormData({ ...formData, proficiency: val })
-                  }
-                >
-                  <SelectTrigger id="langProf">
-                    <SelectValue placeholder="Select proficiency" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {PROFICIENCY_OPTIONS.map(opt => (
-                      <SelectItem key={opt} value={opt}>
-                        {opt}
-                      </SelectItem>
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <DialogTrigger asChild>
+              <Button
+                onClick={() => handleOpenDialog()}
+                className="gap-1.5 bg-neutral-900 text-white hover:bg-neutral-800 rounded-xl text-xs font-semibold h-8 sm:h-9 px-3 shadow-xs"
+                size="sm"
+              >
+                <Plus className="w-3.5 h-3.5" />
+                <span>Add Language</span>
+              </Button>
+            </DialogTrigger>
+
+            <DialogContent className="border border-neutral-200 sm:max-w-md rounded-2xl">
+              <DialogHeader>
+                <DialogTitle className="text-base font-bold text-neutral-900">
+                  {editingId ? "Edit Language" : "Add Language"}
+                </DialogTitle>
+              </DialogHeader>
+
+              <form onSubmit={handleSubmit} className="space-y-4 pt-1">
+                <div>
+                  <Label htmlFor="langName" className="text-xs font-semibold text-neutral-600 uppercase tracking-wider">
+                    Language *
+                  </Label>
+                  <Input
+                    id="langName"
+                    placeholder="e.g. English, Indonesian, Japanese"
+                    value={formData.language}
+                    onChange={e =>
+                      setFormData({ ...formData, language: e.target.value })
+                    }
+                    className="mt-1.5 border-neutral-200 focus:border-neutral-900 rounded-xl"
+                    autoFocus
+                    required
+                  />
+
+                  {/* Quick language suggestions */}
+                  <div className="flex flex-wrap gap-1.5 mt-2">
+                    {COMMON_LANGUAGES.map(l => (
+                      <button
+                        key={l}
+                        type="button"
+                        onClick={() => setFormData(prev => ({ ...prev, language: l }))}
+                        className={`text-[10px] px-2 py-0.5 rounded-full border transition-colors ${
+                          formData.language === l
+                            ? "bg-neutral-900 text-white border-neutral-900"
+                            : "bg-neutral-50 text-neutral-600 border-neutral-200 hover:bg-neutral-100"
+                        }`}
+                      >
+                        {l}
+                      </button>
                     ))}
-                  </SelectContent>
-                </Select>
-              </div>
+                  </div>
+                </div>
 
-              <div className="flex justify-end gap-2 pt-4">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={resetForm}
-                  disabled={isSaving}
-                >
-                  Cancel
-                </Button>
-                <Button
-                  type="submit"
-                  disabled={isSaving}
-                  className="bg-black text-white hover:bg-gray-800"
-                >
-                  {isSaving && <Spinner className="w-4 h-4 mr-2" />}
-                  {editingId ? "Save Changes" : "Add Language"}
-                </Button>
+                <div>
+                  <Label htmlFor="langProf" className="text-xs font-semibold text-neutral-600 uppercase tracking-wider">
+                    Proficiency Level
+                  </Label>
+                  <Select
+                    value={formData.proficiency}
+                    onValueChange={val =>
+                      setFormData({ ...formData, proficiency: val })
+                    }
+                  >
+                    <SelectTrigger id="langProf" className="mt-1.5 border-neutral-200 rounded-xl">
+                      <SelectValue placeholder="Select proficiency" />
+                    </SelectTrigger>
+                    <SelectContent className="rounded-xl border-neutral-200">
+                      {PROFICIENCY_OPTIONS.map(opt => (
+                        <SelectItem key={opt} value={opt} className="text-xs">
+                          {opt}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="flex items-center gap-2 pt-2 border-t border-neutral-100">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={resetForm}
+                    disabled={isSaving}
+                    className="border-neutral-200 text-xs rounded-xl"
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    type="submit"
+                    disabled={isSaving}
+                    className="flex-1 bg-neutral-900 text-white hover:bg-neutral-800 rounded-xl font-semibold text-xs h-9"
+                  >
+                    {isSaving && <Spinner className="w-4 h-4 mr-2" />}
+                    {editingId ? "Save Changes" : "Add Language"}
+                  </Button>
+                </div>
+              </form>
+            </DialogContent>
+          </Dialog>
+        </div>
+
+        {languages.length === 0 ? (
+          <div className="text-center py-8 border border-dashed border-neutral-200 rounded-xl bg-neutral-50/50">
+            <Globe className="w-8 h-8 text-neutral-300 mx-auto mb-2" />
+            <p className="text-xs font-bold text-neutral-700">No languages added yet</p>
+            <p className="text-[11px] text-neutral-400 mt-0.5">
+              Highlight your spoken and written language competencies for global roles.
+            </p>
+          </div>
+        ) : (
+          <DraggableList
+            items={languages}
+            onReorder={handleReorder}
+            droppableId="languages"
+            renderItem={lang => (
+              <div className="flex items-center justify-between gap-3 flex-1 min-w-0 py-1">
+                <div className="flex items-center gap-2 flex-wrap min-w-0">
+                  <span className="font-bold text-neutral-900 text-sm">
+                    {lang.language}
+                  </span>
+                  <Badge variant="outline" className="text-[10px] py-0 px-2 font-medium border-neutral-200 text-neutral-600 bg-neutral-50">
+                    {lang.proficiency}
+                  </Badge>
+                </div>
+
+                <div className="flex items-center gap-1">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => handleOpenDialog(lang)}
+                    className="h-8 w-8 p-0 text-neutral-400 hover:text-neutral-900 hover:bg-neutral-100 rounded-lg flex-shrink-0"
+                  >
+                    <Pencil className="w-3.5 h-3.5" />
+                  </Button>
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-8 w-8 p-0 text-neutral-400 hover:text-red-600 hover:bg-red-50 rounded-lg flex-shrink-0"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent className="border border-neutral-200 rounded-2xl">
+                      <AlertDialogHeader>
+                        <AlertDialogTitle className="text-base font-bold text-neutral-900">
+                          Delete Language?
+                        </AlertDialogTitle>
+                        <AlertDialogDescription className="text-xs text-neutral-600">
+                          Are you sure you want to remove {lang.language}?
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <div className="flex justify-end gap-2 pt-2">
+                        <AlertDialogCancel className="border-neutral-200 text-xs font-semibold">
+                          Cancel
+                        </AlertDialogCancel>
+                        <AlertDialogAction
+                          onClick={() => deleteMutation.mutate({ id: lang.id })}
+                          className="bg-red-600 hover:bg-red-700 text-white text-xs font-semibold"
+                        >
+                          Delete
+                        </AlertDialogAction>
+                      </div>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                </div>
               </div>
-            </form>
-          </DialogContent>
-        </Dialog>
+            )}
+          />
+        )}
       </div>
-
-      {languages.length === 0 ? (
-        <Card className="p-8 text-center border-dashed">
-          <Globe className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-          <p className="text-gray-500 font-medium">No languages added yet</p>
-          <p className="text-xs text-gray-400 mb-4">
-            Showcase your linguistic capabilities to prospective employers
-          </p>
-          <Button
-            onClick={() => handleOpenDialog()}
-            variant="outline"
-            size="sm"
-            className="gap-2"
-          >
-            <Plus className="w-4 h-4" /> Add Language
-          </Button>
-        </Card>
-      ) : (
-        <DraggableList
-          items={languages}
-          onReorder={handleReorder}
-          droppableId="languages"
-          renderItem={lang => (
-            <div className="flex items-center justify-between flex-1 min-w-0">
-              <div>
-                <h4 className="font-semibold text-black text-sm">
-                  {lang.language}
-                </h4>
-                <p className="text-xs text-gray-500">{lang.proficiency}</p>
-              </div>
-              <div className="flex items-center gap-1">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => handleOpenDialog(lang)}
-                  className="h-8 w-8 p-0"
-                >
-                  <Pencil className="w-3.5 h-3.5 text-gray-600" />
-                </Button>
-                <AlertDialog>
-                  <AlertDialogTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="h-8 w-8 p-0 hover:text-red-600"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </Button>
-                  </AlertDialogTrigger>
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>Delete Language?</AlertDialogTitle>
-                      <AlertDialogDescription>
-                        Are you sure you want to remove {lang.language}?
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogAction
-                      onClick={() => deleteMutation.mutate({ id: lang.id })}
-                      className="bg-red-600 hover:bg-red-700"
-                    >
-                      Delete
-                    </AlertDialogAction>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                  </AlertDialogContent>
-                </AlertDialog>
-              </div>
-            </div>
-          )}
-        />
-      )}
-    </div>
+    </Card>
   );
 }

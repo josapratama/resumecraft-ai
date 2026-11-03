@@ -12,7 +12,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Spinner } from "@/components/ui/spinner";
-import { Wand2 } from "lucide-react";
+import { Wand2, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 
 interface AIAssistantProps {
@@ -39,7 +39,6 @@ export default function AIAssistant({
 
   const handleOpenChange = (open: boolean) => {
     setIsOpen(open);
-    // Reset fields whenever the dialog closes (whether by generating or cancelling)
     if (!open) resetFields();
   };
 
@@ -52,6 +51,7 @@ export default function AIAssistant({
             : String(data.summary);
         onTextGenerated(text);
         setIsOpen(false);
+        toast.success("Professional summary generated!");
       },
       onError: () => {
         toast.error("Failed to generate summary. Please try again.");
@@ -67,6 +67,7 @@ export default function AIAssistant({
             : String(data.description);
         onTextGenerated(text);
         setIsOpen(false);
+        toast.success("Job description generated!");
       },
       onError: () => {
         toast.error("Failed to generate description. Please try again.");
@@ -96,73 +97,89 @@ export default function AIAssistant({
   return (
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        <Button variant="outline" size="sm" className="gap-2 border-black">
-          <Wand2 className="w-4 h-4" />
-          AI Generate
+        <Button
+          variant="outline"
+          size="sm"
+          className="gap-1.5 border-neutral-200 text-neutral-700 hover:bg-neutral-100 text-xs h-7 px-2.5 rounded-lg font-medium"
+        >
+          <Sparkles className="w-3 h-3 text-amber-500" />
+          <span>AI Generate</span>
         </Button>
       </DialogTrigger>
-      <DialogContent className="border border-black">
+
+      <DialogContent className="border border-neutral-200 max-w-md rounded-2xl">
         <DialogHeader>
-          <DialogTitle>
-            {type === "summary"
-              ? "Generate Professional Summary"
-              : "Generate Job Description"}
+          <DialogTitle className="text-base font-bold text-neutral-900 flex items-center gap-2">
+            <Sparkles className="w-4 h-4 text-amber-500" />
+            <span>
+              {type === "summary"
+                ? "Generate Professional Summary"
+                : "Generate Job Responsibilities"}
+            </span>
           </DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-4">
+        <div className="space-y-4 pt-1">
           <div>
-            <Label className="text-black font-semibold">Job Title</Label>
+            <Label className="text-xs font-semibold text-neutral-600 uppercase tracking-wider">
+              Target Role / Job Title *
+            </Label>
             <Input
               value={jobTitle}
               onChange={e => setJobTitle(e.target.value)}
-              placeholder="e.g., Senior Software Engineer"
-              className="mt-2 border-black"
+              placeholder="e.g. Senior Full-Stack Engineer"
+              className="mt-1.5 border-neutral-200 focus:border-neutral-900 rounded-xl"
+              autoFocus
             />
           </div>
 
           {type === "description" && (
             <div>
-              <Label className="text-black font-semibold">Company</Label>
+              <Label className="text-xs font-semibold text-neutral-600 uppercase tracking-wider">
+                Company Name
+              </Label>
               <Input
                 value={company}
                 onChange={e => setCompany(e.target.value)}
-                placeholder="e.g., Tech Company Inc"
-                className="mt-2 border-black"
+                placeholder="e.g. Stripe, Tokopedia, Google"
+                className="mt-1.5 border-neutral-200 focus:border-neutral-900 rounded-xl"
               />
             </div>
           )}
 
           <div>
-            <Label className="text-black font-semibold">
+            <Label className="text-xs font-semibold text-neutral-600 uppercase tracking-wider">
               {type === "summary"
-                ? "Experience & Background"
-                : "Key Responsibilities"}
+                ? "Key Background & Expertise (Keywords or brief notes)"
+                : "Key Projects or Daily Duties"}
             </Label>
             <Textarea
               value={context}
               onChange={e => setContext(e.target.value)}
               placeholder={
                 type === "summary"
-                  ? "Describe your experience and background..."
-                  : "List key responsibilities and achievements..."
+                  ? "e.g. 7 years in fintech, led migration to microservices, AWS certified..."
+                  : "e.g. built payment gateway, reduced latency by 30%, mentored juniors..."
               }
-              className="mt-2 border-black min-h-24"
+              className="mt-1.5 border-neutral-200 focus:border-neutral-900 rounded-xl min-h-24 text-xs sm:text-sm leading-relaxed"
             />
           </div>
 
           <Button
             onClick={handleGenerate}
             disabled={isLoading || !jobTitle.trim()}
-            className="w-full bg-black text-white hover:bg-gray-800"
+            className="w-full bg-neutral-900 text-white hover:bg-neutral-800 rounded-xl h-10 font-semibold text-xs sm:text-sm shadow-xs"
           >
             {isLoading ? (
-              <>
-                <Spinner className="w-4 h-4 mr-2" />
-                Generating...
-              </>
+              <div className="flex items-center gap-2">
+                <Spinner className="w-4 h-4" />
+                <span>Crafting with AI...</span>
+              </div>
             ) : (
-              "Generate with AI"
+              <div className="flex items-center gap-1.5">
+                <Sparkles className="w-3.5 h-3.5" />
+                <span>Generate Content</span>
+              </div>
             )}
           </Button>
         </div>

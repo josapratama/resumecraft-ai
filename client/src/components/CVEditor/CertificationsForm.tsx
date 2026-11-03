@@ -21,7 +21,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Trash2, Plus, Pencil, ExternalLink, Calendar } from "lucide-react";
+import { Trash2, Plus, Pencil, ExternalLink, Calendar, Award } from "lucide-react";
 import { Spinner } from "@/components/ui/spinner";
 import type { Certification } from "@/types/cv";
 import { toast } from "sonner";
@@ -108,9 +108,7 @@ export default function CertificationsForm({
   });
 
   const handleReorder = (newOrder: number[]) => {
-    const reordered = newOrder.map(
-      id => certifications.find(c => c.id === id)!
-    );
+    const reordered = newOrder.map(id => certifications.find(c => c.id === id)!);
     setCertifications(reordered);
     onDataChange?.(reordered);
     reorderMutation.mutate({ cvId, ids: newOrder });
@@ -151,10 +149,18 @@ export default function CertificationsForm({
   const isSaving = createMutation.isPending || updateMutation.isPending;
 
   return (
-    <Card className="p-6 border border-black">
+    <Card className="p-5 sm:p-6 border border-neutral-200 bg-white rounded-2xl shadow-xs">
       <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <h3 className="text-lg font-bold text-black">Certifications</h3>
+        <div className="flex items-center justify-between pb-3 border-b border-neutral-100">
+          <div>
+            <h3 className="text-base font-bold text-neutral-900 leading-tight">
+              Certifications & Licenses
+            </h3>
+            <p className="text-xs text-neutral-500 mt-0.5">
+              Accreditations, professional credentials, and honors
+            </p>
+          </div>
+
           <Dialog
             open={isDialogOpen}
             onOpenChange={open => {
@@ -165,22 +171,24 @@ export default function CertificationsForm({
             <DialogTrigger asChild>
               <Button
                 onClick={() => resetForm()}
-                className="gap-2 bg-black text-white hover:bg-gray-800"
+                className="gap-1.5 bg-neutral-900 text-white hover:bg-neutral-800 rounded-xl text-xs font-semibold h-8 sm:h-9 px-3 shadow-xs"
                 size="sm"
               >
-                <Plus className="w-4 h-4" />
-                Add
+                <Plus className="w-3.5 h-3.5" />
+                <span>Add Certification</span>
               </Button>
             </DialogTrigger>
-            <DialogContent className="border border-black max-w-lg">
+
+            <DialogContent className="border border-neutral-200 max-w-lg rounded-2xl">
               <DialogHeader>
-                <DialogTitle>
+                <DialogTitle className="text-base font-bold text-neutral-900">
                   {editingId ? "Edit Certification" : "Add Certification"}
                 </DialogTitle>
               </DialogHeader>
+
               <div className="space-y-4 pt-1">
                 <div>
-                  <Label className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                  <Label className="text-xs font-semibold text-neutral-600 uppercase tracking-wider">
                     Certification Name *
                   </Label>
                   <Input
@@ -191,26 +199,28 @@ export default function CertificationsForm({
                         certificationName: e.target.value,
                       })
                     }
-                    placeholder="e.g., AWS Solutions Architect"
-                    className="mt-1.5 border-gray-300 focus:border-black"
+                    placeholder="e.g. AWS Certified Solutions Architect - Associate"
+                    className="mt-1.5 border-neutral-200 focus:border-neutral-900 rounded-xl"
                   />
                 </div>
+
                 <div>
-                  <Label className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                    Issuer *
+                  <Label className="text-xs font-semibold text-neutral-600 uppercase tracking-wider">
+                    Issuing Organization *
                   </Label>
                   <Input
                     value={formData.issuer}
                     onChange={e =>
                       setFormData({ ...formData, issuer: e.target.value })
                     }
-                    placeholder="e.g., Amazon Web Services"
-                    className="mt-1.5 border-gray-300 focus:border-black"
+                    placeholder="e.g. Amazon Web Services (AWS) or Google Cloud"
+                    className="mt-1.5 border-neutral-200 focus:border-neutral-900 rounded-xl"
                   />
                 </div>
-                <div className="grid grid-cols-2 gap-4">
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <Label className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                    <Label className="text-xs font-semibold text-neutral-600 uppercase tracking-wider">
                       Issue Date
                     </Label>
                     <Input
@@ -219,12 +229,12 @@ export default function CertificationsForm({
                       onChange={e =>
                         setFormData({ ...formData, issueDate: e.target.value })
                       }
-                      className="mt-1.5 border-gray-300 focus:border-black"
+                      className="mt-1.5 border-neutral-200 focus:border-neutral-900 rounded-xl"
                     />
                   </div>
                   <div>
-                    <Label className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                      Expiry Date
+                    <Label className="text-xs font-semibold text-neutral-600 uppercase tracking-wider">
+                      Expiry Date (Optional)
                     </Label>
                     <Input
                       type="month"
@@ -232,28 +242,30 @@ export default function CertificationsForm({
                       onChange={e =>
                         setFormData({ ...formData, expiryDate: e.target.value })
                       }
-                      className="mt-1.5 border-gray-300 focus:border-black"
+                      className="mt-1.5 border-neutral-200 focus:border-neutral-900 rounded-xl"
                     />
                   </div>
                 </div>
+
                 <div>
-                  <Label className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                    Credential Link
+                  <Label className="text-xs font-semibold text-neutral-600 uppercase tracking-wider">
+                    Credential Link / Verification URL
                   </Label>
                   <Input
                     value={formData.link}
                     onChange={e =>
                       setFormData({ ...formData, link: e.target.value })
                     }
-                    placeholder="https://example.com/certificate"
-                    className="mt-1.5 border-gray-300 focus:border-black"
+                    placeholder="https://credly.com/your-badge"
+                    className="mt-1.5 border-neutral-200 focus:border-neutral-900 rounded-xl"
                   />
                 </div>
-                <div className="flex items-center gap-3 pt-1">
+
+                <div className="flex items-center gap-2 pt-2 border-t border-neutral-100">
                   <Button
                     onClick={handleSave}
                     disabled={isSaving}
-                    className="flex-1 bg-black text-white hover:bg-gray-800"
+                    className="flex-1 bg-neutral-900 text-white hover:bg-neutral-800 rounded-xl font-semibold text-xs h-9"
                   >
                     {isSaving ? (
                       <>
@@ -261,45 +273,41 @@ export default function CertificationsForm({
                         Saving...
                       </>
                     ) : (
-                      "Save"
+                      "Save Certification"
                     )}
                   </Button>
+
                   {editingId && (
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
                         <Button
                           variant="ghost"
                           size="sm"
-                          className="text-red-500 hover:text-red-600 hover:bg-red-50 gap-1.5 px-3"
+                          className="text-red-500 hover:text-red-600 hover:bg-red-50 h-9 px-3 rounded-xl text-xs font-semibold"
                           disabled={deleteMutation.isPending}
                         >
-                          {deleteMutation.isPending ? (
-                            <Spinner className="w-3.5 h-3.5" />
-                          ) : (
-                            <Trash2 className="w-3.5 h-3.5" />
-                          )}
+                          <Trash2 className="w-3.5 h-3.5 mr-1" />
                           Delete
                         </Button>
                       </AlertDialogTrigger>
-                      <AlertDialogContent className="border border-black">
+                      <AlertDialogContent className="border border-neutral-200 rounded-2xl">
                         <AlertDialogHeader>
-                          <AlertDialogTitle>
-                            Delete this certification?
+                          <AlertDialogTitle className="text-base font-bold text-neutral-900">
+                            Delete "{formData.certificationName}"?
                           </AlertDialogTitle>
-                          <AlertDialogDescription>
-                            "{formData.certificationName}" will be permanently
-                            removed.
+                          <AlertDialogDescription className="text-xs text-neutral-600">
+                            This certification will be permanently removed.
                           </AlertDialogDescription>
                         </AlertDialogHeader>
-                        <div className="flex gap-2">
-                          <AlertDialogCancel className="border-black">
+                        <div className="flex justify-end gap-2 pt-2">
+                          <AlertDialogCancel className="border-neutral-200 text-xs font-semibold">
                             Cancel
                           </AlertDialogCancel>
                           <AlertDialogAction
                             onClick={() =>
                               deleteMutation.mutate({ id: editingId })
                             }
-                            className="bg-red-600 hover:bg-red-700"
+                            className="bg-red-600 hover:bg-red-700 text-white text-xs font-semibold"
                           >
                             Delete
                           </AlertDialogAction>
@@ -319,20 +327,20 @@ export default function CertificationsForm({
             onReorder={handleReorder}
             droppableId="certifications"
             renderItem={cert => (
-              <div className="flex items-start justify-between gap-3 flex-1 min-w-0">
+              <div className="flex items-start justify-between gap-3 flex-1 min-w-0 py-1">
                 <div className="flex-1 min-w-0">
-                  <p className="font-semibold text-black text-sm leading-tight">
+                  <p className="font-bold text-neutral-900 text-sm leading-tight">
                     {cert.certificationName}
                   </p>
-                  <p className="text-sm text-gray-600 mt-0.5">{cert.issuer}</p>
+                  <p className="text-xs text-neutral-600 mt-0.5 font-medium">
+                    {cert.issuer}
+                  </p>
                   {cert.issueDate && (
-                    <div className="flex items-center gap-1 text-xs text-gray-400 mt-1">
+                    <div className="flex items-center gap-1.5 text-[11px] text-neutral-400 mt-1">
                       <Calendar className="w-3 h-3" />
                       <span>
-                        {fmtMonth(cert.issueDate)}
-                        {cert.expiryDate
-                          ? ` – ${fmtMonth(cert.expiryDate)}`
-                          : ""}
+                        Issued {fmtMonth(cert.issueDate)}
+                        {cert.expiryDate ? ` - Expires ${fmtMonth(cert.expiryDate)}` : ""}
                       </span>
                     </div>
                   )}
@@ -341,19 +349,21 @@ export default function CertificationsForm({
                       href={cert.link}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-0.5 text-xs text-blue-500 hover:text-blue-700 mt-1"
+                      className="inline-flex items-center gap-1 text-[11px] text-blue-600 hover:underline mt-1 font-medium"
                       onClick={e => e.stopPropagation()}
                     >
                       <ExternalLink className="w-3 h-3" />
-                      View credential
+                      View Credential
                     </a>
                   )}
                 </div>
+
                 <Button
                   onClick={() => handleEdit(cert)}
                   variant="ghost"
                   size="sm"
-                  className="h-8 w-8 p-0 flex-shrink-0 text-gray-400 hover:text-black hover:bg-gray-100"
+                  className="h-8 w-8 p-0 text-neutral-400 hover:text-neutral-900 hover:bg-neutral-100 rounded-lg flex-shrink-0"
+                  title="Edit certification"
                 >
                   <Pencil className="w-3.5 h-3.5" />
                 </Button>
@@ -361,10 +371,11 @@ export default function CertificationsForm({
             )}
           />
         ) : (
-          <div className="text-center py-8 border-2 border-dashed border-gray-200 rounded-lg">
-            <p className="text-sm text-gray-400">No certifications yet</p>
-            <p className="text-xs text-gray-300 mt-1">
-              Click "Add" to get started
+          <div className="text-center py-8 border border-dashed border-neutral-200 rounded-xl bg-neutral-50/50">
+            <Award className="w-8 h-8 text-neutral-300 mx-auto mb-2" />
+            <p className="text-xs font-bold text-neutral-700">No certifications added yet</p>
+            <p className="text-[11px] text-neutral-400 mt-0.5">
+              Add professional credentials, cloud badges, or industry licenses.
             </p>
           </div>
         )}

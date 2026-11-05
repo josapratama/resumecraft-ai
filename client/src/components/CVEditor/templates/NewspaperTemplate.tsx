@@ -3,7 +3,7 @@
  * Journalists, writers, editors.
  */
 import type { FullCVData } from "@/types/cv";
-import { groupSkills, TechChips } from "./_shared";
+import { groupSkills, TechChips, CustomSectionsDisplay } from "./_shared";
 
 export default function NewspaperTemplate({ cvData }: { cvData: FullCVData }) {
   const grouped = groupSkills(cvData.skills);
@@ -122,6 +122,22 @@ export default function NewspaperTemplate({ cvData }: { cvData: FullCVData }) {
               ))}
             </div>
           )}
+          {cvData.languages && cvData.languages.length > 0 && (
+            <div className="min-w-0">
+              <h2
+                className="font-black uppercase text-xs tracking-widest border-b border-black mb-2"
+                style={{ fontFamily: "sans-serif" }}
+              >
+                Languages
+              </h2>
+              {cvData.languages.map(l => (
+                <p key={l.id} className="text-xs mb-1">
+                  <span className="font-bold break-words">{l.language}</span>{" "}
+                  <span className="text-gray-600 italic">({l.proficiency})</span>
+                </p>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Column 2–3 */}
@@ -209,6 +225,17 @@ export default function NewspaperTemplate({ cvData }: { cvData: FullCVData }) {
                   </div>
                 ))}
               </div>
+            </div>
+          )}
+          {cvData.customSections && cvData.customSections.length > 0 && (
+            <div>
+              <h2
+                className="font-black uppercase text-xs tracking-widest border-b border-black mb-3"
+                style={{ fontFamily: "sans-serif" }}
+              >
+                Dispatches & Notes
+              </h2>
+              <CustomSectionsDisplay customSections={cvData.customSections} />
             </div>
           )}
         </div>

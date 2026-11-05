@@ -3,7 +3,7 @@
  * Sales, marketing, impactful presence.
  */
 import type { FullCVData } from "@/types/cv";
-import { groupSkills, TechChips } from "./_shared";
+import { groupSkills, TechChips, LanguagesDisplay, CustomSectionsDisplay } from "./_shared";
 
 export default function BoldTemplate({ cvData }: { cvData: FullCVData }) {
   const grouped = groupSkills(cvData.skills);
@@ -170,7 +170,7 @@ export default function BoldTemplate({ cvData }: { cvData: FullCVData }) {
         )}
 
         {cvData.certifications.length > 0 && (
-          <div className="pb-8">
+          <div className="mb-6">
             <div className="flex items-center gap-2 mb-3">
               <h2 className="text-sm font-black uppercase tracking-widest text-black">
                 Certifications
@@ -188,6 +188,30 @@ export default function BoldTemplate({ cvData }: { cvData: FullCVData }) {
                 <span className="text-gray-500">{cert.issuer}</span>
               </div>
             ))}
+          </div>
+        )}
+
+        {cvData.languages && cvData.languages.length > 0 && (
+          <div className="mb-6">
+            <div className="flex items-center gap-2 mb-3">
+              <h2 className="text-sm font-black uppercase tracking-widest text-black">
+                Languages
+              </h2>
+              <div className="flex-1 h-0.5 bg-red-600" />
+            </div>
+            <LanguagesDisplay languages={cvData.languages} />
+          </div>
+        )}
+
+        {cvData.customSections && cvData.customSections.length > 0 && (
+          <div className="pb-8">
+            <div className="flex items-center gap-2 mb-3">
+              <h2 className="text-sm font-black uppercase tracking-widest text-black">
+                Additional Information
+              </h2>
+              <div className="flex-1 h-0.5 bg-red-600" />
+            </div>
+            <CustomSectionsDisplay customSections={cvData.customSections} />
           </div>
         )}
       </div>

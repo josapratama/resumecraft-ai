@@ -3,7 +3,7 @@
  * Social media-ready, visual storytelling.
  */
 import type { FullCVData } from "@/types/cv";
-import { groupSkills, PROF_WIDTH, TechChips } from "./_shared";
+import { groupSkills, PROF_WIDTH, TechChips, LanguagesDisplay, CustomSectionsDisplay } from "./_shared";
 
 function CircleProgress({
   pct,
@@ -243,6 +243,26 @@ export default function InfographicTemplate({
                 <span className="text-gray-400">{edu.graduationDate}</span>
               </div>
             ))}
+          </div>
+        )}
+
+        {/* Languages */}
+        {cvData.languages && cvData.languages.length > 0 && (
+          <div>
+            <h2 className="text-xs font-bold uppercase tracking-widest text-rose-600 mb-2">
+              Languages
+            </h2>
+            <LanguagesDisplay languages={cvData.languages} textColor="text-black font-bold" subColor="text-rose-600" />
+          </div>
+        )}
+
+        {/* Custom Sections */}
+        {cvData.customSections && cvData.customSections.length > 0 && (
+          <div>
+            <h2 className="text-xs font-bold uppercase tracking-widest text-rose-600 mb-2">
+              Additional Information
+            </h2>
+            <CustomSectionsDisplay customSections={cvData.customSections} />
           </div>
         )}
       </div>

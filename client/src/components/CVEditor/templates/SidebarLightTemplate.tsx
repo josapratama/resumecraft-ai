@@ -2,7 +2,7 @@
  * Sidebar Light — light lavender sidebar, white main, clean and airy.
  */
 import type { FullCVData } from "@/types/cv";
-import { groupSkills, PROF_WIDTH, TechChips } from "./_shared";
+import { groupSkills, PROF_WIDTH, TechChips, CustomSectionsDisplay } from "./_shared";
 
 export default function SidebarLightTemplate({
   cvData,
@@ -108,6 +108,22 @@ export default function SidebarLightTemplate({
             ))}
           </div>
         )}
+
+        {cvData.languages && cvData.languages.length > 0 && (
+          <div className="min-w-0">
+            <h2 className="text-xs font-bold uppercase tracking-widest text-[#7c5cbf] mb-3">
+              Languages
+            </h2>
+            <div className="space-y-1 text-xs">
+              {cvData.languages.map(l => (
+                <div key={l.id} className="flex justify-between">
+                  <span className="font-semibold text-gray-800">{l.language}</span>
+                  <span className="text-gray-500 text-[11px]">{l.proficiency}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Main */}
@@ -190,6 +206,16 @@ export default function SidebarLightTemplate({
                 </div>
               ))}
             </div>
+          </div>
+        )}
+
+        {cvData.customSections && cvData.customSections.length > 0 && (
+          <div className="min-w-0">
+            <h2 className="text-xs font-bold uppercase tracking-widest text-[#7c5cbf] mb-4 flex items-center gap-2">
+              <span>Additional Information</span>
+              <span className="flex-1 h-px bg-purple-200" />
+            </h2>
+            <CustomSectionsDisplay customSections={cvData.customSections} />
           </div>
         )}
       </div>

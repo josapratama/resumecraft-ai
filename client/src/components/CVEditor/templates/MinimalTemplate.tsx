@@ -1,4 +1,5 @@
 import type { FullCVData } from "@/types/cv";
+import { LanguagesDisplay, CustomSectionsDisplay } from "./_shared";
 
 interface MinimalTemplateProps {
   cvData: FullCVData;
@@ -175,7 +176,7 @@ export default function MinimalTemplate({ cvData }: MinimalTemplateProps) {
 
       {/* Certifications */}
       {cvData.certifications.length > 0 && (
-        <MinSection title="Certifications" last>
+        <MinSection title="Certifications">
           <div className="space-y-1.5">
             {cvData.certifications.map(cert => (
               <div key={cert.id} className="flex items-baseline gap-2 text-xs">
@@ -193,6 +194,20 @@ export default function MinimalTemplate({ cvData }: MinimalTemplateProps) {
               </div>
             ))}
           </div>
+        </MinSection>
+      )}
+
+      {/* Languages */}
+      {cvData.languages && cvData.languages.length > 0 && (
+        <MinSection title="Languages">
+          <LanguagesDisplay languages={cvData.languages} />
+        </MinSection>
+      )}
+
+      {/* Additional / Custom Sections */}
+      {cvData.customSections && cvData.customSections.length > 0 && (
+        <MinSection title="Additional Information" last>
+          <CustomSectionsDisplay customSections={cvData.customSections} />
         </MinSection>
       )}
     </div>

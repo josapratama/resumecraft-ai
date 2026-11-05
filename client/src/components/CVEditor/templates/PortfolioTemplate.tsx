@@ -3,7 +3,7 @@
  * Developers, designers, artists.
  */
 import type { FullCVData } from "@/types/cv";
-import { groupSkills, PROF_WIDTH } from "./_shared";
+import { groupSkills, PROF_WIDTH, LanguagesDisplay, CustomSectionsDisplay } from "./_shared";
 
 export default function PortfolioTemplate({ cvData }: { cvData: FullCVData }) {
   const grouped = groupSkills(cvData.skills);
@@ -184,6 +184,22 @@ export default function PortfolioTemplate({ cvData }: { cvData: FullCVData }) {
                   {cert.certificationName} · {cert.issuer}
                 </p>
               ))}
+            </div>
+          )}
+          {cvData.languages && cvData.languages.length > 0 && (
+            <div className="min-w-0">
+              <h2 className="text-xs font-bold uppercase tracking-widest text-gray-600 mb-3">
+                Languages
+              </h2>
+              <LanguagesDisplay languages={cvData.languages} textColor="text-white" subColor="text-gray-400" />
+            </div>
+          )}
+          {cvData.customSections && cvData.customSections.length > 0 && (
+            <div className="min-w-0">
+              <h2 className="text-xs font-bold uppercase tracking-widest text-gray-600 mb-3">
+                Additional Information
+              </h2>
+              <CustomSectionsDisplay customSections={cvData.customSections} headingColor="text-white" subColor="text-gray-400" descColor="text-gray-300" />
             </div>
           )}
         </div>

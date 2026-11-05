@@ -150,7 +150,7 @@ export default function AcademicTemplate({ cvData }: { cvData: FullCVData }) {
 
       {/* Certifications = Awards / Honors */}
       {cvData.certifications.length > 0 && (
-        <AcademicSection title="Awards, Honors & Certifications" last>
+        <AcademicSection title="Awards, Honors & Certifications">
           <div className="space-y-1.5">
             {cvData.certifications.map(cert => (
               <div key={cert.id} className="flex justify-between text-xs">
@@ -159,6 +159,43 @@ export default function AcademicTemplate({ cvData }: { cvData: FullCVData }) {
                   <span className="text-gray-600 ml-2">— {cert.issuer}</span>
                 </div>
                 <span className="text-gray-500">{cert.issueDate}</span>
+              </div>
+            ))}
+          </div>
+        </AcademicSection>
+      )}
+
+      {/* Languages */}
+      {cvData.languages && cvData.languages.length > 0 && (
+        <AcademicSection title="Languages">
+          <div className="flex flex-wrap gap-x-6 gap-y-1 text-xs">
+            {cvData.languages.map(l => (
+              <span key={l.id}>
+                <span className="font-bold text-black">{l.language}</span>{" "}
+                <span className="text-gray-600">({l.proficiency})</span>
+              </span>
+            ))}
+          </div>
+        </AcademicSection>
+      )}
+
+      {/* Additional / Custom Sections */}
+      {cvData.customSections && cvData.customSections.length > 0 && (
+        <AcademicSection title="Additional Information" last>
+          <div className="space-y-3">
+            {cvData.customSections.map(cs => (
+              <div key={cs.id}>
+                <div className="flex justify-between text-xs">
+                  <span className="font-bold text-black">
+                    {cs.title} {cs.subtitle && <span className="font-normal text-gray-700">· {cs.subtitle}</span>}
+                  </span>
+                  {cs.date && <span className="text-gray-500">{cs.date}</span>}
+                </div>
+                {cs.description && (
+                  <p className="text-xs text-gray-600 mt-0.5 leading-relaxed whitespace-pre-line">
+                    {cs.description}
+                  </p>
+                )}
               </div>
             ))}
           </div>

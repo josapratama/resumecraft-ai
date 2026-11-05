@@ -3,7 +3,7 @@
  * Authoritative, C-suite feel.
  */
 import type { FullCVData } from "@/types/cv";
-import { groupSkills, TechChips } from "./_shared";
+import { groupSkills, TechChips, LanguagesDisplay, CustomSectionsDisplay } from "./_shared";
 
 export default function ExecutiveTemplate({ cvData }: { cvData: FullCVData }) {
   const grouped = groupSkills(cvData.skills);
@@ -187,6 +187,28 @@ export default function ExecutiveTemplate({ cvData }: { cvData: FullCVData }) {
                 </div>
               ))}
             </div>
+          </div>
+        )}
+
+        {/* Languages */}
+        {cvData.languages && cvData.languages.length > 0 && (
+          <div>
+            <h2 className="text-xs font-bold uppercase tracking-[0.15em] text-[#0a1628] mb-3 flex items-center gap-2">
+              <span>Languages</span>
+              <span className="flex-1 h-px bg-amber-400" />
+            </h2>
+            <LanguagesDisplay languages={cvData.languages} textColor="text-[#0a1628]" />
+          </div>
+        )}
+
+        {/* Additional Sections */}
+        {cvData.customSections && cvData.customSections.length > 0 && (
+          <div>
+            <h2 className="text-xs font-bold uppercase tracking-[0.15em] text-[#0a1628] mb-3 flex items-center gap-2">
+              <span>Additional Information</span>
+              <span className="flex-1 h-px bg-amber-400" />
+            </h2>
+            <CustomSectionsDisplay customSections={cvData.customSections} headingColor="text-[#0a1628]" />
           </div>
         )}
       </div>

@@ -2,7 +2,7 @@
  * Retro — typewriter font, tan/cream background, vintage stamp aesthetic.
  */
 import type { FullCVData } from "@/types/cv";
-import { groupSkills } from "./_shared";
+import { groupSkills, LanguagesDisplay, CustomSectionsDisplay } from "./_shared";
 
 export default function RetroTemplate({ cvData }: { cvData: FullCVData }) {
   const grouped = groupSkills(cvData.skills);
@@ -136,14 +136,26 @@ export default function RetroTemplate({ cvData }: { cvData: FullCVData }) {
         )}
 
         {cvData.certifications.length > 0 && (
-          <RetroSection title="Credentials" last>
+          <RetroSection title="Credentials">
             {cvData.certifications.map(cert => (
               <p key={cert.id} className="text-xs">
                 * <span className="font-bold">{cert.certificationName}</span> —{" "}
                 {cert.issuer}
-                {cert.issueDate ? ` ({cert.issueDate})` : ""}
+                {cert.issueDate ? ` (${cert.issueDate})` : ""}
               </p>
             ))}
+          </RetroSection>
+        )}
+
+        {cvData.languages && cvData.languages.length > 0 && (
+          <RetroSection title="Languages">
+            <LanguagesDisplay languages={cvData.languages} textColor="text-gray-900" subColor="text-gray-600" />
+          </RetroSection>
+        )}
+
+        {cvData.customSections && cvData.customSections.length > 0 && (
+          <RetroSection title="Additional Information" last>
+            <CustomSectionsDisplay customSections={cvData.customSections} />
           </RetroSection>
         )}
       </div>

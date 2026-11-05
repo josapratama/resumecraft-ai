@@ -1,4 +1,5 @@
 import type { FullCVData } from "@/types/cv";
+import { LanguagesDisplay, CustomSectionsDisplay } from "./_shared";
 
 interface ClassicTemplateProps {
   cvData: FullCVData;
@@ -168,7 +169,7 @@ export default function ClassicTemplate({ cvData }: ClassicTemplateProps) {
 
       {/* Certifications */}
       {cvData.certifications.length > 0 && (
-        <Section title="Certifications" last>
+        <Section title="Certifications">
           <div className="space-y-2">
             {cvData.certifications.map(cert => (
               <div key={cert.id} className="flex items-baseline gap-3">
@@ -185,6 +186,20 @@ export default function ClassicTemplate({ cvData }: ClassicTemplateProps) {
               </div>
             ))}
           </div>
+        </Section>
+      )}
+
+      {/* Languages */}
+      {cvData.languages && cvData.languages.length > 0 && (
+        <Section title="Languages">
+          <LanguagesDisplay languages={cvData.languages} />
+        </Section>
+      )}
+
+      {/* Additional / Custom Sections */}
+      {cvData.customSections && cvData.customSections.length > 0 && (
+        <Section title="Additional Information" last>
+          <CustomSectionsDisplay customSections={cvData.customSections} />
         </Section>
       )}
     </div>

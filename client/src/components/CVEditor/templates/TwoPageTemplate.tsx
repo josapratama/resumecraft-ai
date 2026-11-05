@@ -3,7 +3,7 @@
  * Long CVs, experienced professionals.
  */
 import type { FullCVData } from "@/types/cv";
-import { groupSkills, TechChips } from "./_shared";
+import { groupSkills, TechChips, LanguagesDisplay, CustomSectionsDisplay } from "./_shared";
 
 export default function TwoPageTemplate({ cvData }: { cvData: FullCVData }) {
   const grouped = groupSkills(cvData.skills);
@@ -200,6 +200,20 @@ export default function TwoPageTemplate({ cvData }: { cvData: FullCVData }) {
                 </div>
               ))}
             </div>
+          </div>
+        )}
+
+        {cvData.languages && cvData.languages.length > 0 && (
+          <div className="min-w-0 mb-4">
+            <TwoPageSH>Languages</TwoPageSH>
+            <LanguagesDisplay languages={cvData.languages} />
+          </div>
+        )}
+
+        {cvData.customSections && cvData.customSections.length > 0 && (
+          <div className="min-w-0 mb-4">
+            <TwoPageSH>Additional Information</TwoPageSH>
+            <CustomSectionsDisplay customSections={cvData.customSections} />
           </div>
         )}
 

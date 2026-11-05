@@ -3,7 +3,7 @@
  * Pure Swiss design school.
  */
 import type { FullCVData } from "@/types/cv";
-import { groupSkills, TechChips } from "./_shared";
+import { groupSkills, TechChips, LanguagesDisplay, CustomSectionsDisplay } from "./_shared";
 
 export default function SwissTemplate({ cvData }: { cvData: FullCVData }) {
   const grouped = groupSkills(cvData.skills);
@@ -190,7 +190,7 @@ export default function SwissTemplate({ cvData }: { cvData: FullCVData }) {
 
       {/* Certifications */}
       {cvData.certifications.length > 0 && (
-        <div className="grid grid-cols-[80px_1fr] gap-4">
+        <div className="grid grid-cols-[80px_1fr] gap-4 mb-5">
           <p className="text-xs font-bold uppercase tracking-widest text-gray-400 pt-0.5">
             Creds
           </p>
@@ -208,6 +208,26 @@ export default function SwissTemplate({ cvData }: { cvData: FullCVData }) {
               </div>
             ))}
           </div>
+        </div>
+      )}
+
+      {/* Languages */}
+      {cvData.languages && cvData.languages.length > 0 && (
+        <div className="grid grid-cols-[80px_1fr] gap-4 mb-5">
+          <p className="text-xs font-bold uppercase tracking-widest text-gray-400 pt-0.5">
+            Lang
+          </p>
+          <LanguagesDisplay languages={cvData.languages} textColor="text-black font-bold uppercase" subColor="text-red-600" />
+        </div>
+      )}
+
+      {/* Additional Sections */}
+      {cvData.customSections && cvData.customSections.length > 0 && (
+        <div className="grid grid-cols-[80px_1fr] gap-4">
+          <p className="text-xs font-bold uppercase tracking-widest text-gray-400 pt-0.5">
+            More
+          </p>
+          <CustomSectionsDisplay customSections={cvData.customSections} />
         </div>
       )}
     </div>

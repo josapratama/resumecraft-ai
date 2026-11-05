@@ -3,7 +3,7 @@
  * Consultants, NGO workers, geographers.
  */
 import type { FullCVData } from "@/types/cv";
-import { groupSkills, TechChips } from "./_shared";
+import { groupSkills, TechChips, CustomSectionsDisplay } from "./_shared";
 
 export default function AtlasTemplate({ cvData }: { cvData: FullCVData }) {
   const grouped = groupSkills(cvData.skills);
@@ -99,6 +99,22 @@ export default function AtlasTemplate({ cvData }: { cvData: FullCVData }) {
             ))}
           </div>
         )}
+
+        {cvData.languages && cvData.languages.length > 0 && (
+          <div className="min-w-0">
+            <h2 className="text-xs font-bold uppercase tracking-widest text-[#8fb894] mb-3">
+              Languages
+            </h2>
+            <div className="space-y-1.5 text-xs min-w-0">
+              {cvData.languages.map(l => (
+                <div key={l.id} className="flex justify-between">
+                  <span className="font-semibold text-white break-words">{l.language}</span>
+                  <span className="text-[#8fb894] text-[11px]">{l.proficiency}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Main */}
@@ -178,6 +194,13 @@ export default function AtlasTemplate({ cvData }: { cvData: FullCVData }) {
                 </div>
               ))}
             </div>
+          </div>
+        )}
+
+        {cvData.customSections && cvData.customSections.length > 0 && (
+          <div className="min-w-0">
+            <AtlasH>Additional Information</AtlasH>
+            <CustomSectionsDisplay customSections={cvData.customSections} />
           </div>
         )}
       </div>

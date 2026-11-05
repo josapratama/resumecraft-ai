@@ -2,7 +2,7 @@
  * Nordic — Scandinavian minimalism, teal/seafoam accents, extreme whitespace.
  */
 import type { FullCVData } from "@/types/cv";
-import { groupSkills, TechChips } from "./_shared";
+import { groupSkills, TechChips, LanguagesDisplay, CustomSectionsDisplay } from "./_shared";
 
 export default function NordicTemplate({ cvData }: { cvData: FullCVData }) {
   const grouped = groupSkills(cvData.skills);
@@ -166,7 +166,7 @@ export default function NordicTemplate({ cvData }: { cvData: FullCVData }) {
 
         {/* Certifications */}
         {cvData.certifications.length > 0 && (
-          <NordicSection title="Certifications" last>
+          <NordicSection title="Certifications">
             <div className="space-y-1.5">
               {cvData.certifications.map(cert => (
                 <div
@@ -184,6 +184,20 @@ export default function NordicTemplate({ cvData }: { cvData: FullCVData }) {
                 </div>
               ))}
             </div>
+          </NordicSection>
+        )}
+
+        {/* Languages */}
+        {cvData.languages && cvData.languages.length > 0 && (
+          <NordicSection title="Languages">
+            <LanguagesDisplay languages={cvData.languages} textColor="text-gray-900" subColor="text-[#2d9b8a]" />
+          </NordicSection>
+        )}
+
+        {/* Additional / Custom Sections */}
+        {cvData.customSections && cvData.customSections.length > 0 && (
+          <NordicSection title="Additional Information" last>
+            <CustomSectionsDisplay customSections={cvData.customSections} />
           </NordicSection>
         )}
       </div>

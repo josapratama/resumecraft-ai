@@ -3,7 +3,7 @@
  * Security, elite consulting, understated luxury.
  */
 import type { FullCVData } from "@/types/cv";
-import { groupSkills, TechChips } from "./_shared";
+import { groupSkills, TechChips, CustomSectionsDisplay } from "./_shared";
 
 export default function StealthTemplate({ cvData }: { cvData: FullCVData }) {
   const grouped = groupSkills(cvData.skills);
@@ -97,6 +97,22 @@ export default function StealthTemplate({ cvData }: { cvData: FullCVData }) {
               ))}
             </div>
           )}
+
+          {cvData.languages && cvData.languages.length > 0 && (
+            <div className="min-w-0">
+              <h2 className="text-xs font-bold uppercase tracking-widest text-gray-500 mb-3">
+                Languages
+              </h2>
+              <div className="space-y-1 text-xs">
+                {cvData.languages.map(l => (
+                  <div key={l.id} className="flex justify-between">
+                    <span className="font-semibold text-gray-300">{l.language}</span>
+                    <span className="text-gray-500 text-[11px]">{l.proficiency}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Right */}
@@ -175,6 +191,15 @@ export default function StealthTemplate({ cvData }: { cvData: FullCVData }) {
                   </div>
                 ))}
               </div>
+            </div>
+          )}
+
+          {cvData.customSections && cvData.customSections.length > 0 && (
+            <div className="min-w-0">
+              <h2 className="text-xs font-bold uppercase tracking-widest text-gray-500 mb-3">
+                Additional Information
+              </h2>
+              <CustomSectionsDisplay customSections={cvData.customSections} headingColor="text-white" subColor="text-gray-400" descColor="text-gray-400" />
             </div>
           )}
         </div>

@@ -3,7 +3,7 @@
  * Architects, avant-garde designers.
  */
 import type { FullCVData } from "@/types/cv";
-import { groupSkills } from "./_shared";
+import { groupSkills, CustomSectionsDisplay } from "./_shared";
 
 export default function BrutalistTemplate({ cvData }: { cvData: FullCVData }) {
   const grouped = groupSkills(cvData.skills);
@@ -99,6 +99,21 @@ export default function BrutalistTemplate({ cvData }: { cvData: FullCVData }) {
               ))}
             </div>
           )}
+          {cvData.languages && cvData.languages.length > 0 && (
+            <div className="p-4 min-w-0">
+              <h2 className="text-xs font-black uppercase bg-black text-white px-2 py-0.5 inline-block mb-3">
+                Languages
+              </h2>
+              <div className="space-y-1.5 min-w-0 text-xs">
+                {cvData.languages.map(l => (
+                  <div key={l.id} className="flex justify-between border-b-2 border-black pb-0.5">
+                    <span className="font-black">{l.language}</span>
+                    <span className="text-gray-600 font-mono text-[11px]">{l.proficiency}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Right 2 columns */}
@@ -183,6 +198,14 @@ export default function BrutalistTemplate({ cvData }: { cvData: FullCVData }) {
                   </div>
                 ))}
               </div>
+            </div>
+          )}
+          {cvData.customSections && cvData.customSections.length > 0 && (
+            <div className="p-4 min-w-0">
+              <h2 className="text-xs font-black uppercase bg-black text-white px-2 py-0.5 inline-block mb-3">
+                Additional Information
+              </h2>
+              <CustomSectionsDisplay customSections={cvData.customSections} />
             </div>
           )}
         </div>

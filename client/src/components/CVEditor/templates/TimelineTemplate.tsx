@@ -3,7 +3,7 @@
  * Visually tells a career story.
  */
 import type { FullCVData } from "@/types/cv";
-import { groupSkills, TechChips } from "./_shared";
+import { groupSkills, TechChips, LanguagesDisplay, CustomSectionsDisplay } from "./_shared";
 
 export default function TimelineTemplate({ cvData }: { cvData: FullCVData }) {
   const grouped = groupSkills(cvData.skills);
@@ -193,6 +193,22 @@ export default function TimelineTemplate({ cvData }: { cvData: FullCVData }) {
                   · {cert.issuer}
                 </p>
               ))}
+            </div>
+          )}
+          {cvData.languages && cvData.languages.length > 0 && (
+            <div className="min-w-0">
+              <h2 className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">
+                Languages
+              </h2>
+              <LanguagesDisplay languages={cvData.languages} />
+            </div>
+          )}
+          {cvData.customSections && cvData.customSections.length > 0 && (
+            <div className="min-w-0">
+              <h2 className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">
+                Additional Information
+              </h2>
+              <CustomSectionsDisplay customSections={cvData.customSections} />
             </div>
           )}
         </div>

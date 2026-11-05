@@ -144,6 +144,37 @@ export default function CompactTemplate({ cvData }: { cvData: FullCVData }) {
           </div>
         </div>
       )}
+
+      {/* Languages */}
+      {cvData.languages && cvData.languages.length > 0 && (
+        <div className="mt-3">
+          <CompactTitle>Languages</CompactTitle>
+          <div className="flex flex-wrap gap-x-4">
+            {cvData.languages.map(l => (
+              <span key={l.id} className="text-gray-700">
+                <span className="font-bold">{l.language}</span> ({l.proficiency})
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Custom Sections */}
+      {cvData.customSections && cvData.customSections.length > 0 && (
+        <div className="mt-3">
+          <CompactTitle>Additional Information</CompactTitle>
+          <div className="space-y-1">
+            {cvData.customSections.map(cs => (
+              <div key={cs.id} className="text-gray-700">
+                <span className="font-bold">{cs.title}</span>
+                {cs.subtitle && <span> · {cs.subtitle}</span>}
+                {cs.date && <span className="text-gray-500"> ({cs.date})</span>}
+                {cs.description && <p className="text-gray-600 mt-0.5">{cs.description}</p>}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

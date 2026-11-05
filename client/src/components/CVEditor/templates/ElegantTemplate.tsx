@@ -3,7 +3,7 @@
  * Luxury, fashion, finance.
  */
 import type { FullCVData } from "@/types/cv";
-import { groupSkills, TechChips } from "./_shared";
+import { groupSkills, TechChips, LanguagesDisplay, CustomSectionsDisplay } from "./_shared";
 
 export default function ElegantTemplate({ cvData }: { cvData: FullCVData }) {
   const grouped = groupSkills(cvData.skills);
@@ -174,7 +174,7 @@ export default function ElegantTemplate({ cvData }: { cvData: FullCVData }) {
 
       {/* Certifications */}
       {cvData.certifications.length > 0 && (
-        <ElegantSection title="Credentials" last>
+        <ElegantSection title="Credentials">
           {cvData.certifications.map(cert => (
             <div
               key={cert.id}
@@ -188,6 +188,20 @@ export default function ElegantTemplate({ cvData }: { cvData: FullCVData }) {
               <span className="text-gray-500">{cert.issuer}</span>
             </div>
           ))}
+        </ElegantSection>
+      )}
+
+      {/* Languages */}
+      {cvData.languages && cvData.languages.length > 0 && (
+        <ElegantSection title="Languages">
+          <LanguagesDisplay languages={cvData.languages} textColor="text-gray-800" subColor="text-[#c9a87c]" />
+        </ElegantSection>
+      )}
+
+      {/* Additional / Custom Sections */}
+      {cvData.customSections && cvData.customSections.length > 0 && (
+        <ElegantSection title="Additional Information" last>
+          <CustomSectionsDisplay customSections={cvData.customSections} />
         </ElegantSection>
       )}
     </div>

@@ -3,7 +3,7 @@
  * Extremely professional, printer-friendly.
  */
 import type { FullCVData } from "@/types/cv";
-import { groupSkills, TechChips } from "./_shared";
+import { groupSkills, TechChips, LanguagesDisplay, CustomSectionsDisplay } from "./_shared";
 
 export default function MonochromeTemplate({ cvData }: { cvData: FullCVData }) {
   const grouped = groupSkills(cvData.skills);
@@ -163,6 +163,18 @@ export default function MonochromeTemplate({ cvData }: { cvData: FullCVData }) {
                   <p className="text-gray-500 break-words">{cert.issuer}</p>
                 </div>
               ))}
+            </div>
+          )}
+          {cvData.languages && cvData.languages.length > 0 && (
+            <div className="min-w-0">
+              <MH>Languages</MH>
+              <LanguagesDisplay languages={cvData.languages} textColor="text-black" subColor="text-gray-500" />
+            </div>
+          )}
+          {cvData.customSections && cvData.customSections.length > 0 && (
+            <div className="min-w-0">
+              <MH>Additional Information</MH>
+              <CustomSectionsDisplay customSections={cvData.customSections} />
             </div>
           )}
         </div>

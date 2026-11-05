@@ -156,12 +156,41 @@ export default function TechTemplate({ cvData }: { cvData: FullCVData }) {
 
       {/* Certifications */}
       {cvData.certifications.length > 0 && (
-        <div>
+        <div className="mb-6">
           <p className="text-xs text-green-600 mb-2">/* certs */</p>
           {cvData.certifications.map(cert => (
             <p key={cert.id} className="text-xs text-green-400">
               [{cert.issuer}] {cert.certificationName}
             </p>
+          ))}
+        </div>
+      )}
+
+      {/* Languages */}
+      {cvData.languages && cvData.languages.length > 0 && (
+        <div className="mb-6">
+          <p className="text-xs text-green-600 mb-2">/* languages */</p>
+          <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs">
+            {cvData.languages.map(l => (
+              <span key={l.id} className="text-green-300">
+                {l.language} <span className="text-green-600">({l.proficiency})</span>
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Custom Sections */}
+      {cvData.customSections && cvData.customSections.length > 0 && (
+        <div>
+          <p className="text-xs text-green-600 mb-2">/* additional_info */</p>
+          {cvData.customSections.map(cs => (
+            <div key={cs.id} className="mb-2 text-xs">
+              <span className="text-green-300 font-bold">{cs.title}</span>
+              {cs.subtitle && <span className="text-green-600"> // {cs.subtitle}</span>}
+              {cs.date && <span className="text-green-700 ml-2">[{cs.date}]</span>}
+              {cs.description && <p className="text-green-500 mt-0.5">{cs.description}</p>}
+            </div>
           ))}
         </div>
       )}

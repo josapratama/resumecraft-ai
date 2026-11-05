@@ -3,7 +3,7 @@
  * Designers, marketers, creative roles.
  */
 import type { FullCVData } from "@/types/cv";
-import { groupSkills, PROF_WIDTH, TechChips } from "./_shared";
+import { groupSkills, PROF_WIDTH, TechChips, CustomSectionsDisplay } from "./_shared";
 
 export default function CreativeTemplate({ cvData }: { cvData: FullCVData }) {
   const grouped = groupSkills(cvData.skills);
@@ -93,6 +93,21 @@ export default function CreativeTemplate({ cvData }: { cvData: FullCVData }) {
                     <p className="text-xs text-gray-500 break-words">
                       {cert.issuer}
                     </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+          {cvData.languages && cvData.languages.length > 0 && (
+            <div className="min-w-0">
+              <h2 className="text-xs font-black uppercase tracking-widest text-violet-600 mb-3">
+                Languages
+              </h2>
+              <div className="space-y-1.5 min-w-0 text-xs">
+                {cvData.languages.map(l => (
+                  <div key={l.id} className="flex justify-between items-center">
+                    <span className="font-semibold text-gray-800">{l.language}</span>
+                    <span className="text-violet-600 text-[11px]">({l.proficiency})</span>
                   </div>
                 ))}
               </div>
@@ -196,6 +211,14 @@ export default function CreativeTemplate({ cvData }: { cvData: FullCVData }) {
                   </span>
                 </div>
               ))}
+            </div>
+          )}
+          {cvData.customSections && cvData.customSections.length > 0 && (
+            <div className="space-y-3 min-w-0">
+              <h2 className="text-xs font-black uppercase tracking-widest text-violet-600 border-b-2 border-violet-200 pb-1">
+                Additional Information
+              </h2>
+              <CustomSectionsDisplay customSections={cvData.customSections} />
             </div>
           )}
         </div>

@@ -3,7 +3,7 @@
  * Modern SaaS, startup, product roles.
  */
 import type { FullCVData } from "@/types/cv";
-import { groupSkills, PROF_WIDTH, TechChips } from "./_shared";
+import { groupSkills, PROF_WIDTH, TechChips, LanguagesDisplay, CustomSectionsDisplay } from "./_shared";
 
 export default function GradientTemplate({ cvData }: { cvData: FullCVData }) {
   const grouped = groupSkills(cvData.skills);
@@ -197,6 +197,22 @@ export default function GradientTemplate({ cvData }: { cvData: FullCVData }) {
                 </div>
               ))}
             </div>
+          </div>
+        )}
+
+        {/* Languages */}
+        {cvData.languages && cvData.languages.length > 0 && (
+          <div>
+            <GradSection title="Languages" />
+            <LanguagesDisplay languages={cvData.languages} textColor="text-gray-900" subColor="text-indigo-600" />
+          </div>
+        )}
+
+        {/* Additional Sections */}
+        {cvData.customSections && cvData.customSections.length > 0 && (
+          <div>
+            <GradSection title="Additional Information" />
+            <CustomSectionsDisplay customSections={cvData.customSections} />
           </div>
         )}
       </div>

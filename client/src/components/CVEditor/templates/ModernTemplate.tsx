@@ -1,5 +1,5 @@
 import type { FullCVData } from "@/types/cv";
-import { formatEducationTitle, formatCVDate, formatProficiency, formatCategory } from "@/lib/cvFormatters";
+import { formatEducationTitle, formatCVDate, formatProficiency, formatCategory, formatDisplayUrl } from "@/lib/cvFormatters";
 import { useI18n } from "@/lib/i18n";
 import { Mail, Phone, MapPin, Globe, ExternalLink } from "lucide-react";
 
@@ -347,9 +347,10 @@ export default function ModernTemplate({ cvData }: ModernTemplateProps) {
                         rel="noopener noreferrer"
                         className="text-[11px] font-semibold hover:underline flex items-center gap-1 whitespace-nowrap"
                         style={{ color: accent }}
+                        title={proj.link}
                       >
-                        <span>{t("projects_section.demo", "Demo")}</span>
-                        <ExternalLink className="w-2.5 h-2.5" />
+                        <span>{formatDisplayUrl(proj.link)}</span>
+                        <ExternalLink className="w-2.5 h-2.5 shrink-0" />
                       </a>
                     )}
                   </div>

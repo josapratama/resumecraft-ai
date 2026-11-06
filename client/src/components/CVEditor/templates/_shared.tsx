@@ -1,6 +1,6 @@
 import type { FullCVData, Skill } from "@/types/cv";
 import { useI18n } from "@/lib/i18n";
-import { formatProficiency } from "@/lib/cvFormatters";
+import { formatProficiency, formatDisplayUrl } from "@/lib/cvFormatters";
 
 // ─── Skill grouping ────────────────────────────────────────────────────────────
 
@@ -122,6 +122,31 @@ export function LanguagesDisplay({
         </span>
       ))}
     </div>
+  );
+}
+
+export function ProjectLinkDisplay({
+  url,
+  className = "text-xs hover:underline shrink-0 font-medium inline-flex items-center gap-1",
+  style,
+}: {
+  url?: string | null;
+  className?: string;
+  style?: React.CSSProperties;
+}) {
+  if (!url) return null;
+  return (
+    <a
+      href={url}
+      target="_blank"
+      rel="noopener noreferrer"
+      className={className}
+      style={style}
+      title={url}
+    >
+      <span>{formatDisplayUrl(url)}</span>
+      <span aria-hidden="true">↗</span>
+    </a>
   );
 }
 

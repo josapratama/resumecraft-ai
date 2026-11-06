@@ -13,6 +13,23 @@ export function formatEducationTitle(degree?: string | null, field?: string | nu
 }
 
 /**
+ * Format URL for clean, professional display on both digital PDF and printed paper.
+ * Strips https://, http://, www. and trailing slash.
+ * Truncates gracefully if extremely long.
+ * Examples:
+ * formatDisplayUrl("https://josapratama.com") => "josapratama.com"
+ * formatDisplayUrl("https://github.com/josapratama/portfolio") => "github.com/josapratama/portfolio"
+ */
+export function formatDisplayUrl(url?: string | null, maxLen = 35): string {
+  if (!url) return "";
+  let clean = url.trim().replace(/^https?:\/\/(www\.)?/, "").replace(/\/$/, "");
+  if (clean.length > maxLen) {
+    clean = clean.slice(0, maxLen - 1) + "…";
+  }
+  return clean;
+}
+
+/**
  * Format YYYY-MM dates cleanly with active locale
  * Example:
  * formatCVDate("2026-07", "id") => "Jul 2026"
@@ -91,3 +108,4 @@ export function formatCategory(
   }
   return raw;
 }
+

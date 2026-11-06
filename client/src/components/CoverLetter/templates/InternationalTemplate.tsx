@@ -90,3 +90,4 @@ export default function InternationalTemplate({ data }: { data: CoverLetterData 
     </div>
   );
 }
+

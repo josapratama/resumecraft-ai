@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { trpc } from "@/lib/trpc";
 import type { FullCVData } from "@/types/cv";
 import {
@@ -30,11 +30,11 @@ import {
   Palette,
   Layout,
   Edit3,
-  Globe,
+  Search,
   ZoomIn,
   ZoomOut,
   Maximize2,
-  Undo2,
+  Filter,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -50,6 +50,7 @@ const ACCENT_COLORS = [
   { name: "Royal Blue", value: "#2563eb" },
   { name: "Indigo", value: "#4f46e5" },
   { name: "Emerald Green", value: "#059669" },
+  { name: "Rose Crimson", value: "#e11d48" },
   { name: "Purple Creative", value: "#7c3aed" },
   { name: "Amber Orange", value: "#d97706" },
   { name: "Slate Charcoal", value: "#0f172a" },
@@ -61,9 +62,22 @@ export default function CoverLetterWorkspace({
   defaultRole = "",
   onClose,
 }: CoverLetterWorkspaceProps) {
-  // Active Tab: 'ai' | 'templates' | 'edit' | 'style'
-  const [activeTab, setActiveTab] = useState<"ai" | "templates" | "edit" | "style">("templates");
+  // Prevent background window / body scrollbars from leaking through
+  useEffect(() => {
+    const origOverflow = document.body.style.overflow;
+    const origPaddingRight = document.body.style.paddingRight;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = origOverflow;
+      document.body.style.paddingRight = origPaddingRight;
+    };
+  }, []);
+
+  // Active Tab: 'templates' | 'ai' | 'edit' | 'style'
+  const [activeTab, setActiveTab] = useState<"templates" | "ai" | "edit" | "style">("templates");
   const [selectedTemplate, setSelectedTemplate] = useState<CoverLetterTemplateId>("formal-bumn");
+  const [templateCategory, setTemplateCategory] = useState<string>("Semua");
+  const [templateSearch, setTemplateSearch] = useState<string>("");
   const [language, setLanguage] = useState<"id" | "en">("id");
   const [zoomLevel, setZoomLevel] = useState<number>(85);
   const [copied, setCopied] = useState(false);
@@ -157,6 +171,21 @@ export default function CoverLetterWorkspace({
     }
   }, [cvId, selectedTemplate, letterData]);
 
+  // Filter templates
+  const filteredTemplates = useMemo(() => {
+    return COVER_LETTER_TEMPLATES.filter(tpl => {
+      const matchesCategory =
+        templateCategory === "Semua" || tpl.category === templateCategory;
+      const matchesSearch =
+        templateSearch === "" ||
+        tpl.name.toLowerCase().includes(templateSearch.toLowerCase()) ||
+        tpl.badge.toLowerCase().includes(templateSearch.toLowerCase()) ||
+        tpl.recommendedFor.toLowerCase().includes(templateSearch.toLowerCase()) ||
+        tpl.description.toLowerCase().includes(templateSearch.toLowerCase());
+      return matchesCategory && matchesSearch;
+    });
+  }, [templateCategory, templateSearch]);
+
   // AI Generation Mutation
   const generateMutation = trpc.cvAI.generateCoverLetter.useMutation({
     onSuccess: data => {
@@ -171,11 +200,18 @@ export default function CoverLetterWorkspace({
         salutation: data.salutation || prev.salutation,
         opening: data.opening || prev.opening,
         body: data.body || prev.body,
-        skillsHighlight: data.skillsHighlight && data.skillsHighlight.length > 0 ? data.skillsHighlight : prev.skillsHighlight,
-        attachments: data.attachments && data.attachments.length > 0 ? data.attachments : prev.attachments,
+        skillsHighlight:
+          data.skillsHighlight && data.skillsHighlight.length > 0
+            ? data.skillsHighlight
+            : prev.skillsHighlight,
+        attachments:
+          data.attachments && data.attachments.length > 0
+            ? data.attachments
+            : prev.attachments,
         closing: data.closing || prev.closing,
         signOff: data.signOff || prev.signOff,
-        fullLetterText: typeof data.coverLetter === "string" ? data.coverLetter : prev.fullLetterText,
+        fullLetterText:
+          typeof data.coverLetter === "string" ? data.coverLetter : prev.fullLetterText,
       }));
       toast.success("Surat lamaran kerja berhasil dibuat dengan AI!");
       setActiveTab("edit");
@@ -251,9 +287,26 @@ ${letterData.fullName}`;
     COVER_LETTER_TEMPLATE_COMPONENTS["formal-bumn"];
 
   return (
-    <div className="fixed inset-0 z-50 bg-slate-900/80 backdrop-blur-sm flex flex-col overflow-hidden animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-50 w-screen h-screen overflow-hidden bg-slate-900/80 backdrop-blur-sm flex flex-col select-none animate-in fade-in duration-200">
+      <style>{`
+        .custom-cl-scrollbar::-webkit-scrollbar {
+          width: 5px;
+          height: 5px;
+        }
+        .custom-cl-scrollbar::-webkit-scrollbar-track {
+          background: transparent;
+        }
+        .custom-cl-scrollbar::-webkit-scrollbar-thumb {
+          background: #cbd5e1;
+          border-radius: 9999px;
+        }
+        .custom-cl-scrollbar::-webkit-scrollbar-thumb:hover {
+          background: #94a3b8;
+        }
+      `}</style>
+
       {/* Top Navigation Bar */}
-      <header className="h-14 bg-white border-b border-slate-200 px-4 sm:px-6 flex items-center justify-between shrink-0 shadow-xs">
+      <header className="h-14 bg-white border-b border-slate-200 px-4 sm:px-6 flex items-center justify-between shrink-0 shadow-xs z-10">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-lg bg-blue-600 text-white flex items-center justify-center shadow-xs">
             <FileText className="w-4 h-4" />
@@ -262,7 +315,7 @@ ${letterData.fullName}`;
             <h1 className="text-sm font-bold text-slate-900 flex items-center gap-2">
               <span>Surat Lamaran Kerja & Cover Letter</span>
               <span className="text-[10px] font-semibold bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">
-                10 Format Standar
+                25 Format Standar
               </span>
             </h1>
             <p className="text-[11px] text-slate-500 hidden sm:block">
@@ -278,7 +331,9 @@ ${letterData.fullName}`;
             <button
               onClick={() => setLanguage("id")}
               className={`px-2 py-1 rounded-md font-semibold transition-all ${
-                language === "id" ? "bg-white text-slate-900 shadow-xs" : "text-slate-500 hover:text-slate-900"
+                language === "id"
+                  ? "bg-white text-slate-900 shadow-xs"
+                  : "text-slate-500 hover:text-slate-900"
               }`}
             >
               ID (Baku)
@@ -286,7 +341,9 @@ ${letterData.fullName}`;
             <button
               onClick={() => setLanguage("en")}
               className={`px-2 py-1 rounded-md font-semibold transition-all ${
-                language === "en" ? "bg-white text-slate-900 shadow-xs" : "text-slate-500 hover:text-slate-900"
+                language === "en"
+                  ? "bg-white text-slate-900 shadow-xs"
+                  : "text-slate-500 hover:text-slate-900"
               }`}
             >
               EN (Global)
@@ -322,10 +379,10 @@ ${letterData.fullName}`;
         </div>
       </header>
 
-      {/* Main Workspace Layout */}
-      <div className="flex-1 flex flex-col md:flex-row overflow-hidden bg-slate-100">
+      {/* Main Workspace Layout - strictly 100% height without leaking scrollbars */}
+      <div className="flex-1 min-h-0 w-full flex flex-col md:flex-row overflow-hidden bg-slate-100">
         {/* Left Control Panel */}
-        <aside className="w-full md:w-[420px] lg:w-[460px] bg-white border-r border-slate-200 flex flex-col shrink-0 overflow-hidden shadow-sm">
+        <aside className="w-full md:w-[420px] lg:w-[460px] h-full flex flex-col shrink-0 min-h-0 bg-white border-r border-slate-200 overflow-hidden shadow-sm">
           {/* Workspace Tabs */}
           <div className="flex border-b border-slate-200 px-3 pt-2 bg-slate-50/60 shrink-0 gap-1 text-xs">
             <button
@@ -337,7 +394,7 @@ ${letterData.fullName}`;
               }`}
             >
               <Layout className="w-3.5 h-3.5" />
-              <span>Format (10)</span>
+              <span>Format (25)</span>
             </button>
 
             <button
@@ -377,37 +434,68 @@ ${letterData.fullName}`;
             </button>
           </div>
 
-          {/* Panel Content (Scrollable) */}
-          <div className="flex-1 overflow-y-auto p-4 sm:p-5 space-y-4 text-slate-800 text-xs">
-            {/* TAB 1: 10 TEMPLATES SELECTOR */}
+          {/* Panel Content (Scrollable with isolated scrollbar) */}
+          <div className="flex-1 min-h-0 overflow-y-auto p-4 sm:p-5 space-y-4 text-slate-800 text-xs custom-cl-scrollbar">
+            {/* TAB 1: 25 TEMPLATES SELECTOR WITH CATEGORIES & SEARCH */}
             {activeTab === "templates" && (
               <div className="space-y-3">
                 <div>
                   <h3 className="font-bold text-slate-900 text-sm">Pilih Format Surat Lamaran</h3>
                   <p className="text-slate-500 text-[11px] mt-0.5">
-                    Tersedia 10 format baku profesional sesuai industri, instansi, dan tingkat pengalaman Anda.
+                    Tersedia 25 format baku profesional sesuai industri, instansi, dan tingkat pengalaman Anda.
                   </p>
                 </div>
 
+                {/* Search & Filter Bar */}
+                <div className="space-y-2">
+                  <div className="relative">
+                    <Search className="w-3.5 h-3.5 absolute left-2.5 top-2.5 text-slate-400" />
+                    <Input
+                      placeholder="Cari format (BUMN, Medis, Tech, Legal, dll)..."
+                      value={templateSearch}
+                      onChange={e => setTemplateSearch(e.target.value)}
+                      className="pl-8 text-xs border-slate-200 h-8 rounded-lg"
+                    />
+                  </div>
+
+                  {/* Category Pills */}
+                  <div className="flex flex-wrap gap-1 text-[11px]">
+                    {["Semua", "Resmi / Nasional", "Tech & Startup", "Industri Spesifik", "Internasional"].map(cat => (
+                      <button
+                        key={cat}
+                        onClick={() => setTemplateCategory(cat)}
+                        className={`px-2.5 py-1 rounded-md font-semibold transition-all ${
+                          templateCategory === cat
+                            ? "bg-slate-900 text-white shadow-2xs"
+                            : "bg-slate-100 text-slate-600 hover:bg-slate-200/80"
+                        }`}
+                      >
+                        {cat}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Template List */}
                 <div className="space-y-2 pt-1">
-                  {COVER_LETTER_TEMPLATES.map(tpl => {
+                  {filteredTemplates.map(tpl => {
                     const isSelected = selectedTemplate === tpl.id;
                     return (
                       <div
                         key={tpl.id}
                         onClick={() => setSelectedTemplate(tpl.id)}
-                        className={`p-3.5 rounded-xl border text-left cursor-pointer transition-all ${
+                        className={`p-3 rounded-xl border text-left cursor-pointer transition-all ${
                           isSelected
-                            ? "border-blue-600 bg-blue-50/60 shadow-xs ring-1 ring-blue-600/30"
-                            : "border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50/50"
+                            ? "border-blue-600 bg-blue-50/70 shadow-xs ring-1 ring-blue-600/30"
+                            : "border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50/60"
                         }`}
                       >
                         <div className="flex items-center justify-between gap-2 mb-1">
-                          <span className="font-bold text-slate-900 text-xs flex items-center gap-1.5">
+                          <span className="font-bold text-slate-900 text-xs">
                             {tpl.name}
                           </span>
                           <span
-                            className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider ${
+                            className={`text-[9px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider ${
                               isSelected
                                 ? "bg-blue-600 text-white"
                                 : "bg-slate-100 text-slate-600"
@@ -425,6 +513,11 @@ ${letterData.fullName}`;
                       </div>
                     );
                   })}
+                  {filteredTemplates.length === 0 && (
+                    <div className="text-center py-8 text-slate-400 text-xs">
+                      Tidak ditemukan template yang cocok dengan pencarian.
+                    </div>
+                  )}
                 </div>
               </div>
             )}
@@ -481,6 +574,16 @@ ${letterData.fullName}`;
                       className="mt-1 border-slate-200 rounded-lg text-xs"
                     />
                   </div>
+                </div>
+
+                <div>
+                  <Label className="text-xs font-semibold text-slate-700">Alamat Perusahaan (Opsional)</Label>
+                  <Input
+                    value={companyAddress}
+                    onChange={e => setCompanyAddress(e.target.value)}
+                    placeholder="Gedung / Kota Perusahaan"
+                    className="mt-1 border-slate-200 rounded-lg text-xs"
+                  />
                 </div>
 
                 <div>
@@ -647,7 +750,9 @@ ${letterData.fullName}`;
                           key={c.value}
                           onClick={() => setLetterData({ ...letterData, accentColor: c.value })}
                           className={`w-7 h-7 rounded-full flex items-center justify-center transition-all ${
-                            isSelected ? "ring-2 ring-offset-2 ring-slate-900 scale-110 shadow-xs" : "hover:scale-105"
+                            isSelected
+                              ? "ring-2 ring-offset-2 ring-slate-900 scale-110 shadow-xs"
+                              : "hover:scale-105"
                           }`}
                           style={{ backgroundColor: c.value }}
                           title={c.name}
@@ -681,6 +786,9 @@ ${letterData.fullName}`;
                       <SelectItem value="'Palatino Linotype', Palatino, serif" className="text-xs">
                         Executive Palatino (Elegan)
                       </SelectItem>
+                      <SelectItem value="Consolas, 'Roboto Mono', Monaco, monospace" className="text-xs">
+                        Code Monospace (Terminal Developer)
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -702,10 +810,10 @@ ${letterData.fullName}`;
           </div>
         </aside>
 
-        {/* Right Live Preview Workspace */}
-        <main className="flex-1 overflow-y-auto p-4 sm:p-8 flex flex-col items-center">
+        {/* Right Live Preview Workspace - single clean scrollbar only */}
+        <main className="flex-1 min-h-0 h-full overflow-y-auto p-4 sm:p-8 flex flex-col items-center custom-cl-scrollbar">
           {/* Zoom & Scaling Controls */}
-          <div className="w-full max-w-[820px] mb-3 flex items-center justify-between text-xs text-slate-500">
+          <div className="w-full max-w-[820px] mb-3 flex items-center justify-between text-xs text-slate-500 shrink-0">
             <div className="flex items-center gap-1.5 font-medium">
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
               <span>Pratinjau Kertas A4 (Live Preview)</span>
@@ -741,7 +849,7 @@ ${letterData.fullName}`;
 
           {/* Scaled A4 Sheet Container */}
           <div
-            className="transition-all duration-200 ease-out origin-top flex justify-center w-full"
+            className="transition-all duration-200 ease-out origin-top flex justify-center w-full pb-16"
             style={{
               transform: `scale(${zoomLevel / 100})`,
               transformOrigin: "top center",

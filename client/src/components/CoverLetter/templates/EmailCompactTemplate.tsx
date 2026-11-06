@@ -97,3 +97,4 @@ export default function EmailCompactTemplate({ data }: { data: CoverLetterData }
     </div>
   );
 }
+

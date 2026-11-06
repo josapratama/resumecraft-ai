@@ -156,3 +156,4 @@ export default function FormalBUMNTemplate({ data }: { data: CoverLetterData }) 
     </div>
   );
 }
+

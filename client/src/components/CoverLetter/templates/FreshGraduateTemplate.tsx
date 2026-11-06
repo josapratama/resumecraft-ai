@@ -116,3 +116,4 @@ export default function FreshGraduateTemplate({ data }: { data: CoverLetterData 
     </div>
   );
 }
+

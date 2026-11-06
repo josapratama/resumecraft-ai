@@ -105,3 +105,4 @@ export default function CareerSwitchTemplate({ data }: { data: CoverLetterData }
     </div>
   );
 }
+

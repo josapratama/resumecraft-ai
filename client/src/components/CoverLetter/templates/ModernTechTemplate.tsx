@@ -130,3 +130,4 @@ export default function ModernTechTemplate({ data }: { data: CoverLetterData }) 
     </div>
   );
 }
+

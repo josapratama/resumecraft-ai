@@ -86,3 +86,4 @@ export default function MinimalistTemplate({ data }: { data: CoverLetterData }) 
     </div>
   );
 }
+

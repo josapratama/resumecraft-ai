@@ -125,3 +125,4 @@ export default function AcademicResearchTemplate({ data }: { data: CoverLetterDa
     </div>
   );
 }
+

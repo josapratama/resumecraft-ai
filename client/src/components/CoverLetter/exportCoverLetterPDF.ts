@@ -85,3 +85,4 @@ export async function exportCoverLetterToPDF(
   printWindow.document.write(htmlContent);
   printWindow.document.close();
 }
+

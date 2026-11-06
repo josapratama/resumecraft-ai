@@ -192,6 +192,26 @@ export default function CoverLetterWorkspace({
     includeSignature: true,
   });
 
+  // Local state for raw attachments textarea so Enter newline is never stripped
+  const [attachmentsText, setAttachmentsText] = useState<string>(() =>
+    (letterData.attachments || []).join("\n")
+  );
+
+  // Keep attachmentsText in sync when letterData.attachments is loaded or reset externally
+  useEffect(() => {
+    if (letterData.attachments) {
+      const cleanCurrent = attachmentsText
+        .split("\n")
+        .map(s => s.trim())
+        .filter(Boolean);
+      const isDiff =
+        JSON.stringify(cleanCurrent) !== JSON.stringify(letterData.attachments);
+      if (isDiff) {
+        setAttachmentsText(letterData.attachments.join("\n"));
+      }
+    }
+  }, [letterData.attachments]);
+
   // Load saved draft if exists in localStorage (auto-migrating any stale Telkom default draft)
   useEffect(() => {
     try {
@@ -852,22 +872,48 @@ ${letterData.fullName}`;
                 </div>
 
                 <div>
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-between mb-1">
                     <Label className="text-xs font-semibold text-slate-700">Daftar Berkas Lampiran</Label>
-                    <span className="text-[10px] text-slate-400">1 berkas per baris</span>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const updated = attachmentsText.trim()
+                          ? `${attachmentsText.trimEnd()}\n`
+                          : "";
+                        setAttachmentsText(updated + "Salinan Dokumen Tambahan");
+                        setLetterData(prev => ({
+                          ...prev,
+                          attachments: (updated + "Salinan Dokumen Tambahan")
+                            .split("\n")
+                            .map(s => s.trim())
+                            .filter(Boolean),
+                        }));
+                      }}
+                      className="text-[11px] text-blue-600 hover:text-blue-700 font-semibold flex items-center gap-1 hover:underline"
+                    >
+                      + Tambah Poin Baru
+                    </button>
                   </div>
                   <Textarea
-                    value={(letterData.attachments || []).join("\n")}
-                    onChange={e =>
-                      setLetterData({
-                        ...letterData,
-                        attachments: e.target.value.split("\n").filter(Boolean),
-                      })
-                    }
-                    rows={4}
-                    placeholder="Surat Lamaran Pekerjaan&#10;Curriculum Vitae (CV)&#10;Fotocopy Ijazah dan Transkrip Nilai"
-                    className="mt-1 border-slate-200 rounded-lg text-xs font-mono leading-relaxed"
+                    value={attachmentsText}
+                    onChange={e => {
+                      const val = e.target.value;
+                      setAttachmentsText(val);
+                      setLetterData(prev => ({
+                        ...prev,
+                        attachments: val
+                          .split("\n")
+                          .map(s => s.trim())
+                          .filter(Boolean),
+                      }));
+                    }}
+                    rows={5}
+                    placeholder="Curriculum Vitae (CV) Terbaru&#10;Salinan Ijazah dan Transkrip Nilai&#10;Tekan Enter untuk menambah poin ke bawah"
+                    className="mt-1 border-slate-200 rounded-lg text-xs leading-relaxed"
                   />
+                  <p className="text-[10px] text-slate-400 mt-1">
+                    * Tekan <b>Enter</b> di keyboard atau klik tombol <b>+ Tambah Poin Baru</b> di atas untuk menambah baris lampiran.
+                  </p>
                 </div>
 
                 <div>

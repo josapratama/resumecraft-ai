@@ -19,7 +19,7 @@ export default function StandardIndonesianTemplate({ data }: { data: CoverLetter
 
         {/* Tempat & Tanggal di Kanan Atas */}
         <div className="text-right text-slate-850 mb-6 font-medium">
-          {data.city || "Prabumulih"}, {data.date || new Date().toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })}
+          {data.city || "Jakarta"}, {data.date || new Date().toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })}
         </div>
 
         {/* Nomor Surat & Lampiran (HANYA MUNCUL JIKA DIISI / DIAKTIFKAN USER) */}

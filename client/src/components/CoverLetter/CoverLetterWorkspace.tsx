@@ -35,6 +35,7 @@ import {
   ZoomOut,
   Maximize2,
   Filter,
+  RotateCcw,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -56,40 +57,84 @@ const ACCENT_COLORS = [
   { name: "Slate Charcoal", value: "#0f172a" },
 ];
 
-const KEMNAKER_MAGANG_PRESET: Partial<CoverLetterData> = {
-  subject: "Permohonan Program Magang Nasional – Assistant Retail Advisor",
-  jobTitle: "Assistant Retail Advisor",
-  companyName: "Kementerian Ketenagakerjaan RI",
-  city: "Prabumulih",
-  recipientTitle: "Tim Rekrutmen MagangHub & HRD Mitra",
-  companyAddress: "Di Tempat",
-  jobSource: "Portal Resmi MagangHub Kemnaker RI",
-  educationDegree: "S1 Informatika",
-  educationSchool: "Universitas Prabumulih",
-  educationGpa: "3.54",
-  salutation: "Dengan Hormat,",
-  opening:
-    "Berdasarkan informasi lowongan yang saya peroleh melalui portal resmi MagangHub Kementerian Ketenagakerjaan RI, bersama surat ini saya bermaksud mengajukan permohonan diri untuk dapat bergabung dalam program Magang Nasional sebagai Assistant Retail Advisor pada mitra perusahaan yang Bapak/Ibu pimpin.",
-  body:
-    "Saya merupakan lulusan S1 Informatika dari Universitas Prabumulih (IPK 3.54) dan memiliki latar belakang pendidikan profesional 1 tahun di Palcomtech Prabumulih. Saya memiliki kemampuan berpikir analitis, ketelitian tinggi dalam pengolahan data kasir dan inventaris, serta pengoperasian perangkat lunak produktivitas (Microsoft Office, Excel, dan basis data komputerisasi) yang didukung oleh Sertifikat Kompetensi resmi. Berbekal keterampilan tersebut, saya mampu beradaptasi cepat serta siap mendukung kelancaran operasional toko secara profesional.",
-  previousField:
-    "Selain latar belakang akademis, saya juga memiliki pengalaman kerja praktik (magang) di Bass Oil Sukananti Limited (Prabumulih Field). Pengalaman tersebut telah membekali saya dengan pemahaman mendalam mengenai pentingnya kepatuhan terhadap Standar Operasional Prosedur (SOP), kedisiplinan kerja tim, ketelitian administrasi, serta kemampuan adaptasi cepat dalam ritme kerja yang dinamis.",
-  attachments: [
-    "Curriculum Vitae (CV) Terbaru",
-    "Salinan Ijazah dan Transkrip Nilai (IPK 3.54)",
-    "Salinan Sertifikat Kompetensi Profesional",
-    "Pas Foto Berwarna Terbaru",
-    "Dokumen Pendukung Lainnya",
-  ],
-  closing:
-    "Besar harapan saya untuk diberikan kesempatan menghadiri tahapan wawancara agar dapat menjelaskan lebih mendalam mengenai dedikasi dan kontribusi positif yang dapat saya berikan bagi keberhasilan program magang ini. Atas perhatian dan kesempatan yang Bapak/Ibu berikan, saya ucapkan terima kasih.",
-  signOff: "Hormat Saya,",
-  includeLetterTitle: true,
-  letterTitle: "SURAT LAMARAN KERJA",
-  includeReferenceNumber: false,
-  includeAttachmentsHeader: false,
-  includeBiodataTable: false,
-};
+/**
+ * Builds clean, dynamic cover letter data from the user's CV data.
+ * Falls back to standard professional dummy values if CV data is empty.
+ */
+function getInitialCoverLetterData(cvData?: FullCVData, defaultRole = ""): CoverLetterData {
+  const fullName = cvData?.personalInfo?.fullName || "Nama Lengkap Pelamar";
+  const email = cvData?.personalInfo?.email || "nama.pelamar@example.com";
+  const phone = cvData?.personalInfo?.phone || "+62 812-3456-7890";
+  const location = cvData?.personalInfo?.location || "Jakarta, Indonesia";
+  const targetRole = defaultRole || cvData?.cv.targetRole || "Staff Administrasi";
+  const portfolioUrl = cvData?.projects?.[0]?.link || "";
+
+  const educationDegree = cvData?.educations?.[0]?.degree || "Sarjana (S1)";
+  const educationSchool = cvData?.educations?.[0]?.school || "Universitas Terkemuka";
+  const educationGpa = cvData?.educations?.[0]?.description?.match(/\d+\.\d+/)?.[0] || "";
+
+  const firstExp = cvData?.workExperiences?.[0];
+  const previousField = firstExp
+    ? `Selain latar belakang akademis, saya juga memiliki pengalaman kerja sebagai ${firstExp.jobTitle} di ${firstExp.company}. Pengalaman tersebut semakin mengasah keterampilan teknis saya, pemahaman mendalam terhadap Standar Operasional Prosedur (SOP), ketelitian verifikasi data, serta kemampuan adaptasi kerja secara profesional.`
+    : "Selain latar belakang akademis, saya juga memiliki pengalaman kerja praktik / magang yang semakin mengasah kemampuan teknis, kepatuhan terhadap Standar Operasional Prosedur (SOP), ketelitian administrasi dan verifikasi data, serta komunikasi profesional lintas fungsi.";
+
+  const city = cvData?.personalInfo?.location?.split(",")?.[0]?.trim() || "Jakarta";
+
+  return {
+    fullName,
+    email,
+    phone,
+    location,
+    photoUrl: cvData?.personalInfo?.photoUrl || null,
+    targetRole,
+    portfolioUrl,
+
+    recipientName: "Bapak/Ibu HRD",
+    recipientTitle: "HRD Manager / Tim Rekrutmen",
+    companyName: "PT Perusahaan Tujuan",
+    companyAddress: "Di Tempat",
+    jobTitle: targetRole,
+    jobSource: "Portal Karir Resmi",
+    date: new Date().toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" }),
+    city,
+
+    includeLetterTitle: true,
+    letterTitle: "SURAT LAMARAN KERJA",
+    includeReferenceNumber: false,
+    includeAttachmentsHeader: false,
+    includeBiodataTable: false,
+
+    subject: `Lamaran Pekerjaan – ${targetRole}`,
+    referenceNumber: "LP/2026/XI/01",
+    salutation: "Dengan Hormat,",
+    opening: `Berdasarkan informasi lowongan pekerjaan yang saya peroleh mengenai posisi ${targetRole} di PT Perusahaan Tujuan, bersama surat ini saya bermaksud mengajukan permohonan diri untuk dapat bergabung dan berkontribusi sebagai tenaga profesional pada perusahaan/instansi yang Bapak/Ibu pimpin.`,
+    body: `Saya merupakan lulusan ${educationDegree} dari ${educationSchool}${educationGpa ? ` (IPK ${educationGpa})` : ""} dengan keterampilan analitis yang baik, ketelitian tinggi, dan manajemen waktu yang terstruktur. Memiliki keahlian dalam administrasi dokumen, pengolahan data, serta pengoperasian perangkat lunak produktivitas yang relevan. Berbekal latar belakang tersebut, saya mampu beradaptasi dengan cepat dan siap memberikan kontribusi nyata bagi operasional perusahaan.`,
+    previousField,
+    skillsHighlight: [
+      "Kemampuan komunikasi profesional, ramah, dan orientasi hasil kerja",
+      "Ketelitian tinggi dalam administrasi data dan pengoperasian komputer",
+      "Kedisiplinan kerja tim, kepatuhan terhadap SOP, serta adaptabilitas tinggi",
+    ],
+    attachments: [
+      "Curriculum Vitae (CV) Terbaru",
+      "Salinan Ijazah dan Transkrip Nilai Terlegalisir",
+      "Salinan Sertifikat Keahlian / Kompetensi",
+      "Pas Foto Berwarna Terbaru",
+      "Salinan Dokumen Pendukung Lainnya",
+    ],
+    closing:
+      "Demikian surat lamaran pekerjaan ini saya sampaikan. Besar harapan saya untuk diberikan kesempatan menghadiri tahapan wawancara agar dapat menjelaskan lebih mendalam mengenai kompetensi dan komitmen kerja yang saya miliki. Atas perhatian dan kesempatan yang Bapak/Ibu berikan, saya ucapkan terima kasih.",
+    signOff: "Hormat Saya,",
+
+    educationDegree,
+    educationSchool,
+    educationGpa,
+
+    accentColor: cvData?.cv.accentColor || "#1e3a8a",
+    fontFamily: "'Times New Roman', Times, serif",
+    includeSignature: true,
+  };
+}
 
 export default function CoverLetterWorkspace({
   cvId,
@@ -118,79 +163,19 @@ export default function CoverLetterWorkspace({
   const [copied, setCopied] = useState(false);
   const [copiedSubject, setCopiedSubject] = useState(false);
 
-  // AI input states
-  const [companyName, setCompanyName] = useState("Kementerian Ketenagakerjaan RI");
-  const [targetJob, setTargetJob] = useState("Assistant Retail Advisor");
+  // AI input states with generic professional defaults
+  const [companyName, setCompanyName] = useState("PT Perusahaan Tujuan");
+  const [targetJob, setTargetJob] = useState(defaultRole || cvData?.cv.targetRole || "Staff Administrasi");
   const [recipientName, setRecipientName] = useState("Pimpinan / Tim Rekrutmen");
-  const [recipientTitle, setRecipientTitle] = useState("Tim Rekrutmen MagangHub & HRD Mitra");
+  const [recipientTitle, setRecipientTitle] = useState("HRD Manager");
   const [companyAddress, setCompanyAddress] = useState("Di Tempat");
   const [jobDescription, setJobDescription] = useState("");
   const [tone, setTone] = useState<"professional" | "confident" | "enthusiastic" | "concise">("professional");
 
   // Cover Letter Data State
-  const initialName = cvData?.personalInfo?.fullName || "JOSA PRATAMA";
-  const initialEmail = cvData?.personalInfo?.email || "pratamajosa1234@gmail.com";
-  const initialPhone = cvData?.personalInfo?.phone || "+6281291561139";
-  const initialLocation = cvData?.personalInfo?.location || "Kota Prabumulih, Sumatera Selatan";
-  const initialPortfolio = cvData?.projects?.[0]?.link || "https://josapratama.com";
-
-  const [letterData, setLetterData] = useState<CoverLetterData>({
-    fullName: initialName,
-    email: initialEmail,
-    phone: initialPhone,
-    location: initialLocation,
-    photoUrl: cvData?.personalInfo?.photoUrl || null,
-    targetRole: "Assistant Retail Advisor",
-    portfolioUrl: initialPortfolio,
-
-    recipientName: "Bapak/Ibu HRD",
-    recipientTitle: "Tim Rekrutmen MagangHub & HRD Mitra",
-    companyName: "Kementerian Ketenagakerjaan RI",
-    companyAddress: "Di Tempat",
-    jobTitle: "Assistant Retail Advisor",
-    jobSource: "Portal Resmi MagangHub Kemnaker RI",
-    date: new Date().toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" }),
-    city: "Prabumulih",
-
-    includeLetterTitle: true,
-    letterTitle: "SURAT LAMARAN KERJA",
-    includeReferenceNumber: false,
-    includeAttachmentsHeader: false,
-    includeBiodataTable: false,
-
-    subject: "Permohonan Program Magang Nasional – Assistant Retail Advisor",
-    referenceNumber: "LP/2026/XI/01",
-    salutation: "Dengan Hormat,",
-    opening:
-      "Berdasarkan informasi lowongan yang saya peroleh melalui portal resmi MagangHub Kementerian Ketenagakerjaan RI, bersama surat ini saya bermaksud mengajukan permohonan diri untuk dapat bergabung dalam program Magang Nasional sebagai Assistant Retail Advisor pada mitra perusahaan yang Bapak/Ibu pimpin.",
-    body:
-      "Saya merupakan lulusan S1 Informatika dari Universitas Prabumulih (IPK 3.54) dan memiliki latar belakang pendidikan profesional 1 tahun di Palcomtech Prabumulih. Saya memiliki kemampuan berpikir analitis, ketelitian tinggi dalam pengolahan data kasir dan inventaris, serta pengoperasian perangkat lunak produktivitas (Microsoft Office, Excel, dan basis data komputerisasi) yang didukung oleh Sertifikat Kompetensi resmi. Berbekal keterampilan tersebut, saya mampu beradaptasi cepat serta siap mendukung kelancaran operasional toko secara profesional.",
-    previousField:
-      "Selain latar belakang akademis, saya juga memiliki pengalaman kerja praktik (magang) di Bass Oil Sukananti Limited (Prabumulih Field). Pengalaman tersebut telah membekali saya dengan pemahaman mendalam mengenai pentingnya kepatuhan terhadap Standar Operasional Prosedur (SOP), kedisiplinan kerja tim, ketelitian administrasi, serta kemampuan adaptasi cepat dalam ritme kerja yang dinamis.",
-    skillsHighlight: [
-      "Pelayanan pelanggan ramah, komunikatif, dan orientasi kepuasan konsumen",
-      "Ketelitian dalam pencatatan stok barang, kasir (POS), dan pelaporan data",
-      "Kedisiplinan kerja tim, kepatuhan SOP operasional, serta adaptasi cepat",
-    ],
-    attachments: [
-      "Curriculum Vitae (CV) Terbaru",
-      "Salinan Ijazah dan Transkrip Nilai (IPK 3.54)",
-      "Salinan Sertifikat Kompetensi Profesional",
-      "Pas Foto Berwarna Terbaru",
-      "Dokumen Pendukung Lainnya",
-    ],
-    closing:
-      "Besar harapan saya untuk diberikan kesempatan menghadiri tahapan wawancara agar dapat menjelaskan lebih mendalam mengenai dedikasi dan kontribusi positif yang dapat saya berikan bagi keberhasilan program magang ini. Atas perhatian dan kesempatan yang Bapak/Ibu berikan, saya ucapkan terima kasih.",
-    signOff: "Hormat Saya,",
-
-    educationDegree: cvData?.educations?.[0]?.degree || "S1 Informatika",
-    educationSchool: cvData?.educations?.[0]?.school || "Universitas Prabumulih",
-    educationGpa: "3.54",
-
-    accentColor: cvData?.cv.accentColor || "#1e3a8a",
-    fontFamily: "'Times New Roman', Times, serif",
-    includeSignature: true,
-  });
+  const [letterData, setLetterData] = useState<CoverLetterData>(() =>
+    getInitialCoverLetterData(cvData, defaultRole)
+  );
 
   // Local state for raw attachments textarea so Enter newline is never stripped
   const [attachmentsText, setAttachmentsText] = useState<string>(() =>
@@ -212,43 +197,30 @@ export default function CoverLetterWorkspace({
     }
   }, [letterData.attachments]);
 
-  // Load saved draft if exists in localStorage (auto-migrating any stale Telkom default draft)
+  // Load saved draft if exists in localStorage
   useEffect(() => {
     try {
       const saved = localStorage.getItem(`cover_letter_draft_${cvId}`);
       if (saved) {
         const parsed = JSON.parse(saved);
-        const isStaleDraft =
-          !parsed.letterData ||
-          parsed.letterData.companyName?.includes("Telkom") ||
-          parsed.letterData.subject?.includes("– sub") ||
-          parsed.letterData.opening?.includes("posisi sub");
-
-        if (isStaleDraft) {
-          setSelectedTemplate("standard-indonesian");
+        if (parsed.selectedTemplate) setSelectedTemplate(parsed.selectedTemplate);
+        if (parsed.letterData) {
           setLetterData(prev => ({
             ...prev,
-            ...KEMNAKER_MAGANG_PRESET,
-            fullName: prev.fullName || "JOSA PRATAMA",
-            email: prev.email || "pratamajosa1234@gmail.com",
-            phone: prev.phone || "+6281291561139",
-            location: prev.location || "Kota Prabumulih",
+            ...parsed.letterData,
+            // Sync personal identity from active CV data if present
+            fullName: cvData?.personalInfo?.fullName || parsed.letterData.fullName || prev.fullName,
+            email: cvData?.personalInfo?.email || parsed.letterData.email || prev.email,
+            phone: cvData?.personalInfo?.phone || parsed.letterData.phone || prev.phone,
           }));
-        } else {
-          if (parsed.selectedTemplate) setSelectedTemplate(parsed.selectedTemplate);
-          if (parsed.letterData) setLetterData(prev => ({ ...prev, ...parsed.letterData }));
         }
       } else {
-        setSelectedTemplate("standard-indonesian");
-        setLetterData(prev => ({
-          ...prev,
-          ...KEMNAKER_MAGANG_PRESET,
-        }));
+        setLetterData(getInitialCoverLetterData(cvData, defaultRole));
       }
     } catch {
       // ignore
     }
-  }, [cvId]);
+  }, [cvId, cvData, defaultRole]);
 
   // Auto-save draft
   useEffect(() => {
@@ -421,21 +393,19 @@ ${letterData.fullName}`;
           <div className="flex items-center bg-slate-100 p-0.5 rounded-lg border border-slate-200 text-xs">
             <button
               onClick={() => setLanguage("id")}
-              className={`px-2 py-1 rounded-md font-semibold transition-all ${
-                language === "id"
+              className={`px-2 py-1 rounded-md font-semibold transition-all ${language === "id"
                   ? "bg-white text-slate-900 shadow-xs"
                   : "text-slate-500 hover:text-slate-900"
-              }`}
+                }`}
             >
               ID (Baku)
             </button>
             <button
               onClick={() => setLanguage("en")}
-              className={`px-2 py-1 rounded-md font-semibold transition-all ${
-                language === "en"
+              className={`px-2 py-1 rounded-md font-semibold transition-all ${language === "en"
                   ? "bg-white text-slate-900 shadow-xs"
                   : "text-slate-500 hover:text-slate-900"
-              }`}
+                }`}
             >
               EN (Global)
             </button>
@@ -445,15 +415,17 @@ ${letterData.fullName}`;
             variant="outline"
             size="sm"
             onClick={() => {
+              const fresh = getInitialCoverLetterData(cvData, defaultRole);
               setSelectedTemplate("standard-indonesian");
-              setLetterData(prev => ({ ...prev, ...KEMNAKER_MAGANG_PRESET }));
-              toast.success("Draf Magang Kemnaker (Assistant Retail Advisor) berhasil diterapkan!");
+              setLetterData(fresh);
+              setAttachmentsText((fresh.attachments || []).join("\n"));
+              toast.success("Format surat lamaran di-reset ke template standar baku.");
             }}
-            className="text-xs gap-1.5 h-8 border-indigo-200 bg-indigo-50/70 hover:bg-indigo-100 text-indigo-700 font-semibold"
-            title="Klik untuk mengisi otomatis seluruh kolom dengan draf lowongan Magang Kemnaker"
+            className="text-xs gap-1.5 h-8 border-slate-200 hover:bg-slate-50 text-slate-700 font-medium"
+            title="Reset seluruh kolom ke template standar baku"
           >
-            <Sparkles className="w-3.5 h-3.5 text-indigo-600" />
-            <span className="hidden sm:inline">Muat Draf Kemnaker</span>
+            <RotateCcw className="w-3.5 h-3.5 text-slate-500" />
+            <span className="hidden sm:inline">Reset Standar</span>
           </Button>
 
           <Button
@@ -493,11 +465,10 @@ ${letterData.fullName}`;
           <div className="flex border-b border-slate-200 px-3 pt-2 bg-slate-50/60 shrink-0 gap-1 text-xs">
             <button
               onClick={() => setActiveTab("templates")}
-              className={`flex items-center gap-1.5 py-2 px-3 border-b-2 font-semibold transition-all ${
-                activeTab === "templates"
+              className={`flex items-center gap-1.5 py-2 px-3 border-b-2 font-semibold transition-all ${activeTab === "templates"
                   ? "border-blue-600 text-blue-600 bg-white rounded-t-lg shadow-2xs"
                   : "border-transparent text-slate-600 hover:text-slate-900"
-              }`}
+                }`}
             >
               <Layout className="w-3.5 h-3.5" />
               <span>Format ({COVER_LETTER_TEMPLATES.length})</span>
@@ -505,11 +476,10 @@ ${letterData.fullName}`;
 
             <button
               onClick={() => setActiveTab("ai")}
-              className={`flex items-center gap-1.5 py-2 px-3 border-b-2 font-semibold transition-all ${
-                activeTab === "ai"
+              className={`flex items-center gap-1.5 py-2 px-3 border-b-2 font-semibold transition-all ${activeTab === "ai"
                   ? "border-blue-600 text-blue-600 bg-white rounded-t-lg shadow-2xs"
                   : "border-transparent text-slate-600 hover:text-slate-900"
-              }`}
+                }`}
             >
               <Sparkles className="w-3.5 h-3.5 text-blue-600" />
               <span>AI Generator</span>
@@ -517,11 +487,10 @@ ${letterData.fullName}`;
 
             <button
               onClick={() => setActiveTab("edit")}
-              className={`flex items-center gap-1.5 py-2 px-3 border-b-2 font-semibold transition-all ${
-                activeTab === "edit"
+              className={`flex items-center gap-1.5 py-2 px-3 border-b-2 font-semibold transition-all ${activeTab === "edit"
                   ? "border-blue-600 text-blue-600 bg-white rounded-t-lg shadow-2xs"
                   : "border-transparent text-slate-600 hover:text-slate-900"
-              }`}
+                }`}
             >
               <Edit3 className="w-3.5 h-3.5" />
               <span>Sunting Isi</span>
@@ -529,11 +498,10 @@ ${letterData.fullName}`;
 
             <button
               onClick={() => setActiveTab("style")}
-              className={`flex items-center gap-1.5 py-2 px-3 border-b-2 font-semibold transition-all ${
-                activeTab === "style"
+              className={`flex items-center gap-1.5 py-2 px-3 border-b-2 font-semibold transition-all ${activeTab === "style"
                   ? "border-blue-600 text-blue-600 bg-white rounded-t-lg shadow-2xs"
                   : "border-transparent text-slate-600 hover:text-slate-900"
-              }`}
+                }`}
             >
               <Palette className="w-3.5 h-3.5" />
               <span>Desain</span>
@@ -570,11 +538,10 @@ ${letterData.fullName}`;
                       <button
                         key={cat}
                         onClick={() => setTemplateCategory(cat)}
-                        className={`px-2.5 py-1 rounded-md font-semibold transition-all ${
-                          templateCategory === cat
+                        className={`px-2.5 py-1 rounded-md font-semibold transition-all ${templateCategory === cat
                             ? "bg-slate-900 text-white shadow-2xs"
                             : "bg-slate-100 text-slate-600 hover:bg-slate-200/80"
-                        }`}
+                          }`}
                       >
                         {cat}
                       </button>
@@ -590,22 +557,20 @@ ${letterData.fullName}`;
                       <div
                         key={tpl.id}
                         onClick={() => setSelectedTemplate(tpl.id)}
-                        className={`p-3 rounded-xl border text-left cursor-pointer transition-all ${
-                          isSelected
+                        className={`p-3 rounded-xl border text-left cursor-pointer transition-all ${isSelected
                             ? "border-blue-600 bg-blue-50/70 shadow-xs ring-1 ring-blue-600/30"
                             : "border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50/60"
-                        }`}
+                          }`}
                       >
                         <div className="flex items-center justify-between gap-2 mb-1">
                           <span className="font-bold text-slate-900 text-xs">
                             {tpl.name}
                           </span>
                           <span
-                            className={`text-[9px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider ${
-                              isSelected
+                            className={`text-[9px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider ${isSelected
                                 ? "bg-blue-600 text-white"
                                 : "bg-slate-100 text-slate-600"
-                            }`}
+                              }`}
                           >
                             {tpl.badge}
                           </span>
@@ -872,259 +837,258 @@ ${letterData.fullName}`;
                 </div>
 
                 <div>
-                  <div className="flex items-center justify-between mb-1">
-                    <Label className="text-xs font-semibold text-slate-700">Daftar Berkas Lampiran</Label>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        const updated = attachmentsText.trim()
-                          ? `${attachmentsText.trimEnd()}\n`
-                          : "";
-                        setAttachmentsText(updated + "Salinan Dokumen Tambahan");
+                    <div className="flex items-center justify-between mb-1">
+                      <Label className="text-xs font-semibold text-slate-700">Daftar Berkas Lampiran</Label>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const updated = attachmentsText.trim()
+                            ? `${attachmentsText.trimEnd()}\n`
+                            : "";
+                          setAttachmentsText(updated + "Salinan Dokumen Tambahan");
+                          setLetterData(prev => ({
+                            ...prev,
+                            attachments: (updated + "Salinan Dokumen Tambahan")
+                              .split("\n")
+                              .map(s => s.trim())
+                              .filter(Boolean),
+                          }));
+                        }}
+                        className="text-[11px] text-blue-600 hover:text-blue-700 font-semibold flex items-center gap-1 hover:underline"
+                      >
+                        + Tambah Poin Baru
+                      </button>
+                    </div>
+                    <Textarea
+                      value={attachmentsText}
+                      onChange={e => {
+                        const val = e.target.value;
+                        setAttachmentsText(val);
                         setLetterData(prev => ({
                           ...prev,
-                          attachments: (updated + "Salinan Dokumen Tambahan")
+                          attachments: val
                             .split("\n")
                             .map(s => s.trim())
                             .filter(Boolean),
                         }));
                       }}
-                      className="text-[11px] text-blue-600 hover:text-blue-700 font-semibold flex items-center gap-1 hover:underline"
-                    >
-                      + Tambah Poin Baru
-                    </button>
+                      rows={5}
+                      placeholder="Curriculum Vitae (CV) Terbaru&#10;Salinan Ijazah dan Transkrip Nilai&#10;Tekan Enter untuk menambah poin ke bawah"
+                      className="mt-1 border-slate-200 rounded-lg text-xs leading-relaxed"
+                    />
+                    <p className="text-[10px] text-slate-400 mt-1">
+                      * Tekan <b>Enter</b> di keyboard atau klik tombol <b>+ Tambah Poin Baru</b> di atas untuk menambah baris lampiran.
+                    </p>
                   </div>
-                  <Textarea
-                    value={attachmentsText}
-                    onChange={e => {
-                      const val = e.target.value;
-                      setAttachmentsText(val);
-                      setLetterData(prev => ({
-                        ...prev,
-                        attachments: val
-                          .split("\n")
-                          .map(s => s.trim())
-                          .filter(Boolean),
-                      }));
-                    }}
-                    rows={5}
-                    placeholder="Curriculum Vitae (CV) Terbaru&#10;Salinan Ijazah dan Transkrip Nilai&#10;Tekan Enter untuk menambah poin ke bawah"
-                    className="mt-1 border-slate-200 rounded-lg text-xs leading-relaxed"
-                  />
-                  <p className="text-[10px] text-slate-400 mt-1">
-                    * Tekan <b>Enter</b> di keyboard atau klik tombol <b>+ Tambah Poin Baru</b> di atas untuk menambah baris lampiran.
-                  </p>
-                </div>
 
-                <div>
-                  <Label className="text-xs font-semibold text-slate-700">Paragraf Penutup</Label>
-                  <Textarea
-                    value={letterData.closing}
-                    onChange={e => setLetterData({ ...letterData, closing: e.target.value })}
-                    rows={3}
-                    className="mt-1 border-slate-200 rounded-lg text-xs leading-relaxed"
-                  />
-                </div>
+                  <div>
+                    <Label className="text-xs font-semibold text-slate-700">Paragraf Penutup</Label>
+                    <Textarea
+                      value={letterData.closing}
+                      onChange={e => setLetterData({ ...letterData, closing: e.target.value })}
+                      rows={3}
+                      className="mt-1 border-slate-200 rounded-lg text-xs leading-relaxed"
+                    />
+                  </div>
 
-                <div>
-                  <Label className="text-xs font-semibold text-slate-700">Salam Penutup</Label>
-                  <Input
-                    value={letterData.signOff}
-                    onChange={e => setLetterData({ ...letterData, signOff: e.target.value })}
-                    className="mt-1 border-slate-200 rounded-lg text-xs"
-                  />
+                  <div>
+                    <Label className="text-xs font-semibold text-slate-700">Salam Penutup</Label>
+                    <Input
+                      value={letterData.signOff}
+                      onChange={e => setLetterData({ ...letterData, signOff: e.target.value })}
+                      className="mt-1 border-slate-200 rounded-lg text-xs"
+                    />
+                  </div>
                 </div>
-              </div>
             )}
 
-            {/* TAB 4: STYLE & DESIGN */}
-            {activeTab === "style" && (
-              <div className="space-y-4">
-                <div>
-                  <h3 className="font-bold text-slate-900 text-sm">Kustomisasi Dokumen & Desain</h3>
-                  <p className="text-slate-500 text-[11px] mt-0.5">
-                    Sesuaikan elemen surat (judul, nomor dinas, tabel), tipografi, dan warna.
-                  </p>
-                </div>
+                {/* TAB 4: STYLE & DESIGN */}
+                {activeTab === "style" && (
+                  <div className="space-y-4">
+                    <div>
+                      <h3 className="font-bold text-slate-900 text-sm">Kustomisasi Dokumen & Desain</h3>
+                      <p className="text-slate-500 text-[11px] mt-0.5">
+                        Sesuaikan elemen surat (judul, nomor dinas, tabel), tipografi, dan warna.
+                      </p>
+                    </div>
 
-                {/* Struktur Khusus Surat (Custom Header & Element Toggles) */}
-                <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl space-y-3">
-                  <span className="text-xs font-bold text-slate-800 uppercase tracking-wider block">
-                    Elemen & Tata Letak Surat
-                  </span>
+                    {/* Struktur Khusus Surat (Custom Header & Element Toggles) */}
+                    <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl space-y-3">
+                      <span className="text-xs font-bold text-slate-800 uppercase tracking-wider block">
+                        Elemen & Tata Letak Surat
+                      </span>
 
-                  {/* Toggle Judul SURAT LAMARAN KERJA */}
-                  <div className="space-y-1.5">
-                    <label className="flex items-center gap-2 cursor-pointer">
+                      {/* Toggle Judul SURAT LAMARAN KERJA */}
+                      <div className="space-y-1.5">
+                        <label className="flex items-center gap-2 cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={letterData.includeLetterTitle !== false}
+                            onChange={e =>
+                              setLetterData({ ...letterData, includeLetterTitle: e.target.checked })
+                            }
+                            className="w-4 h-4 rounded text-blue-600 focus:ring-blue-500 border-slate-300 cursor-pointer"
+                          />
+                          <span className="text-xs font-semibold text-slate-800">
+                            Judul Dokumen di Tengah Atas
+                          </span>
+                        </label>
+                        {letterData.includeLetterTitle !== false && (
+                          <Input
+                            value={letterData.letterTitle || "SURAT LAMARAN KERJA"}
+                            onChange={e =>
+                              setLetterData({ ...letterData, letterTitle: e.target.value })
+                            }
+                            placeholder="SURAT LAMARAN KERJA"
+                            className="h-7 text-xs border-slate-200 bg-white rounded-md mt-1"
+                          />
+                        )}
+                      </div>
+
+                      {/* Toggle Nomor Surat Kedinasan */}
+                      <div className="space-y-1.5 pt-2 border-t border-slate-200/60">
+                        <label className="flex items-start gap-2 cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={Boolean(letterData.includeReferenceNumber)}
+                            onChange={e =>
+                              setLetterData({ ...letterData, includeReferenceNumber: e.target.checked })
+                            }
+                            className="w-4 h-4 rounded text-blue-600 focus:ring-blue-500 border-slate-300 cursor-pointer mt-0.5"
+                          />
+                          <div>
+                            <span className="text-xs font-semibold text-slate-800 block">
+                              Tampilkan Nomor Surat Kedinasan (Nomor : ...)
+                            </span>
+                            <span className="text-[10px] text-slate-500 leading-tight block">
+                              Nonaktifkan (OFF) untuk pelamar umum perseorangan. Hanya aktifkan bila instansi memerlukan penomoran arsip.
+                            </span>
+                          </div>
+                        </label>
+                        {letterData.includeReferenceNumber && (
+                          <Input
+                            value={letterData.referenceNumber || ""}
+                            onChange={e =>
+                              setLetterData({ ...letterData, referenceNumber: e.target.value })
+                            }
+                            placeholder="Contoh: LP/2026/XI/01"
+                            className="h-7 text-xs border-slate-200 bg-white rounded-md mt-1"
+                          />
+                        )}
+                      </div>
+
+                      {/* Toggle Baris Lampiran di Atas */}
+                      <div className="pt-2 border-t border-slate-200/60">
+                        <label className="flex items-start gap-2 cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={Boolean(letterData.includeAttachmentsHeader)}
+                            onChange={e =>
+                              setLetterData({ ...letterData, includeAttachmentsHeader: e.target.checked })
+                            }
+                            className="w-4 h-4 rounded text-blue-600 focus:ring-blue-500 border-slate-300 cursor-pointer mt-0.5"
+                          />
+                          <div>
+                            <span className="text-xs font-semibold text-slate-800 block">
+                              Tampilkan Baris "Lampiran" di Header Atas
+                            </span>
+                            <span className="text-[10px] text-slate-500 leading-tight block">
+                              Menambahkan "Lampiran : 1 (Satu) Berkas Lengkap" tepat di bawah Perihal.
+                            </span>
+                          </div>
+                        </label>
+                      </div>
+
+                      {/* Toggle Tabel Biodata Ringkas */}
+                      <div className="pt-2 border-t border-slate-200/60">
+                        <label className="flex items-start gap-2 cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={Boolean(letterData.includeBiodataTable)}
+                            onChange={e =>
+                              setLetterData({ ...letterData, includeBiodataTable: e.target.checked })
+                            }
+                            className="w-4 h-4 rounded text-blue-600 focus:ring-blue-500 border-slate-300 cursor-pointer mt-0.5"
+                          />
+                          <div>
+                            <span className="text-xs font-semibold text-slate-800 block">
+                              Tampilkan Tabel Biodata Ringkas
+                            </span>
+                            <span className="text-[10px] text-slate-500 leading-tight block">
+                              Menampilkan tabel Nama, Pendidikan, Domisili, dan No. HP di tengah surat.
+                            </span>
+                          </div>
+                        </label>
+                      </div>
+                    </div>
+
+                    <div>
+                      <Label className="text-xs font-semibold text-slate-700 mb-2 block">Warna Aksen</Label>
+                      <div className="flex flex-wrap gap-2.5">
+                        {ACCENT_COLORS.map(c => {
+                          const isSelected = letterData.accentColor === c.value;
+                          return (
+                            <button
+                              key={c.value}
+                              onClick={() => setLetterData({ ...letterData, accentColor: c.value })}
+                              className={`w-7 h-7 rounded-full flex items-center justify-center transition-all ${isSelected
+                                  ? "ring-2 ring-offset-2 ring-slate-900 scale-110 shadow-xs"
+                                  : "hover:scale-105"
+                                }`}
+                              style={{ backgroundColor: c.value }}
+                              title={c.name}
+                            >
+                              {isSelected && <Check className="w-3.5 h-3.5 text-white" />}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    <div>
+                      <Label className="text-xs font-semibold text-slate-700 mb-1.5 block">Keluarga Font (Tipografi)</Label>
+                      <Select
+                        value={letterData.fontFamily}
+                        onValueChange={val => setLetterData({ ...letterData, fontFamily: val })}
+                      >
+                        <SelectTrigger className="border-slate-200 rounded-lg text-xs">
+                          <SelectValue placeholder="Pilih font" />
+                        </SelectTrigger>
+                        <SelectContent className="rounded-xl border-slate-200">
+                          <SelectItem value="'Times New Roman', Times, serif" className="text-xs">
+                            Formal Times New Roman (Standar Surat Lamaran Indonesia & BUMN)
+                          </SelectItem>
+                          <SelectItem value="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" className="text-xs">
+                            Modern Sans (Inter / Segoe UI / Roboto)
+                          </SelectItem>
+                          <SelectItem value="Georgia, Cambria, serif" className="text-xs">
+                            Classic Serif (Georgia / Cambria)
+                          </SelectItem>
+                          <SelectItem value="'Palatino Linotype', Palatino, serif" className="text-xs">
+                            Executive Palatino (Elegan)
+                          </SelectItem>
+                          <SelectItem value="Consolas, 'Roboto Mono', Monaco, monospace" className="text-xs">
+                            Code Monospace (Terminal Developer)
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="pt-2 border-t border-slate-100 flex items-center justify-between">
+                      <div>
+                        <p className="font-semibold text-slate-900 text-xs">Tanda Tangan Digital</p>
+                        <p className="text-[11px] text-slate-500">Tampilkan tulisan tanda tangan di atas nama</p>
+                      </div>
                       <input
                         type="checkbox"
-                        checked={letterData.includeLetterTitle !== false}
-                        onChange={e =>
-                          setLetterData({ ...letterData, includeLetterTitle: e.target.checked })
-                        }
+                        checked={letterData.includeSignature}
+                        onChange={e => setLetterData({ ...letterData, includeSignature: e.target.checked })}
                         className="w-4 h-4 rounded text-blue-600 focus:ring-blue-500 border-slate-300 cursor-pointer"
                       />
-                      <span className="text-xs font-semibold text-slate-800">
-                        Judul Dokumen di Tengah Atas
-                      </span>
-                    </label>
-                    {letterData.includeLetterTitle !== false && (
-                      <Input
-                        value={letterData.letterTitle || "SURAT LAMARAN KERJA"}
-                        onChange={e =>
-                          setLetterData({ ...letterData, letterTitle: e.target.value })
-                        }
-                        placeholder="SURAT LAMARAN KERJA"
-                        className="h-7 text-xs border-slate-200 bg-white rounded-md mt-1"
-                      />
-                    )}
+                    </div>
                   </div>
-
-                  {/* Toggle Nomor Surat Kedinasan */}
-                  <div className="space-y-1.5 pt-2 border-t border-slate-200/60">
-                    <label className="flex items-start gap-2 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={Boolean(letterData.includeReferenceNumber)}
-                        onChange={e =>
-                          setLetterData({ ...letterData, includeReferenceNumber: e.target.checked })
-                        }
-                        className="w-4 h-4 rounded text-blue-600 focus:ring-blue-500 border-slate-300 cursor-pointer mt-0.5"
-                      />
-                      <div>
-                        <span className="text-xs font-semibold text-slate-800 block">
-                          Tampilkan Nomor Surat Kedinasan (Nomor : ...)
-                        </span>
-                        <span className="text-[10px] text-slate-500 leading-tight block">
-                          Nonaktifkan (OFF) untuk pelamar umum perseorangan. Hanya aktifkan bila instansi memerlukan penomoran arsip.
-                        </span>
-                      </div>
-                    </label>
-                    {letterData.includeReferenceNumber && (
-                      <Input
-                        value={letterData.referenceNumber || ""}
-                        onChange={e =>
-                          setLetterData({ ...letterData, referenceNumber: e.target.value })
-                        }
-                        placeholder="Contoh: LP/2026/XI/01"
-                        className="h-7 text-xs border-slate-200 bg-white rounded-md mt-1"
-                      />
-                    )}
-                  </div>
-
-                  {/* Toggle Baris Lampiran di Atas */}
-                  <div className="pt-2 border-t border-slate-200/60">
-                    <label className="flex items-start gap-2 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={Boolean(letterData.includeAttachmentsHeader)}
-                        onChange={e =>
-                          setLetterData({ ...letterData, includeAttachmentsHeader: e.target.checked })
-                        }
-                        className="w-4 h-4 rounded text-blue-600 focus:ring-blue-500 border-slate-300 cursor-pointer mt-0.5"
-                      />
-                      <div>
-                        <span className="text-xs font-semibold text-slate-800 block">
-                          Tampilkan Baris "Lampiran" di Header Atas
-                        </span>
-                        <span className="text-[10px] text-slate-500 leading-tight block">
-                          Menambahkan "Lampiran : 1 (Satu) Berkas Lengkap" tepat di bawah Perihal.
-                        </span>
-                      </div>
-                    </label>
-                  </div>
-
-                  {/* Toggle Tabel Biodata Ringkas */}
-                  <div className="pt-2 border-t border-slate-200/60">
-                    <label className="flex items-start gap-2 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={Boolean(letterData.includeBiodataTable)}
-                        onChange={e =>
-                          setLetterData({ ...letterData, includeBiodataTable: e.target.checked })
-                        }
-                        className="w-4 h-4 rounded text-blue-600 focus:ring-blue-500 border-slate-300 cursor-pointer mt-0.5"
-                      />
-                      <div>
-                        <span className="text-xs font-semibold text-slate-800 block">
-                          Tampilkan Tabel Biodata Ringkas
-                        </span>
-                        <span className="text-[10px] text-slate-500 leading-tight block">
-                          Menampilkan tabel Nama, Pendidikan, Domisili, dan No. HP di tengah surat.
-                        </span>
-                      </div>
-                    </label>
-                  </div>
-                </div>
-
-                <div>
-                  <Label className="text-xs font-semibold text-slate-700 mb-2 block">Warna Aksen</Label>
-                  <div className="flex flex-wrap gap-2.5">
-                    {ACCENT_COLORS.map(c => {
-                      const isSelected = letterData.accentColor === c.value;
-                      return (
-                        <button
-                          key={c.value}
-                          onClick={() => setLetterData({ ...letterData, accentColor: c.value })}
-                          className={`w-7 h-7 rounded-full flex items-center justify-center transition-all ${
-                            isSelected
-                              ? "ring-2 ring-offset-2 ring-slate-900 scale-110 shadow-xs"
-                              : "hover:scale-105"
-                          }`}
-                          style={{ backgroundColor: c.value }}
-                          title={c.name}
-                        >
-                          {isSelected && <Check className="w-3.5 h-3.5 text-white" />}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                <div>
-                  <Label className="text-xs font-semibold text-slate-700 mb-1.5 block">Keluarga Font (Tipografi)</Label>
-                  <Select
-                    value={letterData.fontFamily}
-                    onValueChange={val => setLetterData({ ...letterData, fontFamily: val })}
-                  >
-                    <SelectTrigger className="border-slate-200 rounded-lg text-xs">
-                      <SelectValue placeholder="Pilih font" />
-                    </SelectTrigger>
-                    <SelectContent className="rounded-xl border-slate-200">
-                      <SelectItem value="'Times New Roman', Times, serif" className="text-xs">
-                        Formal Times New Roman (Standar Surat Lamaran Indonesia & BUMN)
-                      </SelectItem>
-                      <SelectItem value="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" className="text-xs">
-                        Modern Sans (Inter / Segoe UI / Roboto)
-                      </SelectItem>
-                      <SelectItem value="Georgia, Cambria, serif" className="text-xs">
-                        Classic Serif (Georgia / Cambria)
-                      </SelectItem>
-                      <SelectItem value="'Palatino Linotype', Palatino, serif" className="text-xs">
-                        Executive Palatino (Elegan)
-                      </SelectItem>
-                      <SelectItem value="Consolas, 'Roboto Mono', Monaco, monospace" className="text-xs">
-                        Code Monospace (Terminal Developer)
-                      </SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="pt-2 border-t border-slate-100 flex items-center justify-between">
-                  <div>
-                    <p className="font-semibold text-slate-900 text-xs">Tanda Tangan Digital</p>
-                    <p className="text-[11px] text-slate-500">Tampilkan tulisan tanda tangan di atas nama</p>
-                  </div>
-                  <input
-                    type="checkbox"
-                    checked={letterData.includeSignature}
-                    onChange={e => setLetterData({ ...letterData, includeSignature: e.target.checked })}
-                    className="w-4 h-4 rounded text-blue-600 focus:ring-blue-500 border-slate-300 cursor-pointer"
-                  />
-                </div>
+                )}
               </div>
-            )}
-          </div>
         </aside>
 
         {/* Right Live Preview Workspace - single clean scrollbar only */}

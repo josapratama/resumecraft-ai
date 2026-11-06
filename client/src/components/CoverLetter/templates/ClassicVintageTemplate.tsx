@@ -39,7 +39,7 @@ export default function ClassicVintageTemplate({ data }: { data: CoverLetterData
           </div>
           <div className="text-right">
             <p className="text-slate-700 font-medium italic font-serif">
-              {data.city || "Prabumulih"}, {data.date || new Date().toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })}
+              {data.city || "Jakarta"}, {data.date || new Date().toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })}
             </p>
           </div>
         </div>

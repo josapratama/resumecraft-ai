@@ -21,7 +21,7 @@ export default function FreshGraduateTemplate({ data }: { data: CoverLetterData 
               </p>
             </div>
             <div className="text-xs text-slate-500">
-              {data.city || "Prabumulih"}, {data.date || new Date().toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })}
+              {data.city || "Jakarta"}, {data.date || new Date().toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })}
             </div>
           </div>
           <p className="text-xs text-slate-600 mt-2">

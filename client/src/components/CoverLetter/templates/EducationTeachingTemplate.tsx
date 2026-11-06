@@ -40,7 +40,7 @@ export default function EducationTeachingTemplate({ data }: { data: CoverLetterD
             <p className="text-slate-500">{data.companyAddress || "Bagian Manajemen Guru & Kurikulum"}</p>
           </div>
           <div className="text-right text-slate-500">
-            {data.city || "Prabumulih"}, {data.date || new Date().toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })}
+            {data.city || "Jakarta"}, {data.date || new Date().toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })}
           </div>
         </div>
 

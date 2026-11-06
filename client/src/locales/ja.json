@@ -1,0 +1,88 @@
+{
+  "topbar": {
+    "dashboard": "ダッシュボード",
+    "ai_tools": "AIツール",
+    "theme": "テーマ",
+    "share": "共有",
+    "ai_chat": "AIチャット",
+    "pdf": "PDFダウンロード",
+    "public": "公開",
+    "private": "非公開",
+    "updated": "更新日"
+  },
+  "tabs": {
+    "personal": "個人情報",
+    "experience": "職務経歴",
+    "education": "学歴",
+    "skills": "スキル",
+    "projects": "プロジェクト",
+    "certs": "資格",
+    "languages": "言語",
+    "custom": "カスタム"
+  },
+  "personal": {
+    "title": "個人情報",
+    "subtitle": "氏名、連絡先、キャリアの概要",
+    "full_name": "氏名",
+    "email": "メールアドレス",
+    "phone": "電話番号",
+    "location": "所在地（都市、国）",
+    "photo_label": "プロフィール写真（任意）",
+    "choose_photo": "写真を選択",
+    "remove_photo": "削除",
+    "photo_placeholder": "または画像URLを入力",
+    "photo_hint": "JPG、PNG、WebP対応。PDF用に自動圧縮されます。",
+    "summary": "自己PR・職務要約",
+    "summary_placeholder": "経験年数、得意分野、実績などを簡潔に記載してください...",
+    "enhance_ai": "AIで推敲",
+    "save_changes": "変更を保存",
+    "saving": "保存中...",
+    "saved": "保存済み",
+    "unsaved": "未保存の変更"
+  },
+  "education": {
+    "title": "学歴",
+    "subtitle": "学位、大学、学術的実績",
+    "add_degree": "学歴を追加",
+    "edit_degree": "学歴を編集",
+    "school": "学校名・大学名",
+    "school_placeholder": "例: 東京大学",
+    "degree": "学位・課程",
+    "degree_placeholder": "例: 学士、修士",
+    "field": "専攻分野・学科",
+    "field_placeholder": "例: 情報科学",
+    "location": "所在地",
+    "grad_date": "卒業年月（見込み）",
+    "description": "詳細・GPA・実績"
+  },
+  "experience": {
+    "title": "職務経歴",
+    "subtitle": "役職、企業、担当業務と実績",
+    "add_position": "職歴を追加",
+    "job_title": "役職・職種",
+    "company": "会社名・組織名",
+    "start_date": "開始日",
+    "end_date": "終了日",
+    "current_role": "現在も在籍中",
+    "present": "現在"
+  },
+  "skills": {
+    "title": "スキル",
+    "subtitle": "主要なスキル、ツール、技術",
+    "add_skill": "スキルを追加",
+    "category": "カテゴリ",
+    "skill_name": "スキル名",
+    "proficiency": "熟練度"
+  },
+  "template_headers": {
+    "about": "自己紹介",
+    "contact": "連絡先",
+    "education": "学歴",
+    "experience": "職務経歴",
+    "skills": "スキル",
+    "projects": "プロジェクト",
+    "languages": "言語能力",
+    "certifications": "保有資格",
+    "achievements": "受賞歴・課外活動"
+  }
+}

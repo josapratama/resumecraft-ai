@@ -9,6 +9,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { Wand2, Circle, User, Mail, Phone, MapPin, Check, Save, Camera, Trash2, Upload } from "lucide-react";
 import AIAssistant from "./AIAssistant";
 import { toast } from "sonner";
+import { useI18n } from "@/lib/i18n";
 import type { PersonalInfo } from "@/types/cv";
 
 interface PersonalInfoFormProps {
@@ -22,6 +23,7 @@ export default function PersonalInfoForm({
   initialData,
   onDataChange,
 }: PersonalInfoFormProps) {
+  const { t } = useI18n();
   const [savedData, setSavedData] = useState({
     fullName: initialData?.fullName || "",
     email: initialData?.email || "",
@@ -144,16 +146,16 @@ export default function PersonalInfoForm({
       <div className="flex items-center justify-between mb-4 pb-3 border-b border-neutral-100">
         <div>
           <h3 className="text-base font-bold text-neutral-900 leading-tight">
-            Personal Information
+            {t("personal.title", "Personal Information")}
           </h3>
           <p className="text-xs text-neutral-500 mt-0.5">
-            Your name, contact details, and career overview
+            {t("personal.subtitle", "Your name, contact details, and career overview")}
           </p>
         </div>
         {isDirty && (
           <span className="flex items-center gap-1.5 text-[11px] font-semibold text-amber-600 bg-amber-50 px-2.5 py-1 rounded-full border border-amber-200">
             <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
-            Unsaved changes
+            {t("personal.unsaved", "Unsaved changes")}
           </span>
         )}
       </div>
@@ -163,7 +165,7 @@ export default function PersonalInfoForm({
         <div className="p-4 bg-neutral-50/80 border border-neutral-200/80 rounded-xl">
           <Label className="text-xs font-semibold text-neutral-600 uppercase tracking-wider flex items-center gap-1.5 mb-2.5">
             <Camera className="w-3.5 h-3.5 text-neutral-500" />
-            Profile Photo / Pas Foto (Optional)
+            {t("personal.photo_label", "Profile Photo / Pas Foto (Optional)")}
           </Label>
           <div className="flex flex-col sm:flex-row items-center gap-4">
             <div className="relative group w-20 h-20 rounded-full border-2 border-neutral-200 overflow-hidden bg-white flex items-center justify-center shrink-0 shadow-xs">
@@ -181,7 +183,7 @@ export default function PersonalInfoForm({
               <div className="flex flex-wrap items-center gap-2">
                 <label className="cursor-pointer inline-flex items-center gap-1.5 bg-neutral-900 text-white hover:bg-neutral-800 text-xs font-medium px-3 py-1.5 rounded-lg transition-colors shadow-xs">
                   <Upload className="w-3.5 h-3.5" />
-                  <span>Choose Photo</span>
+                  <span>{t("personal.choose_photo", "Choose Photo")}</span>
                   <input
                     type="file"
                     accept="image/*"
@@ -198,18 +200,18 @@ export default function PersonalInfoForm({
                     className="text-xs text-red-600 hover:text-red-700 hover:bg-red-50 h-8 px-2.5 rounded-lg"
                   >
                     <Trash2 className="w-3.5 h-3.5 mr-1" />
-                    Remove
+                    {t("personal.remove_photo", "Remove")}
                   </Button>
                 )}
               </div>
               <Input
                 value={formData.photoUrl}
                 onChange={e => handleChange("photoUrl", e.target.value)}
-                placeholder="or paste image URL (e.g. https://...)"
+                placeholder={t("personal.photo_placeholder", "or paste image URL (e.g. https://...)")}
                 className="text-xs h-8 bg-white border-neutral-200 focus:border-neutral-900 rounded-lg"
               />
               <p className="text-[11px] text-neutral-400">
-                Supports JPG, PNG, WebP or direct image links. Compressed automatically for sharp PDF export.
+                {t("personal.photo_hint", "Supports JPG, PNG, WebP or direct image links. Compressed automatically for sharp PDF export.")}
               </p>
             </div>
           </div>
@@ -219,7 +221,7 @@ export default function PersonalInfoForm({
         <div>
           <Label className="text-xs font-semibold text-neutral-600 uppercase tracking-wider flex items-center gap-1.5">
             <User className="w-3.5 h-3.5 text-neutral-400" />
-            Full Name
+            {t("personal.full_name", "Full Name")}
           </Label>
           <Input
             value={formData.fullName}
@@ -234,7 +236,7 @@ export default function PersonalInfoForm({
           <div>
             <Label className="text-xs font-semibold text-neutral-600 uppercase tracking-wider flex items-center gap-1.5">
               <Mail className="w-3.5 h-3.5 text-neutral-400" />
-              Email Address
+              {t("personal.email", "Email Address")}
             </Label>
             <Input
               type="email"
@@ -247,7 +249,7 @@ export default function PersonalInfoForm({
           <div>
             <Label className="text-xs font-semibold text-neutral-600 uppercase tracking-wider flex items-center gap-1.5">
               <Phone className="w-3.5 h-3.5 text-neutral-400" />
-              Phone Number
+              {t("personal.phone", "Phone Number")}
             </Label>
             <Input
               value={formData.phone}
@@ -262,7 +264,7 @@ export default function PersonalInfoForm({
         <div>
           <Label className="text-xs font-semibold text-neutral-600 uppercase tracking-wider flex items-center gap-1.5">
             <MapPin className="w-3.5 h-3.5 text-neutral-400" />
-            Location (City, Country)
+            {t("personal.location", "Location (City, Country)")}
           </Label>
           <Input
             value={formData.location}
@@ -276,7 +278,7 @@ export default function PersonalInfoForm({
         <div>
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2">
             <Label className="text-xs font-semibold text-neutral-600 uppercase tracking-wider">
-              Professional Summary
+              {t("personal.summary", "Professional Summary")}
             </Label>
             <div className="flex items-center gap-2">
               <Button
@@ -291,7 +293,7 @@ export default function PersonalInfoForm({
                 ) : (
                   <Wand2 className="w-3 h-3 text-indigo-600" />
                 )}
-                <span>Enhance with AI</span>
+                <span>{t("personal.enhance_ai", "Enhance with AI")}</span>
               </Button>
               <AIAssistant
                 cvId={cvId}
@@ -305,7 +307,7 @@ export default function PersonalInfoForm({
           <Textarea
             value={formData.professionalSummary}
             onChange={e => handleChange("professionalSummary", e.target.value)}
-            placeholder="Write 2-4 sentences highlighting your years of experience, core expertise, and notable career achievements..."
+            placeholder={t("personal.summary_placeholder", "Write 2-4 sentences highlighting your years of experience, core expertise, and notable career achievements...")}
             className="border-neutral-200 focus:border-neutral-900 rounded-xl min-h-28 text-sm leading-relaxed"
           />
         </div>
@@ -323,17 +325,17 @@ export default function PersonalInfoForm({
           {updateMutation.isPending ? (
             <>
               <Spinner className="w-4 h-4" />
-              <span>Saving Changes...</span>
+              <span>{t("personal.saving", "Saving Changes...")}</span>
             </>
           ) : isDirty ? (
             <>
               <Save className="w-4 h-4" />
-              <span>Save Changes</span>
+              <span>{t("personal.save_changes", "Save Changes")}</span>
             </>
           ) : (
             <>
               <Check className="w-4 h-4 text-emerald-600" />
-              <span>Saved & Up to Date</span>
+              <span>{t("personal.saved", "Saved & Up to Date")}</span>
             </>
           )}
         </Button>

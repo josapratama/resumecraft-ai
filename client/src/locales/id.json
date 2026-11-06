@@ -1,0 +1,88 @@
+{
+  "topbar": {
+    "dashboard": "Dasbor",
+    "ai_tools": "Alat AI",
+    "theme": "Tema",
+    "share": "Bagikan",
+    "ai_chat": "Obrolan AI",
+    "pdf": "Unduh PDF",
+    "public": "Publik",
+    "private": "Pribadi",
+    "updated": "Diperbarui"
+  },
+  "tabs": {
+    "personal": "Pribadi",
+    "experience": "Pengalaman",
+    "education": "Pendidikan",
+    "skills": "Keahlian",
+    "projects": "Proyek",
+    "certs": "Sertifikat",
+    "languages": "Bahasa",
+    "custom": "Kustom"
+  },
+  "personal": {
+    "title": "Informasi Pribadi",
+    "subtitle": "Nama, kontak, dan ringkasan karier Anda",
+    "full_name": "Nama Lengkap",
+    "email": "Alamat Email",
+    "phone": "Nomor Telepon",
+    "location": "Lokasi (Kota, Negara)",
+    "photo_label": "Foto Profil / Pas Foto (Opsional)",
+    "choose_photo": "Pilih Foto",
+    "remove_photo": "Hapus",
+    "photo_placeholder": "atau tempel URL gambar (cth. https://...)",
+    "photo_hint": "Mendukung JPG, PNG, WebP atau link gambar. Otomatis dikompres agar PDF tajam.",
+    "summary": "Ringkasan Profesional",
+    "summary_placeholder": "Tulis 2-4 kalimat yang menonjolkan pengalaman, keahlian utama, dan pencapaian karier Anda...",
+    "enhance_ai": "Tingkatkan dengan AI",
+    "save_changes": "Simpan Perubahan",
+    "saving": "Menyimpan Perubahan...",
+    "saved": "Tersimpan & Terkini",
+    "unsaved": "Ada perubahan belum disimpan"
+  },
+  "education": {
+    "title": "Pendidikan",
+    "subtitle": "Gelar, universitas, dan pencapaian akademis",
+    "add_degree": "Tambah Pendidikan",
+    "edit_degree": "Ubah Pendidikan",
+    "school": "Kampus / Sekolah",
+    "school_placeholder": "cth. Universitas Prabumulih atau ITB",
+    "degree": "Gelar / Jenjang",
+    "degree_placeholder": "cth. S1, D3, atau Sarjana",
+    "field": "Program Studi / Jurusan",
+    "field_placeholder": "cth. Informatika atau Sistem Informasi",
+    "location": "Lokasi",
+    "grad_date": "Tanggal / Bulan Kelulusan",
+    "description": "Deskripsi / IPK / Prestasi"
+  },
+  "experience": {
+    "title": "Pengalaman Kerja",
+    "subtitle": "Posisi, perusahaan, dan pencapaian kerja Anda",
+    "add_position": "Tambah Pengalaman",
+    "job_title": "Posisi / Jabatan",
+    "company": "Nama Perusahaan / Organisasi",
+    "start_date": "Tanggal Mulai",
+    "end_date": "Tanggal Selesai",
+    "current_role": "Saya masih bekerja di sini",
+    "present": "Sekarang"
+  },
+  "skills": {
+    "title": "Keahlian",
+    "subtitle": "Kompetensi utama, alat, dan keahlian teknis",
+    "add_skill": "Tambah Keahlian",
+    "category": "Kategori",
+    "skill_name": "Nama Keahlian",
+    "proficiency": "Tingkat Kemahiran"
+  },
+  "template_headers": {
+    "about": "Tentang Saya",
+    "contact": "Kontak",
+    "education": "Pendidikan",
+    "experience": "Pengalaman Kerja",
+    "skills": "Keahlian",
+    "projects": "Proyek Unggulan",
+    "languages": "Kemampuan Bahasa",
+    "certifications": "Sertifikasi",
+    "achievements": "Prestasi & Kegiatan"
+  }
+}

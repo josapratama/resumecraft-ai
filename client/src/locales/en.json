@@ -1,0 +1,88 @@
+{
+  "topbar": {
+    "dashboard": "Dashboard",
+    "ai_tools": "AI Tools",
+    "theme": "Theme",
+    "share": "Share",
+    "ai_chat": "AI Chat",
+    "pdf": "Download PDF",
+    "public": "Public",
+    "private": "Private",
+    "updated": "Updated"
+  },
+  "tabs": {
+    "personal": "Personal",
+    "experience": "Experience",
+    "education": "Education",
+    "skills": "Skills",
+    "projects": "Projects",
+    "certs": "Certs",
+    "languages": "Languages",
+    "custom": "Custom"
+  },
+  "personal": {
+    "title": "Personal Information",
+    "subtitle": "Your name, contact details, and career overview",
+    "full_name": "Full Name",
+    "email": "Email Address",
+    "phone": "Phone Number",
+    "location": "Location (City, Country)",
+    "photo_label": "Profile Photo / Pas Foto (Optional)",
+    "choose_photo": "Choose Photo",
+    "remove_photo": "Remove",
+    "photo_placeholder": "or paste image URL (e.g. https://...)",
+    "photo_hint": "Supports JPG, PNG, WebP or direct image links. Compressed automatically for sharp PDF export.",
+    "summary": "Professional Summary",
+    "summary_placeholder": "Write 2-4 sentences highlighting your years of experience, core expertise, and notable career achievements...",
+    "enhance_ai": "Enhance with AI",
+    "save_changes": "Save Changes",
+    "saving": "Saving Changes...",
+    "saved": "Saved & Up to Date",
+    "unsaved": "Unsaved changes"
+  },
+  "education": {
+    "title": "Education",
+    "subtitle": "Degrees, universities, and academic accomplishments",
+    "add_degree": "Add Degree",
+    "edit_degree": "Edit Education",
+    "school": "School / University",
+    "school_placeholder": "e.g. Stanford University or ITB",
+    "degree": "Degree",
+    "degree_placeholder": "e.g. S1 or Bachelor of Science",
+    "field": "Field of Study",
+    "field_placeholder": "e.g. Informatika or Computer Science",
+    "location": "Location",
+    "grad_date": "Graduation Date (or expected)",
+    "description": "Description / GPA / Honors"
+  },
+  "experience": {
+    "title": "Work Experience",
+    "subtitle": "Positions, companies, and impact you delivered",
+    "add_position": "Add Position",
+    "job_title": "Job Title",
+    "company": "Company",
+    "start_date": "Start Date",
+    "end_date": "End Date",
+    "current_role": "I currently work here",
+    "present": "Present"
+  },
+  "skills": {
+    "title": "Skills",
+    "subtitle": "Core competencies, tools, and technical proficiencies",
+    "add_skill": "Add Skill",
+    "category": "Category",
+    "skill_name": "Skill Name",
+    "proficiency": "Proficiency Level"
+  },
+  "template_headers": {
+    "about": "About Me",
+    "contact": "Contact",
+    "education": "Education",
+    "experience": "Work Experience",
+    "skills": "Skills",
+    "projects": "Projects",
+    "languages": "Languages",
+    "certifications": "Certifications",
+    "achievements": "Achievements & Activities"
+  }
+}

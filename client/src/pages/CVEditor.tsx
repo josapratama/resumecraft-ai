@@ -61,6 +61,8 @@ import StyleCustomizerModal from "@/components/CVEditor/StyleCustomizerModal";
 import CVPreview from "@/components/CVEditor/CVPreview";
 import { AIChatBox } from "@/components/AIChatBox";
 import { useAuth } from "@/_core/hooks/useAuth";
+import { useI18n } from "@/lib/i18n";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 import type { FullCVData, TemplateId } from "@/types/cv";
 
 /** Narrows AIChatBox Message to the roles the AI endpoint actually accepts. */
@@ -146,6 +148,7 @@ const ALL_TEMPLATES: { id: TemplateId; label: string; category: string }[] = [
 ];
 
 export default function CVEditor() {
+  const { t } = useI18n();
   const { cvId } = useParams<{ cvId: string }>();
   const cvIdNum = parseInt(cvId || "0", 10);
   const [, navigate] = useLocation();
@@ -315,7 +318,7 @@ export default function CVEditor() {
                 className="gap-1.5 text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100 h-9 px-2.5 rounded-lg flex-shrink-0"
               >
                 <ArrowLeft className="w-4 h-4" />
-                <span className="hidden sm:inline font-medium text-xs">Dashboard</span>
+                <span className="hidden sm:inline font-medium text-xs">{t("topbar.dashboard", "Dashboard")}</span>
               </Button>
 
               <div className="min-w-0">
@@ -372,11 +375,11 @@ export default function CVEditor() {
                 )}
                 <div className="flex items-center gap-2 text-[11px] text-neutral-500">
                   <span className="hidden sm:inline">
-                    Updated {new Date(cvData.cv.updatedAt).toLocaleDateString()}
+                    {t("topbar.updated", "Updated")} {new Date(cvData.cv.updatedAt).toLocaleDateString()}
                   </span>
                   {cvData.cv.isPublic && (
                     <Badge variant="outline" className="text-[10px] py-0 px-1 border-emerald-300 text-emerald-700 bg-emerald-50">
-                      Public
+                      {t("topbar.public", "Public")}
                     </Badge>
                   )}
                 </div>
@@ -394,7 +397,7 @@ export default function CVEditor() {
                     className="gap-1.5 border-indigo-200 text-indigo-700 bg-indigo-50/70 hover:bg-indigo-100 h-8 sm:h-9 px-2 sm:px-3 rounded-lg"
                   >
                     <Sparkles className="w-3.5 h-3.5 text-indigo-600" />
-                    <span className="hidden md:inline font-semibold text-xs">AI Tools</span>
+                    <span className="hidden md:inline font-semibold text-xs">{t("topbar.ai_tools", "AI Tools")}</span>
                     <ChevronDown className="w-3 h-3 opacity-60" />
                   </Button>
                 </DropdownMenuTrigger>
@@ -465,7 +468,7 @@ export default function CVEditor() {
                 title="Customize Accent Color & Typography"
               >
                 <Palette className="w-3.5 h-3.5 text-neutral-600" />
-                <span className="hidden lg:inline text-xs">Theme</span>
+                <span className="hidden lg:inline text-xs">{t("topbar.theme", "Theme")}</span>
               </Button>
 
               {/* Share Public Modal */}
@@ -477,7 +480,7 @@ export default function CVEditor() {
                 title="Share Public Link for Recruiters"
               >
                 <Share2 className="w-3.5 h-3.5 text-blue-600" />
-                <span className="hidden lg:inline text-xs">Share</span>
+                <span className="hidden lg:inline text-xs">{t("topbar.share", "Share")}</span>
               </Button>
 
               {/* Desktop AI Assistant Toggle */}
@@ -493,7 +496,7 @@ export default function CVEditor() {
                 }`}
               >
                 {showAIChat ? <X className="w-3.5 h-3.5" /> : <Bot className="w-3.5 h-3.5" />}
-                <span className="text-xs font-medium">AI Chat</span>
+                <span className="text-xs font-medium">{t("topbar.ai_chat", "AI Chat")}</span>
               </Button>
 
               {/* Template Picker Dropdown */}
@@ -572,9 +575,12 @@ export default function CVEditor() {
               >
                 <Download className="w-3.5 h-3.5" />
                 <span className="font-semibold text-xs">
-                  {isExporting ? "Exporting..." : "PDF"}
+                  {isExporting ? "Exporting..." : t("topbar.pdf", "PDF")}
                 </span>
               </Button>
+
+              {/* Multilingual Switcher (Polyglot Hub) */}
+              <LanguageSwitcher />
             </div>
           </div>
 
@@ -652,6 +658,8 @@ export default function CVEditor() {
                   const Icon = section.icon;
                   const count = sectionCounts[section.id] || 0;
                   const isActive = activeSection === section.id;
+                  const tabKey = section.id === "certifications" ? "certs" : section.id;
+                  const sectionLabel = t(`tabs.${tabKey}`, section.shortLabel);
                   return (
                     <button
                       key={section.id}
@@ -663,7 +671,7 @@ export default function CVEditor() {
                       }`}
                     >
                       <Icon className={`w-3.5 h-3.5 ${isActive ? "text-red-600" : "text-neutral-500"}`} />
-                      <span>{section.shortLabel}</span>
+                      <span>{sectionLabel}</span>
                       {count > 0 && (
                         <span
                           className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${

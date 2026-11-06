@@ -1,5 +1,6 @@
 import type { FullCVData } from "@/types/cv";
 import { formatEducationTitle, formatCVDate } from "@/lib/cvFormatters";
+import { useI18n } from "@/lib/i18n";
 import { Mail, Phone, MapPin, Globe, ExternalLink } from "lucide-react";
 
 interface ModernTemplateProps {
@@ -14,6 +15,7 @@ const PROFICIENCY_WIDTH: Record<string, number> = {
 };
 
 export default function ModernTemplate({ cvData }: ModernTemplateProps) {
+  const { t } = useI18n();
   const accent = cvData.cv?.accentColor || "#ef4444";
   const fontFamily = cvData.cv?.fontFamily || "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
 
@@ -81,7 +83,7 @@ export default function ModernTemplate({ cvData }: ModernTemplateProps) {
               className="text-xs font-bold uppercase tracking-widest mb-2.5 pb-1 border-b border-slate-800"
               style={{ color: accent }}
             >
-              Contact
+              {t("template_headers.contact", "Contact")}
             </h2>
             <div className="space-y-2 text-xs text-slate-300 min-w-0">
               {cvData.personalInfo?.email && (
@@ -111,7 +113,7 @@ export default function ModernTemplate({ cvData }: ModernTemplateProps) {
               className="text-xs font-bold uppercase tracking-widest mb-2.5 pb-1 border-b border-slate-800"
               style={{ color: accent }}
             >
-              Skills
+              {t("template_headers.skills", "Skills")}
             </h2>
             <div className="space-y-3.5 min-w-0">
               {groupedSkills.map(cat => (
@@ -157,7 +159,7 @@ export default function ModernTemplate({ cvData }: ModernTemplateProps) {
               className="text-xs font-bold uppercase tracking-widest mb-2.5 pb-1 border-b border-slate-800"
               style={{ color: accent }}
             >
-              Languages
+              {t("template_headers.languages", "Languages")}
             </h2>
             <div className="space-y-2 min-w-0">
               {cvData.languages.map(l => (
@@ -177,7 +179,7 @@ export default function ModernTemplate({ cvData }: ModernTemplateProps) {
               className="text-xs font-bold uppercase tracking-widest mb-2.5 pb-1 border-b border-slate-800"
               style={{ color: accent }}
             >
-              Certifications
+              {t("template_headers.certifications", "Certifications")}
             </h2>
             <div className="space-y-2 min-w-0">
               {cvData.certifications.map(cert => (
@@ -203,7 +205,7 @@ export default function ModernTemplate({ cvData }: ModernTemplateProps) {
           <div className="min-w-0">
             <div className="flex items-center gap-2 mb-2">
               <h2 className="text-xs font-bold uppercase tracking-widest text-slate-500">
-                About Me
+                {t("template_headers.about", "About Me")}
               </h2>
               <div
                 className="flex-1 h-px"
@@ -221,7 +223,7 @@ export default function ModernTemplate({ cvData }: ModernTemplateProps) {
           <div className="min-w-0">
             <div className="flex items-center gap-2 mb-3">
               <h2 className="text-xs font-bold uppercase tracking-widest text-slate-500">
-                Education
+                {t("template_headers.education", "Education")}
               </h2>
               <div
                 className="flex-1 h-px"
@@ -272,7 +274,7 @@ export default function ModernTemplate({ cvData }: ModernTemplateProps) {
           <div className="min-w-0">
             <div className="flex items-center gap-2 mb-3">
               <h2 className="text-xs font-bold uppercase tracking-widest text-slate-500">
-                Work Experience
+                {t("template_headers.experience", "Work Experience")}
               </h2>
               <div
                 className="flex-1 h-px"
@@ -295,7 +297,7 @@ export default function ModernTemplate({ cvData }: ModernTemplateProps) {
                       {exp.jobTitle}
                     </h3>
                     <span className="text-[11px] font-medium text-slate-500 whitespace-nowrap">
-                      {formatCVDate(exp.startDate)} – {formatCVDate(exp.endDate) || "Present"}
+                      {formatCVDate(exp.startDate)} – {formatCVDate(exp.endDate) || t("experience.present", "Present")}
                     </span>
                   </div>
                   <p
@@ -321,7 +323,7 @@ export default function ModernTemplate({ cvData }: ModernTemplateProps) {
           <div className="min-w-0">
             <div className="flex items-center gap-2 mb-3">
               <h2 className="text-xs font-bold uppercase tracking-widest text-slate-500">
-                Projects
+                {t("template_headers.projects", "Projects")}
               </h2>
               <div
                 className="flex-1 h-px"

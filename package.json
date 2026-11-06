@@ -4,6 +4,8 @@
   "type": "module",
   "license": "MIT",
   "scripts": {
+    "sync:i18n": "node scripts/sync-i18n.js resumecraft client/src/locales https://polyglot-hub.josapratama.com",
+    "prebuild": "npm run sync:i18n",
     "dev": "cross-env NODE_ENV=development tsx watch server/_core/index.ts",
     "build": "vite build && cross-env NODE_ENV=production esbuild server/_core/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist",
     "start": "cross-env NODE_ENV=production node dist/index.js",

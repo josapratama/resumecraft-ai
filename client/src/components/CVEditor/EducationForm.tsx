@@ -27,6 +27,7 @@ import { Spinner } from "@/components/ui/spinner";
 import type { Education } from "@/types/cv";
 import { toast } from "sonner";
 import { formatEducationTitle } from "@/lib/cvFormatters";
+import { useI18n } from "@/lib/i18n";
 import DraggableList from "./DraggableList";
 
 interface EducationFormProps {
@@ -50,6 +51,7 @@ export default function EducationForm({
   initialData,
   onDataChange,
 }: EducationFormProps) {
+  const { t } = useI18n();
   const utils = trpc.useUtils();
   const [educations, setEducations] = useState(initialData);
   const [editingId, setEditingId] = useState<number | null>(null);
@@ -169,10 +171,10 @@ export default function EducationForm({
         <div className="flex items-center justify-between pb-3 border-b border-neutral-100">
           <div>
             <h3 className="text-base font-bold text-neutral-900 leading-tight">
-              Education
+              {t("education.title", "Education")}
             </h3>
             <p className="text-xs text-neutral-500 mt-0.5">
-              Degrees, universities, and academic accomplishments
+              {t("education.subtitle", "Degrees, universities, and academic accomplishments")}
             </p>
           </div>
 
@@ -190,28 +192,28 @@ export default function EducationForm({
                 size="sm"
               >
                 <Plus className="w-3.5 h-3.5" />
-                <span>Add Degree</span>
+                <span>{t("education.add_degree", "Add Degree")}</span>
               </Button>
             </DialogTrigger>
 
             <DialogContent className="border border-neutral-200 max-w-xl rounded-2xl max-h-[90vh] overflow-y-auto">
               <DialogHeader>
                 <DialogTitle className="text-base font-bold text-neutral-900">
-                  {editingId ? "Edit Education" : "Add Education"}
+                  {editingId ? t("education.edit_degree", "Edit Education") : t("education.add_degree", "Add Education")}
                 </DialogTitle>
               </DialogHeader>
 
               <div className="space-y-4 pt-1">
                 <div>
                   <Label className="text-xs font-semibold text-neutral-600 uppercase tracking-wider">
-                    School / University *
+                    {t("education.school", "School / University")} *
                   </Label>
                   <Input
                     value={formData.school}
                     onChange={e =>
                       setFormData({ ...formData, school: e.target.value })
                     }
-                    placeholder="e.g. Stanford University or ITB"
+                    placeholder={t("education.school_placeholder", "e.g. Stanford University or ITB")}
                     className="mt-1.5 border-neutral-200 focus:border-neutral-900 rounded-xl"
                   />
                 </div>
@@ -219,27 +221,27 @@ export default function EducationForm({
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <Label className="text-xs font-semibold text-neutral-600 uppercase tracking-wider">
-                      Degree *
+                      {t("education.degree", "Degree")} *
                     </Label>
                     <Input
                       value={formData.degree}
                       onChange={e =>
                         setFormData({ ...formData, degree: e.target.value })
                       }
-                      placeholder="e.g. Bachelor of Science"
+                      placeholder={t("education.degree_placeholder", "e.g. Bachelor of Science")}
                       className="mt-1.5 border-neutral-200 focus:border-neutral-900 rounded-xl"
                     />
                   </div>
                   <div>
                     <Label className="text-xs font-semibold text-neutral-600 uppercase tracking-wider">
-                      Field of Study
+                      {t("education.field", "Field of Study")}
                     </Label>
                     <Input
                       value={formData.field}
                       onChange={e =>
                         setFormData({ ...formData, field: e.target.value })
                       }
-                      placeholder="e.g. Computer Science"
+                      placeholder={t("education.field_placeholder", "e.g. Computer Science")}
                       className="mt-1.5 border-neutral-200 focus:border-neutral-900 rounded-xl"
                     />
                   </div>
@@ -248,7 +250,7 @@ export default function EducationForm({
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <Label className="text-xs font-semibold text-neutral-600 uppercase tracking-wider">
-                      Location
+                      {t("education.location", "Location")}
                     </Label>
                     <Input
                       value={formData.location}
@@ -261,7 +263,7 @@ export default function EducationForm({
                   </div>
                   <div>
                     <Label className="text-xs font-semibold text-neutral-600 uppercase tracking-wider">
-                      Graduation Date
+                      {t("education.grad_date", "Graduation Date")}
                     </Label>
                     <Input
                       type="month"
@@ -279,7 +281,7 @@ export default function EducationForm({
 
                 <div>
                   <Label className="text-xs font-semibold text-neutral-600 uppercase tracking-wider">
-                    Honors & Activities
+                    {t("education.description", "Honors & Activities")}
                   </Label>
                   <Textarea
                     value={formData.description}

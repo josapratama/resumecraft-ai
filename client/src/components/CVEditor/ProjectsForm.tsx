@@ -27,6 +27,7 @@ import { Trash2, Plus, Pencil, ExternalLink, FolderGit2 } from "lucide-react";
 import { Spinner } from "@/components/ui/spinner";
 import type { Project } from "@/types/cv";
 import { toast } from "sonner";
+import { useI18n } from "@/lib/i18n";
 import DraggableList from "./DraggableList";
 
 interface ProjectsFormProps {
@@ -40,6 +41,7 @@ export default function ProjectsForm({
   initialData,
   onDataChange,
 }: ProjectsFormProps) {
+  const { t } = useI18n();
   const utils = trpc.useUtils();
   const [projects, setProjects] = useState(initialData);
   const [editingId, setEditingId] = useState<number | null>(null);
@@ -149,10 +151,10 @@ export default function ProjectsForm({
         <div className="flex items-center justify-between pb-3 border-b border-neutral-100">
           <div>
             <h3 className="text-base font-bold text-neutral-900 leading-tight">
-              Projects & Portfolios
+              {t("projects_section.title", "Projects & Portfolios")}
             </h3>
             <p className="text-xs text-neutral-500 mt-0.5">
-              Highlight side projects, open-source work, and key deliverables
+              {t("projects_section.subtitle", "Highlight side projects, open-source work, and key deliverables")}
             </p>
           </div>
 
@@ -170,21 +172,21 @@ export default function ProjectsForm({
                 size="sm"
               >
                 <Plus className="w-3.5 h-3.5" />
-                <span>Add Project</span>
+                <span>{t("projects_section.add_project", "Add Project")}</span>
               </Button>
             </DialogTrigger>
 
             <DialogContent className="border border-neutral-200 max-w-xl rounded-2xl max-h-[90vh] overflow-y-auto">
               <DialogHeader>
                 <DialogTitle className="text-base font-bold text-neutral-900">
-                  {editingId ? "Edit Project" : "Add Project"}
+                  {editingId ? t("projects_section.edit_project", "Edit Project") : t("projects_section.add_project", "Add Project")}
                 </DialogTitle>
               </DialogHeader>
 
               <div className="space-y-4 pt-1">
                 <div>
                   <Label className="text-xs font-semibold text-neutral-600 uppercase tracking-wider">
-                    Project Name *
+                    {t("projects_section.project_name", "Project Name")} *
                   </Label>
                   <Input
                     value={formData.projectName}
@@ -198,7 +200,7 @@ export default function ProjectsForm({
 
                 <div>
                   <Label className="text-xs font-semibold text-neutral-600 uppercase tracking-wider">
-                    Description & Key Deliverables
+                    {t("projects_section.description", "Description & Key Deliverables")}
                   </Label>
                   <Textarea
                     value={formData.description}
@@ -212,7 +214,7 @@ export default function ProjectsForm({
 
                 <div>
                   <Label className="text-xs font-semibold text-neutral-600 uppercase tracking-wider">
-                    Technologies Used (comma separated)
+                    {t("projects_section.technologies", "Technologies Used (comma separated)")}
                   </Label>
                   <Input
                     value={formData.technologies}
@@ -226,7 +228,7 @@ export default function ProjectsForm({
 
                 <div>
                   <Label className="text-xs font-semibold text-neutral-600 uppercase tracking-wider">
-                    Project / Demo URL
+                    {t("projects_section.link", "Project / Demo URL")}
                   </Label>
                   <Input
                     value={formData.link}
@@ -387,9 +389,9 @@ export default function ProjectsForm({
         ) : (
           <div className="text-center py-8 border border-dashed border-neutral-200 rounded-xl bg-neutral-50/50">
             <FolderGit2 className="w-8 h-8 text-neutral-300 mx-auto mb-2" />
-            <p className="text-xs font-bold text-neutral-700">No projects added yet</p>
+            <p className="text-xs font-bold text-neutral-700">{t("projects_section.no_projects", "No projects added yet")}</p>
             <p className="text-[11px] text-neutral-400 mt-0.5">
-              Showcase projects, open-source repositories, or business ventures.
+              {t("projects_section.no_projects_desc", "Showcase applications, research projects, or open-source repositories.")}
             </p>
           </div>
         )}

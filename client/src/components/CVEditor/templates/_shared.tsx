@@ -1,4 +1,6 @@
 import type { FullCVData, Skill } from "@/types/cv";
+import { useI18n } from "@/lib/i18n";
+import { formatProficiency } from "@/lib/cvFormatters";
 
 // ─── Skill grouping ────────────────────────────────────────────────────────────
 
@@ -109,13 +111,14 @@ export function LanguagesDisplay({
   textColor?: string;
   subColor?: string;
 }) {
+  const { t } = useI18n();
   if (!languages || languages.length === 0) return null;
   return (
     <div className="flex flex-wrap gap-x-4 gap-y-1.5 text-xs">
       {languages.map(l => (
         <span key={l.id} className="inline-flex items-center gap-1.5">
           <strong className={textColor}>{l.language}</strong>
-          <span className={subColor}>({l.proficiency})</span>
+          <span className={subColor}>({formatProficiency(l.proficiency, t)})</span>
         </span>
       ))}
     </div>

@@ -33,6 +33,8 @@ import { Trash2, Plus, Pencil, Wrench, Sparkles } from "lucide-react";
 import { Spinner } from "@/components/ui/spinner";
 import type { Skill } from "@/types/cv";
 import { toast } from "sonner";
+import { useI18n } from "@/lib/i18n";
+import { formatProficiency, formatCategory } from "@/lib/cvFormatters";
 import DraggableList from "./DraggableList";
 
 interface SkillsFormProps {
@@ -78,6 +80,7 @@ export default function SkillsForm({
   initialData,
   onDataChange,
 }: SkillsFormProps) {
+  const { t } = useI18n();
   const utils = trpc.useUtils();
   const [skills, setSkills] = useState(initialData);
   const [editingId, setEditingId] = useState<number | null>(null);
@@ -181,10 +184,10 @@ export default function SkillsForm({
         <div className="flex items-center justify-between pb-3 border-b border-neutral-100">
           <div>
             <h3 className="text-base font-bold text-neutral-900 leading-tight">
-              Skills & Competencies
+              {t("skills_section.title", "Skills & Competencies")}
             </h3>
             <p className="text-xs text-neutral-500 mt-0.5">
-              Highlight key technologies, tools, and professional strengths
+              {t("skills_section.subtitle", "Highlight key technologies, tools, and professional strengths")}
             </p>
           </div>
 
@@ -202,21 +205,21 @@ export default function SkillsForm({
                 size="sm"
               >
                 <Plus className="w-3.5 h-3.5" />
-                <span>Add Skill</span>
+                <span>{t("skills_section.add_skill", "Add Skill")}</span>
               </Button>
             </DialogTrigger>
 
             <DialogContent className="border border-neutral-200 max-w-md rounded-2xl">
               <DialogHeader>
                 <DialogTitle className="text-base font-bold text-neutral-900">
-                  {editingId ? "Edit Skill" : "Add Skill"}
+                  {editingId ? t("skills_section.edit_skill", "Edit Skill") : t("skills_section.add_skill", "Add Skill")}
                 </DialogTitle>
               </DialogHeader>
 
               <div className="space-y-4 pt-1">
                 <div>
                   <Label className="text-xs font-semibold text-neutral-600 uppercase tracking-wider">
-                    Skill Name *
+                    {t("skills_section.skill_name", "Skill Name")} *
                   </Label>
                   <Input
                     value={formData.skillName}
@@ -231,7 +234,7 @@ export default function SkillsForm({
 
                 <div>
                   <Label className="text-xs font-semibold text-neutral-600 uppercase tracking-wider">
-                    Category *
+                    {t("skills_section.category", "Category")} *
                   </Label>
                   <Input
                     value={formData.category}
@@ -254,7 +257,7 @@ export default function SkillsForm({
                             : "bg-neutral-50 text-neutral-600 border-neutral-200 hover:bg-neutral-100"
                         }`}
                       >
-                        {cat}
+                        {formatCategory(cat, t)}
                       </button>
                     ))}
                   </div>
@@ -262,7 +265,7 @@ export default function SkillsForm({
 
                 <div>
                   <Label className="text-xs font-semibold text-neutral-600 uppercase tracking-wider">
-                    Proficiency (Optional)
+                    {t("skills_section.proficiency", "Proficiency (Optional)")}
                   </Label>
                   <Select
                     value={formData.proficiency}
@@ -274,12 +277,12 @@ export default function SkillsForm({
                     }
                   >
                     <SelectTrigger className="mt-1.5 border-neutral-200 rounded-xl">
-                      <SelectValue placeholder="Select level" />
+                      <SelectValue placeholder={t("skills_section.select_level", "Select level")} />
                     </SelectTrigger>
                     <SelectContent className="rounded-xl border-neutral-200">
                       {PROFICIENCY_OPTIONS.map(opt => (
                         <SelectItem key={opt.value} value={opt.value} className="text-xs">
-                          {opt.label}
+                          {opt.value === "none" ? t("proficiency.none", opt.label) : formatProficiency(opt.value, t)}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -298,7 +301,7 @@ export default function SkillsForm({
                         Saving...
                       </>
                     ) : (
-                      "Save Skill"
+                      t("skills_section.save_skill", "Save Skill")
                     )}
                   </Button>
 
@@ -358,7 +361,7 @@ export default function SkillsForm({
                     {skill.skillName}
                   </span>
                   <span className="text-[11px] text-neutral-500 bg-neutral-100 px-2 py-0.5 rounded-md font-medium">
-                    {skill.category}
+                    {formatCategory(skill.category, t)}
                   </span>
                   {skill.proficiency && (
                     <Badge
@@ -367,7 +370,7 @@ export default function SkillsForm({
                         PROFICIENCY_COLORS[skill.proficiency] || "bg-neutral-50 text-neutral-600"
                       }`}
                     >
-                      {skill.proficiency}
+                      {formatProficiency(skill.proficiency, t)}
                     </Badge>
                   )}
                 </div>
@@ -387,9 +390,9 @@ export default function SkillsForm({
         ) : (
           <div className="text-center py-8 border border-dashed border-neutral-200 rounded-xl bg-neutral-50/50">
             <Wrench className="w-8 h-8 text-neutral-300 mx-auto mb-2" />
-            <p className="text-xs font-bold text-neutral-700">No skills added yet</p>
+            <p className="text-xs font-bold text-neutral-700">{t("skills_section.no_skills", "No skills added yet")}</p>
             <p className="text-[11px] text-neutral-400 mt-0.5">
-              List your hard skills, tools, and technical proficiencies.
+              {t("skills_section.no_skills_desc", "List your hard skills, tools, and technical proficiencies.")}
             </p>
           </div>
         )}

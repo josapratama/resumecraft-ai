@@ -25,6 +25,8 @@ import { Trash2, Plus, Pencil, ExternalLink, Calendar, Award } from "lucide-reac
 import { Spinner } from "@/components/ui/spinner";
 import type { Certification } from "@/types/cv";
 import { toast } from "sonner";
+import { useI18n } from "@/lib/i18n";
+import { formatCVDate } from "@/lib/cvFormatters";
 import DraggableList from "./DraggableList";
 
 interface CertificationsFormProps {
@@ -48,6 +50,7 @@ export default function CertificationsForm({
   initialData,
   onDataChange,
 }: CertificationsFormProps) {
+  const { t, locale } = useI18n();
   const utils = trpc.useUtils();
   const [certifications, setCertifications] = useState(initialData);
   const [editingId, setEditingId] = useState<number | null>(null);
@@ -154,10 +157,10 @@ export default function CertificationsForm({
         <div className="flex items-center justify-between pb-3 border-b border-neutral-100">
           <div>
             <h3 className="text-base font-bold text-neutral-900 leading-tight">
-              Certifications & Licenses
+              {t("certifications_section.title", "Certifications & Licenses")}
             </h3>
             <p className="text-xs text-neutral-500 mt-0.5">
-              Accreditations, professional credentials, and honors
+              {t("certifications_section.subtitle", "Accreditations, professional credentials, and honors")}
             </p>
           </div>
 
@@ -175,21 +178,21 @@ export default function CertificationsForm({
                 size="sm"
               >
                 <Plus className="w-3.5 h-3.5" />
-                <span>Add Certification</span>
+                <span>{t("certifications_section.add_cert", "Add Certification")}</span>
               </Button>
             </DialogTrigger>
 
             <DialogContent className="border border-neutral-200 max-w-lg rounded-2xl">
               <DialogHeader>
                 <DialogTitle className="text-base font-bold text-neutral-900">
-                  {editingId ? "Edit Certification" : "Add Certification"}
+                  {editingId ? t("certifications_section.edit_cert", "Edit Certification") : t("certifications_section.add_cert", "Add Certification")}
                 </DialogTitle>
               </DialogHeader>
 
               <div className="space-y-4 pt-1">
                 <div>
                   <Label className="text-xs font-semibold text-neutral-600 uppercase tracking-wider">
-                    Certification Name *
+                    {t("certifications_section.name", "Certification Name")} *
                   </Label>
                   <Input
                     value={formData.certificationName}
@@ -206,7 +209,7 @@ export default function CertificationsForm({
 
                 <div>
                   <Label className="text-xs font-semibold text-neutral-600 uppercase tracking-wider">
-                    Issuing Organization *
+                    {t("certifications_section.issuer", "Issuing Organization")} *
                   </Label>
                   <Input
                     value={formData.issuer}
@@ -373,9 +376,9 @@ export default function CertificationsForm({
         ) : (
           <div className="text-center py-8 border border-dashed border-neutral-200 rounded-xl bg-neutral-50/50">
             <Award className="w-8 h-8 text-neutral-300 mx-auto mb-2" />
-            <p className="text-xs font-bold text-neutral-700">No certifications added yet</p>
+            <p className="text-xs font-bold text-neutral-700">{t("certifications_section.no_certs", "No certifications added yet")}</p>
             <p className="text-[11px] text-neutral-400 mt-0.5">
-              Add professional credentials, cloud badges, or industry licenses.
+              {t("certifications_section.no_certs_desc", "Add official credentials, professional certifications, or awards.")}
             </p>
           </div>
         )}

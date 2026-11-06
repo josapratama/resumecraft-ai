@@ -33,6 +33,8 @@ import { Trash2, Plus, Pencil, Globe } from "lucide-react";
 import { Spinner } from "@/components/ui/spinner";
 import type { Language } from "@/types/cv";
 import { toast } from "sonner";
+import { useI18n } from "@/lib/i18n";
+import { formatProficiency } from "@/lib/cvFormatters";
 import DraggableList from "./DraggableList";
 
 interface LanguagesFormProps {
@@ -66,6 +68,7 @@ export default function LanguagesForm({
   initialData = [],
   onDataChange,
 }: LanguagesFormProps) {
+  const { t } = useI18n();
   const utils = trpc.useUtils();
   const [languages, setLanguages] = useState<Language[]>(initialData);
   const [editingId, setEditingId] = useState<number | null>(null);
@@ -172,10 +175,10 @@ export default function LanguagesForm({
         <div className="flex items-center justify-between pb-3 border-b border-neutral-100">
           <div>
             <h3 className="text-base font-bold text-neutral-900 leading-tight">
-              Languages
+              {t("languages_section.title", "Languages")}
             </h3>
             <p className="text-xs text-neutral-500 mt-0.5">
-              Languages you speak and your proficiency level
+              {t("languages_section.subtitle", "Languages you speak and your proficiency level")}
             </p>
           </div>
 
@@ -187,21 +190,21 @@ export default function LanguagesForm({
                 size="sm"
               >
                 <Plus className="w-3.5 h-3.5" />
-                <span>Add Language</span>
+                <span>{t("languages_section.add_language", "Add Language")}</span>
               </Button>
             </DialogTrigger>
 
             <DialogContent className="border border-neutral-200 sm:max-w-md rounded-2xl">
               <DialogHeader>
                 <DialogTitle className="text-base font-bold text-neutral-900">
-                  {editingId ? "Edit Language" : "Add Language"}
+                  {editingId ? t("languages_section.edit_language", "Edit Language") : t("languages_section.add_language", "Add Language")}
                 </DialogTitle>
               </DialogHeader>
 
               <form onSubmit={handleSubmit} className="space-y-4 pt-1">
                 <div>
                   <Label htmlFor="langName" className="text-xs font-semibold text-neutral-600 uppercase tracking-wider">
-                    Language *
+                    {t("languages_section.language", "Language")} *
                   </Label>
                   <Input
                     id="langName"
@@ -236,7 +239,7 @@ export default function LanguagesForm({
 
                 <div>
                   <Label htmlFor="langProf" className="text-xs font-semibold text-neutral-600 uppercase tracking-wider">
-                    Proficiency Level
+                    {t("languages_section.proficiency", "Proficiency Level")}
                   </Label>
                   <Select
                     value={formData.proficiency}
@@ -245,12 +248,12 @@ export default function LanguagesForm({
                     }
                   >
                     <SelectTrigger id="langProf" className="mt-1.5 border-neutral-200 rounded-xl">
-                      <SelectValue placeholder="Select proficiency" />
+                      <SelectValue placeholder={t("languages_section.select_proficiency", "Select proficiency")} />
                     </SelectTrigger>
                     <SelectContent className="rounded-xl border-neutral-200">
                       {PROFICIENCY_OPTIONS.map(opt => (
                         <SelectItem key={opt} value={opt} className="text-xs">
-                          {opt}
+                          {formatProficiency(opt, t)}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -273,7 +276,7 @@ export default function LanguagesForm({
                     className="flex-1 bg-neutral-900 text-white hover:bg-neutral-800 rounded-xl font-semibold text-xs h-9"
                   >
                     {isSaving && <Spinner className="w-4 h-4 mr-2" />}
-                    {editingId ? "Save Changes" : "Add Language"}
+                    {editingId ? t("languages_section.save_changes", "Save Changes") : t("languages_section.save_language", "Add Language")}
                   </Button>
                 </div>
               </form>
@@ -284,9 +287,9 @@ export default function LanguagesForm({
         {languages.length === 0 ? (
           <div className="text-center py-8 border border-dashed border-neutral-200 rounded-xl bg-neutral-50/50">
             <Globe className="w-8 h-8 text-neutral-300 mx-auto mb-2" />
-            <p className="text-xs font-bold text-neutral-700">No languages added yet</p>
+            <p className="text-xs font-bold text-neutral-700">{t("languages_section.no_languages", "No languages added yet")}</p>
             <p className="text-[11px] text-neutral-400 mt-0.5">
-              Highlight your spoken and written language competencies for global roles.
+              {t("languages_section.no_languages_desc", "Highlight your spoken and written language competencies for global roles.")}
             </p>
           </div>
         ) : (
@@ -301,7 +304,7 @@ export default function LanguagesForm({
                     {lang.language}
                   </span>
                   <Badge variant="outline" className="text-[10px] py-0 px-2 font-medium border-neutral-200 text-neutral-600 bg-neutral-50">
-                    {lang.proficiency}
+                    {formatProficiency(lang.proficiency, t)}
                   </Badge>
                 </div>
 

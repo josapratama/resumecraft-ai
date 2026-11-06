@@ -1,5 +1,5 @@
 import type { FullCVData } from "@/types/cv";
-import { formatEducationTitle, formatCVDate } from "@/lib/cvFormatters";
+import { formatEducationTitle, formatCVDate, formatProficiency, formatCategory } from "@/lib/cvFormatters";
 import { useI18n } from "@/lib/i18n";
 import { Mail, Phone, MapPin, Globe, ExternalLink } from "lucide-react";
 
@@ -15,7 +15,7 @@ const PROFICIENCY_WIDTH: Record<string, number> = {
 };
 
 export default function ModernTemplate({ cvData }: ModernTemplateProps) {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const accent = cvData.cv?.accentColor || "#ef4444";
   const fontFamily = cvData.cv?.fontFamily || "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
 
@@ -119,7 +119,7 @@ export default function ModernTemplate({ cvData }: ModernTemplateProps) {
               {groupedSkills.map(cat => (
                 <div key={cat.category} className="min-w-0">
                   <p className="text-[11px] font-semibold text-slate-300 mb-1.5 break-words uppercase tracking-wider">
-                    {cat.category}
+                    {formatCategory(cat.category, t)}
                   </p>
                   <div className="space-y-1.5 min-w-0">
                     {cat.skills.map(skill => (
@@ -130,7 +130,7 @@ export default function ModernTemplate({ cvData }: ModernTemplateProps) {
                           </span>
                           {skill.proficiency && (
                             <span className="text-[10px] text-slate-400 capitalize whitespace-nowrap">
-                              {skill.proficiency}
+                              {formatProficiency(skill.proficiency, t)}
                             </span>
                           )}
                         </div>
@@ -165,7 +165,9 @@ export default function ModernTemplate({ cvData }: ModernTemplateProps) {
               {cvData.languages.map(l => (
                 <div key={l.id} className="flex justify-between items-baseline text-xs">
                   <span className="text-slate-200 font-medium">{l.language}</span>
-                  <span className="text-slate-400 text-[11px] font-light">{l.proficiency}</span>
+                  <span className="text-slate-400 text-[11px] font-light">
+                    {formatProficiency(l.proficiency, t)}
+                  </span>
                 </div>
               ))}
             </div>
@@ -189,7 +191,7 @@ export default function ModernTemplate({ cvData }: ModernTemplateProps) {
                   </p>
                   <p className="text-[11px] text-slate-400 break-words mt-0.5">
                     {cert.issuer}
-                    {cert.issueDate && ` · ${formatCVDate(cert.issueDate)}`}
+                    {cert.issueDate && ` · ${formatCVDate(cert.issueDate, locale)}`}
                   </p>
                 </div>
               ))}
@@ -249,7 +251,7 @@ export default function ModernTemplate({ cvData }: ModernTemplateProps) {
                       </h3>
                       {edu.graduationDate && (
                         <span className="text-[11px] font-medium text-slate-500 whitespace-nowrap">
-                          {formatCVDate(edu.graduationDate)}
+                          {formatCVDate(edu.graduationDate, locale)}
                         </span>
                       )}
                     </div>
@@ -297,7 +299,7 @@ export default function ModernTemplate({ cvData }: ModernTemplateProps) {
                       {exp.jobTitle}
                     </h3>
                     <span className="text-[11px] font-medium text-slate-500 whitespace-nowrap">
-                      {formatCVDate(exp.startDate)} – {formatCVDate(exp.endDate) || t("experience.present", "Present")}
+                      {formatCVDate(exp.startDate, locale)} – {formatCVDate(exp.endDate, locale) || t("experience.present", "Present")}
                     </span>
                   </div>
                   <p
@@ -346,7 +348,7 @@ export default function ModernTemplate({ cvData }: ModernTemplateProps) {
                         className="text-[11px] font-semibold hover:underline flex items-center gap-1 whitespace-nowrap"
                         style={{ color: accent }}
                       >
-                        <span>Demo</span>
+                        <span>{t("projects_section.demo", "Demo")}</span>
                         <ExternalLink className="w-2.5 h-2.5" />
                       </a>
                     )}
@@ -379,7 +381,7 @@ export default function ModernTemplate({ cvData }: ModernTemplateProps) {
           <div className="min-w-0">
             <div className="flex items-center gap-2 mb-3">
               <h2 className="text-xs font-bold uppercase tracking-widest text-slate-500">
-                Achievements & Activities
+                {t("template_headers.achievements", "Achievements & Activities")}
               </h2>
               <div
                 className="flex-1 h-px"
@@ -399,7 +401,7 @@ export default function ModernTemplate({ cvData }: ModernTemplateProps) {
                       {item.title} {item.subtitle && <span className="font-normal text-slate-600">· {item.subtitle}</span>}
                     </p>
                     {item.date && (
-                      <span className="text-[11px] text-slate-500">{formatCVDate(item.date)}</span>
+                      <span className="text-[11px] text-slate-500">{formatCVDate(item.date, locale)}</span>
                     )}
                   </div>
                   <span

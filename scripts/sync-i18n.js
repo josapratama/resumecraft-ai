@@ -74,3 +74,4 @@ syncTranslations().catch(err => {
   console.error("Sync error:", err.message);
   process.exit(0); // Never break build
 });
+

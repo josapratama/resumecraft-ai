@@ -34,6 +34,7 @@ import { Trash2, Plus, Pencil, Layers, Calendar } from "lucide-react";
 import { Spinner } from "@/components/ui/spinner";
 import type { CustomSection } from "@/types/cv";
 import { toast } from "sonner";
+import { useI18n } from "@/lib/i18n";
 import DraggableList from "./DraggableList";
 
 interface CustomSectionsFormProps {
@@ -56,6 +57,7 @@ export default function CustomSectionsForm({
   initialData = [],
   onDataChange,
 }: CustomSectionsFormProps) {
+  const { t } = useI18n();
   const utils = trpc.useUtils();
   const [sections, setSections] = useState<CustomSection[]>(initialData);
   const [editingId, setEditingId] = useState<number | null>(null);
@@ -174,10 +176,10 @@ export default function CustomSectionsForm({
         <div className="flex items-center justify-between pb-3 border-b border-neutral-100">
           <div>
             <h3 className="text-base font-bold text-neutral-900 leading-tight">
-              Additional Sections
+              {t("custom_section.title", "Additional Sections")}
             </h3>
             <p className="text-xs text-neutral-500 mt-0.5">
-              Awards, volunteer work, research publications, or speaking engagements
+              {t("custom_section.subtitle", "Awards, volunteer work, research publications, or speaking engagements")}
             </p>
           </div>
 
@@ -189,14 +191,14 @@ export default function CustomSectionsForm({
                 size="sm"
               >
                 <Plus className="w-3.5 h-3.5" />
-                <span>Add Item</span>
+                <span>{t("custom_section.add_section", "Add Item")}</span>
               </Button>
             </DialogTrigger>
 
             <DialogContent className="border border-neutral-200 sm:max-w-md rounded-2xl">
               <DialogHeader>
                 <DialogTitle className="text-base font-bold text-neutral-900">
-                  {editingId ? "Edit Section Item" : "Add Section Item"}
+                  {editingId ? t("custom_section.edit_section", "Edit Section Item") : t("custom_section.add_section", "Add Section Item")}
                 </DialogTitle>
               </DialogHeader>
 
@@ -309,9 +311,9 @@ export default function CustomSectionsForm({
         {sections.length === 0 ? (
           <div className="text-center py-8 border border-dashed border-neutral-200 rounded-xl bg-neutral-50/50">
             <Layers className="w-8 h-8 text-neutral-300 mx-auto mb-2" />
-            <p className="text-xs font-bold text-neutral-700">No additional sections added yet</p>
+            <p className="text-xs font-bold text-neutral-700">{t("custom_section.no_sections", "No additional sections added yet")}</p>
             <p className="text-[11px] text-neutral-400 mt-0.5">
-              Highlight awards, volunteer work, publications, or campus organizations.
+              {t("custom_section.no_sections_desc", "Customize your CV with volunteering, publications, or custom achievements.")}
             </p>
           </div>
         ) : (

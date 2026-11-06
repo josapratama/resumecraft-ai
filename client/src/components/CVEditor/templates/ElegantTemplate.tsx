@@ -1,3 +1,4 @@
+import { formatEducationTitle } from "@/lib/cvFormatters";
 /**
  * Elegant — centered name, thin dividers, rose-gold accents, serif + sans mix.
  * Luxury, fashion, finance.
@@ -94,7 +95,7 @@ export default function ElegantTemplate({ cvData }: { cvData: FullCVData }) {
               <div key={edu.id} className="flex justify-between items-baseline">
                 <div>
                   <h3 className="text-sm italic text-gray-900">
-                    {edu.degree} in {edu.field}
+                    {formatEducationTitle(edu.degree, edu.field)}
                   </h3>
                   <p
                     className="text-xs text-gray-600"

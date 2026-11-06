@@ -26,6 +26,7 @@ import { Trash2, Plus, Pencil, Calendar, GraduationCap } from "lucide-react";
 import { Spinner } from "@/components/ui/spinner";
 import type { Education } from "@/types/cv";
 import { toast } from "sonner";
+import { formatEducationTitle } from "@/lib/cvFormatters";
 import DraggableList from "./DraggableList";
 
 interface EducationFormProps {
@@ -359,8 +360,7 @@ export default function EducationForm({
               <div className="flex items-start justify-between gap-3 flex-1 min-w-0 py-1">
                 <div className="flex-1 min-w-0">
                   <p className="font-bold text-neutral-900 text-sm leading-tight">
-                    {edu.degree}
-                    {edu.field ? ` in ${edu.field}` : ""}
+                    {formatEducationTitle(edu.degree, edu.field)}
                   </p>
                   <p className="text-xs text-neutral-600 mt-0.5 font-medium">
                     {edu.school}

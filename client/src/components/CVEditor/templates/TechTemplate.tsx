@@ -1,3 +1,4 @@
+import { formatEducationTitle } from "@/lib/cvFormatters";
 /**
  * Tech — dark terminal-style, green-on-black, monospace font.
  * Developer / hacker aesthetic.
@@ -144,7 +145,7 @@ export default function TechTemplate({ cvData }: { cvData: FullCVData }) {
           {cvData.educations.map(edu => (
             <div key={edu.id} className="flex justify-between">
               <span className="text-xs text-green-300">
-                {edu.degree} in {edu.field} — {edu.school}
+                {formatEducationTitle(edu.degree, edu.field)} — {edu.school}
               </span>
               <span className="text-xs text-green-700">
                 {edu.graduationDate}

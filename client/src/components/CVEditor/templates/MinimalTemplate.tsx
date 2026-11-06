@@ -1,3 +1,4 @@
+import { formatEducationTitle } from "@/lib/cvFormatters";
 import type { FullCVData } from "@/types/cv";
 import { LanguagesDisplay, CustomSectionsDisplay } from "./_shared";
 
@@ -94,7 +95,7 @@ export default function MinimalTemplate({ cvData }: MinimalTemplateProps) {
               <div key={edu.id}>
                 <div className="flex items-baseline justify-between">
                   <h3 className="text-xs font-semibold text-black">
-                    {edu.degree} in {edu.field}
+                    {formatEducationTitle(edu.degree, edu.field)}
                   </h3>
                   <span className="text-xs text-gray-400 whitespace-nowrap ml-2">
                     {edu.graduationDate}

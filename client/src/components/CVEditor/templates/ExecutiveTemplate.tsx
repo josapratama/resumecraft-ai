@@ -1,3 +1,4 @@
+import { formatEducationTitle } from "@/lib/cvFormatters";
 /**
  * Executive — navy header, gold accents, two-column footer for skills/certs.
  * Authoritative, C-suite feel.
@@ -92,7 +93,7 @@ export default function ExecutiveTemplate({ cvData }: { cvData: FullCVData }) {
                 >
                   <div>
                     <h3 className="text-xs font-bold text-[#0a1628]">
-                      {edu.degree} in {edu.field}
+                      {formatEducationTitle(edu.degree, edu.field)}
                     </h3>
                     <p className="text-xs text-gray-600">{edu.school}</p>
                   </div>

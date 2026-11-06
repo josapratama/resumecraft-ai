@@ -1,3 +1,4 @@
+import { formatEducationTitle } from "@/lib/cvFormatters";
 /**
  * Two-Page — explicit page breaks, footnote page numbers.
  * Long CVs, experienced professionals.
@@ -103,7 +104,7 @@ export default function TwoPageTemplate({ cvData }: { cvData: FullCVData }) {
                 >
                   <div className="min-w-0">
                     <h3 className="text-sm font-bold text-black break-words">
-                      {edu.degree} in {edu.field}
+                      {formatEducationTitle(edu.degree, edu.field)}
                     </h3>
                     <p className="text-xs text-gray-600 break-words">
                       {edu.school}

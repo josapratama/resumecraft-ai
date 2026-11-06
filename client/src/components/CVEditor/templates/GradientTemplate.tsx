@@ -1,3 +1,4 @@
+import { formatEducationTitle } from "@/lib/cvFormatters";
 /**
  * Gradient — full-bleed color washes, blue-to-indigo theme.
  * Modern SaaS, startup, product roles.
@@ -129,7 +130,7 @@ export default function GradientTemplate({ cvData }: { cvData: FullCVData }) {
                 {cvData.educations.map(edu => (
                   <div key={edu.id} className="mb-3">
                     <h3 className="text-xs font-bold text-gray-900">
-                      {edu.degree} in {edu.field}
+                      {formatEducationTitle(edu.degree, edu.field)}
                     </h3>
                     <p className="text-xs text-indigo-600">{edu.school}</p>
                     <p className="text-xs text-gray-400">

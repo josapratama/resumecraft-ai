@@ -1,3 +1,4 @@
+import { formatEducationTitle } from "@/lib/cvFormatters";
 /**
  * Infographic — visual stats, circular proficiency indicators, icon-driven.
  * Social media-ready, visual storytelling.
@@ -236,7 +237,7 @@ export default function InfographicTemplate({
               >
                 <div>
                   <span className="font-bold text-black">
-                    {edu.degree} in {edu.field}
+                    {formatEducationTitle(edu.degree, edu.field)}
                   </span>
                   <span className="text-gray-500 ml-1">· {edu.school}</span>
                 </div>

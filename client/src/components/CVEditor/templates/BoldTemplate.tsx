@@ -1,3 +1,4 @@
+import { formatEducationTitle } from "@/lib/cvFormatters";
 /**
  * Bold — large red name, heavy black sections, high contrast.
  * Sales, marketing, impactful presence.
@@ -113,7 +114,7 @@ export default function BoldTemplate({ cvData }: { cvData: FullCVData }) {
                 >
                   <div>
                     <h3 className="text-xs font-black text-black">
-                      {edu.degree} in {edu.field}
+                      {formatEducationTitle(edu.degree, edu.field)}
                     </h3>
                     <p className="text-xs text-gray-600">{edu.school}</p>
                   </div>

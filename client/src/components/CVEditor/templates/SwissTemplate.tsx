@@ -1,3 +1,4 @@
+import { formatEducationTitle } from "@/lib/cvFormatters";
 /**
  * Swiss — International Typographic Style, grid-based, red + black, Helvetica.
  * Pure Swiss design school.
@@ -110,7 +111,7 @@ export default function SwissTemplate({ cvData }: { cvData: FullCVData }) {
               <div key={edu.id} className="grid grid-cols-[1fr_auto] gap-4">
                 <div>
                   <h3 className="text-xs font-black uppercase">
-                    {edu.degree} in {edu.field}
+                    {formatEducationTitle(edu.degree, edu.field)}
                   </h3>
                   <p className="text-xs text-gray-600">{edu.school}</p>
                 </div>

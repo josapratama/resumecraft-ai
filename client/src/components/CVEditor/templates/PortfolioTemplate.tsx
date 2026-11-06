@@ -1,3 +1,4 @@
+import { formatEducationTitle } from "@/lib/cvFormatters";
 /**
  * Portfolio — projects are the hero, skills as large pills, experience compact.
  * Developers, designers, artists.
@@ -165,7 +166,7 @@ export default function PortfolioTemplate({ cvData }: { cvData: FullCVData }) {
               {cvData.educations.map(edu => (
                 <div key={edu.id} className="min-w-0">
                   <p className="text-xs font-bold text-white break-words">
-                    {edu.degree} in {edu.field}
+                    {formatEducationTitle(edu.degree, edu.field)}
                   </p>
                   <p className="text-xs text-gray-500 break-words">
                     {edu.school} · {edu.graduationDate}

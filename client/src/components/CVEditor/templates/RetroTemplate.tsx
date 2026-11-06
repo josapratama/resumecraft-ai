@@ -1,3 +1,4 @@
+import { formatEducationTitle } from "@/lib/cvFormatters";
 /**
  * Retro — typewriter font, tan/cream background, vintage stamp aesthetic.
  */
@@ -73,7 +74,7 @@ export default function RetroTemplate({ cvData }: { cvData: FullCVData }) {
                 className="flex justify-between items-baseline text-xs"
               >
                 <span className="font-bold">
-                  {edu.degree} in {edu.field} — {edu.school}
+                  {formatEducationTitle(edu.degree, edu.field)} — {edu.school}
                 </span>
                 <span className="text-gray-500">{edu.graduationDate}</span>
               </div>

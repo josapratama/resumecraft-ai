@@ -1,3 +1,4 @@
+import { formatEducationTitle } from "@/lib/cvFormatters";
 /**
  * Creative — violet/pink gradient header, bold typography, asymmetric layout.
  * Designers, marketers, creative roles.
@@ -200,7 +201,7 @@ export default function CreativeTemplate({ cvData }: { cvData: FullCVData }) {
                 >
                   <div className="min-w-0">
                     <p className="text-xs font-bold text-gray-900 break-words">
-                      {edu.degree} in {edu.field}
+                      {formatEducationTitle(edu.degree, edu.field)}
                     </p>
                     <p className="text-xs text-gray-500 break-words">
                       {edu.school}

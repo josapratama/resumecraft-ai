@@ -1,3 +1,4 @@
+import { formatEducationTitle } from "@/lib/cvFormatters";
 /**
  * Timeline — vertical timeline with alternating left/right entries.
  * Visually tells a career story.
@@ -32,7 +33,7 @@ export default function TimelineTemplate({ cvData }: { cvData: FullCVData }) {
     ...cvData.educations.map(e => ({
       type: "edu" as const,
       id: e.id,
-      title: `${e.degree} in ${e.field}`,
+      title: `${formatEducationTitle(e.degree, e.field)}`,
       subtitle: e.school,
       date: e.graduationDate || "",
       description: e.description,

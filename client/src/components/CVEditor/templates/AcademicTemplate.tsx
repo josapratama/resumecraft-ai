@@ -1,3 +1,4 @@
+import { formatEducationTitle } from "@/lib/cvFormatters";
 /**
  * Academic — dense, publication-ready, serif, Chicago style citations.
  * Professors, researchers, PhD candidates.
@@ -48,7 +49,7 @@ export default function AcademicTemplate({ cvData }: { cvData: FullCVData }) {
               <div key={edu.id}>
                 <div className="flex justify-between">
                   <span className="text-xs font-bold">
-                    {edu.degree} in {edu.field}
+                    {formatEducationTitle(edu.degree, edu.field)}
                   </span>
                   <span className="text-xs text-gray-500">
                     {edu.graduationDate}

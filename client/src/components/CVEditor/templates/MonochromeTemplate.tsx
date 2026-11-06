@@ -1,3 +1,4 @@
+import { formatEducationTitle } from "@/lib/cvFormatters";
 /**
  * Monochrome — pure grayscale, subtle shadows, no color whatsoever.
  * Extremely professional, printer-friendly.
@@ -142,7 +143,7 @@ export default function MonochromeTemplate({ cvData }: { cvData: FullCVData }) {
               {cvData.educations.map(edu => (
                 <div key={edu.id} className="mb-2 min-w-0">
                   <p className="text-xs font-semibold text-gray-800 break-words">
-                    {edu.degree} in {edu.field}
+                    {formatEducationTitle(edu.degree, edu.field)}
                   </p>
                   <p className="text-xs text-gray-500 break-words">
                     {edu.school}

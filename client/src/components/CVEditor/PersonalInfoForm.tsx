@@ -6,7 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Spinner } from "@/components/ui/spinner";
-import { Wand2, Circle, User, Mail, Phone, MapPin, Check, Save } from "lucide-react";
+import { Wand2, Circle, User, Mail, Phone, MapPin, Check, Save, Camera, Trash2, Upload } from "lucide-react";
 import AIAssistant from "./AIAssistant";
 import { toast } from "sonner";
 import type { PersonalInfo } from "@/types/cv";
@@ -28,6 +28,7 @@ export default function PersonalInfoForm({
     phone: initialData?.phone || "",
     location: initialData?.location || "",
     professionalSummary: initialData?.professionalSummary || "",
+    photoUrl: initialData?.photoUrl || "",
   });
 
   const [formData, setFormData] = useState({ ...savedData });
@@ -75,6 +76,52 @@ export default function PersonalInfoForm({
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please upload an image file (JPG, PNG, WebP)");
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        const maxDim = 400;
+        let width = img.width;
+        let height = img.height;
+        if (width > height) {
+          if (width > maxDim) {
+            height = Math.round((height * maxDim) / width);
+            width = maxDim;
+          }
+        } else {
+          if (height > maxDim) {
+            width = Math.round((width * maxDim) / height);
+            height = maxDim;
+          }
+        }
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext("2d");
+        if (ctx) {
+          ctx.drawImage(img, 0, 0, width, height);
+          const dataUrl = canvas.toDataURL("image/jpeg", 0.85);
+          handleChange("photoUrl", dataUrl);
+          toast.success("Photo loaded! Don't forget to click Save.");
+        }
+      };
+      img.src = reader.result as string;
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleRemovePhoto = () => {
+    handleChange("photoUrl", "");
+    toast.info("Photo removed. Click Save to apply.");
+  };
+
   const handleSave = () => {
     updateMutation.mutate({ cvId, ...formData });
   };
@@ -112,6 +159,62 @@ export default function PersonalInfoForm({
       </div>
 
       <div className="space-y-4">
+        {/* Profile Photo (Pas Foto) */}
+        <div className="p-4 bg-neutral-50/80 border border-neutral-200/80 rounded-xl">
+          <Label className="text-xs font-semibold text-neutral-600 uppercase tracking-wider flex items-center gap-1.5 mb-2.5">
+            <Camera className="w-3.5 h-3.5 text-neutral-500" />
+            Profile Photo / Pas Foto (Optional)
+          </Label>
+          <div className="flex flex-col sm:flex-row items-center gap-4">
+            <div className="relative group w-20 h-20 rounded-full border-2 border-neutral-200 overflow-hidden bg-white flex items-center justify-center shrink-0 shadow-xs">
+              {formData.photoUrl ? (
+                <img
+                  src={formData.photoUrl}
+                  alt="Profile Preview"
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <User className="w-8 h-8 text-neutral-300" />
+              )}
+            </div>
+            <div className="flex-1 w-full space-y-2">
+              <div className="flex flex-wrap items-center gap-2">
+                <label className="cursor-pointer inline-flex items-center gap-1.5 bg-neutral-900 text-white hover:bg-neutral-800 text-xs font-medium px-3 py-1.5 rounded-lg transition-colors shadow-xs">
+                  <Upload className="w-3.5 h-3.5" />
+                  <span>Choose Photo</span>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleFileUpload}
+                    className="hidden"
+                  />
+                </label>
+                {formData.photoUrl && (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleRemovePhoto}
+                    className="text-xs text-red-600 hover:text-red-700 hover:bg-red-50 h-8 px-2.5 rounded-lg"
+                  >
+                    <Trash2 className="w-3.5 h-3.5 mr-1" />
+                    Remove
+                  </Button>
+                )}
+              </div>
+              <Input
+                value={formData.photoUrl}
+                onChange={e => handleChange("photoUrl", e.target.value)}
+                placeholder="or paste image URL (e.g. https://...)"
+                className="text-xs h-8 bg-white border-neutral-200 focus:border-neutral-900 rounded-lg"
+              />
+              <p className="text-[11px] text-neutral-400">
+                Supports JPG, PNG, WebP or direct image links. Compressed automatically for sharp PDF export.
+              </p>
+            </div>
+          </div>
+        </div>
+
         {/* Full Name */}
         <div>
           <Label className="text-xs font-semibold text-neutral-600 uppercase tracking-wider flex items-center gap-1.5">

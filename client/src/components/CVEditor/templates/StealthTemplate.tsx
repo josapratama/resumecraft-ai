@@ -1,3 +1,4 @@
+import { formatEducationTitle } from "@/lib/cvFormatters";
 /**
  * Stealth — all-dark, subtle gray-on-charcoal, zero color except white text.
  * Security, elite consulting, understated luxury.
@@ -70,7 +71,7 @@ export default function StealthTemplate({ cvData }: { cvData: FullCVData }) {
               {cvData.educations.map(edu => (
                 <div key={edu.id} className="mb-2 min-w-0">
                   <p className="text-xs font-semibold text-gray-300 break-words">
-                    {edu.degree} in {edu.field}
+                    {formatEducationTitle(edu.degree, edu.field)}
                   </p>
                   <p className="text-xs text-gray-500 break-words">
                     {edu.school}

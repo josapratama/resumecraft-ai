@@ -1,3 +1,4 @@
+import { formatEducationTitle } from "@/lib/cvFormatters";
 /**
  * Nordic — Scandinavian minimalism, teal/seafoam accents, extreme whitespace.
  */
@@ -88,7 +89,7 @@ export default function NordicTemplate({ cvData }: { cvData: FullCVData }) {
                 <div key={edu.id} className="flex justify-between items-start">
                   <div>
                     <h3 className="text-sm font-medium text-gray-900">
-                      {edu.degree} in {edu.field}
+                      {formatEducationTitle(edu.degree, edu.field)}
                     </h3>
                     <p className="text-xs text-gray-500 mt-0.5">{edu.school}</p>
                   </div>

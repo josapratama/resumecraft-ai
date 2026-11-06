@@ -170,6 +170,7 @@ export const cvRouter = router({
           phone: z.string().trim().max(20).optional(),
           location: shortStr.optional(),
           professionalSummary: longStr.optional(),
+          photoUrl: z.string().optional().nullable(),
         })
       )
       .mutation(async ({ ctx, input }) => {

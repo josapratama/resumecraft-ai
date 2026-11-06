@@ -43,6 +43,13 @@
       "when": 1783950000000,
       "tag": "0005_rich_features",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "5",
+      "when": 1784000000000,
+      "tag": "0006_add_photo_url",
+      "breakpoints": true
     }
   ]
 }

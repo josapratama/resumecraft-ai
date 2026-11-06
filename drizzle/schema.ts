@@ -81,6 +81,7 @@ export const personalInfos = mysqlTable("personalInfos", {
   phone: varchar("phone", { length: 20 }),
   location: varchar("location", { length: 255 }),
   professionalSummary: text("professionalSummary"),
+  photoUrl: text("photoUrl"),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });

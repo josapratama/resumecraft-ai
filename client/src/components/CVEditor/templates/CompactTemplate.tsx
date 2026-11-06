@@ -1,3 +1,4 @@
+import { formatEducationTitle } from "@/lib/cvFormatters";
 /**
  * Compact — maximum info density, small text, single page optimized.
  * When you need everything on one page.
@@ -88,7 +89,7 @@ export default function CompactTemplate({ cvData }: { cvData: FullCVData }) {
             {cvData.educations.map(edu => (
               <div key={edu.id} className="flex justify-between">
                 <span className="font-bold">
-                  {edu.degree} in {edu.field}, {edu.school}
+                  {formatEducationTitle(edu.degree, edu.field)}, {edu.school}
                 </span>
                 <span className="text-gray-500">{edu.graduationDate}</span>
               </div>

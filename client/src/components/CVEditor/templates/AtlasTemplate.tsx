@@ -1,3 +1,4 @@
+import { formatEducationTitle } from "@/lib/cvFormatters";
 /**
  * Atlas — deep forest green sidebar, khaki main, earthy explorer aesthetic.
  * Consultants, NGO workers, geographers.
@@ -70,7 +71,7 @@ export default function AtlasTemplate({ cvData }: { cvData: FullCVData }) {
             {cvData.educations.map(edu => (
               <div key={edu.id} className="mb-2 min-w-0">
                 <p className="text-xs font-semibold text-white break-words">
-                  {edu.degree} in {edu.field}
+                  {formatEducationTitle(edu.degree, edu.field)}
                 </p>
                 <p className="text-xs text-[#8fb894] break-words">
                   {edu.school}

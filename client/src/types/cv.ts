@@ -6,6 +6,7 @@ export interface PersonalInfo {
   phone: string | null;
   location: string | null;
   professionalSummary: string | null;
+  photoUrl?: string | null;
   createdAt: Date;
   updatedAt: Date;
 }

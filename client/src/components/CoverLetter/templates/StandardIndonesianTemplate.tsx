@@ -152,3 +152,4 @@ export default function StandardIndonesianTemplate({ data }: { data: CoverLetter
     </div>
   );
 }
+

@@ -56,6 +56,41 @@ const ACCENT_COLORS = [
   { name: "Slate Charcoal", value: "#0f172a" },
 ];
 
+const KEMNAKER_MAGANG_PRESET: Partial<CoverLetterData> = {
+  subject: "Permohonan Program Magang Nasional – Assistant Retail Advisor",
+  jobTitle: "Assistant Retail Advisor",
+  companyName: "Kementerian Ketenagakerjaan RI",
+  city: "Prabumulih",
+  recipientTitle: "Tim Rekrutmen MagangHub & HRD Mitra",
+  companyAddress: "Di Tempat",
+  jobSource: "Portal Resmi MagangHub Kemnaker RI",
+  educationDegree: "S1 Informatika",
+  educationSchool: "Universitas Prabumulih",
+  educationGpa: "3.54",
+  salutation: "Dengan Hormat,",
+  opening:
+    "Berdasarkan informasi lowongan yang saya peroleh melalui portal resmi MagangHub Kementerian Ketenagakerjaan RI, bersama surat ini saya bermaksud mengajukan permohonan diri untuk dapat bergabung dalam program Magang Nasional sebagai Assistant Retail Advisor pada mitra perusahaan yang Bapak/Ibu pimpin.",
+  body:
+    "Saya merupakan lulusan S1 Informatika dari Universitas Prabumulih (IPK 3.54) dan memiliki latar belakang pendidikan profesional 1 tahun di Palcomtech Prabumulih. Saya memiliki kemampuan berpikir analitis, ketelitian tinggi dalam pengolahan data kasir dan inventaris, serta pengoperasian perangkat lunak produktivitas (Microsoft Office, Excel, dan basis data komputerisasi) yang didukung oleh Sertifikat Kompetensi resmi. Berbekal keterampilan tersebut, saya mampu beradaptasi cepat serta siap mendukung kelancaran operasional toko secara profesional.",
+  previousField:
+    "Selain latar belakang akademis, saya juga memiliki pengalaman kerja praktik (magang) di Bass Oil Sukananti Limited (Prabumulih Field). Pengalaman tersebut telah membekali saya dengan pemahaman mendalam mengenai pentingnya kepatuhan terhadap Standar Operasional Prosedur (SOP), kedisiplinan kerja tim, ketelitian administrasi, serta kemampuan adaptasi cepat dalam ritme kerja yang dinamis.",
+  attachments: [
+    "Curriculum Vitae (CV) Terbaru",
+    "Salinan Ijazah dan Transkrip Nilai (IPK 3.54)",
+    "Salinan Sertifikat Kompetensi Profesional",
+    "Pas Foto Berwarna Terbaru",
+    "Dokumen Pendukung Lainnya",
+  ],
+  closing:
+    "Besar harapan saya untuk diberikan kesempatan menghadiri tahapan wawancara agar dapat menjelaskan lebih mendalam mengenai dedikasi dan kontribusi positif yang dapat saya berikan bagi keberhasilan program magang ini. Atas perhatian dan kesempatan yang Bapak/Ibu berikan, saya ucapkan terima kasih.",
+  signOff: "Hormat Saya,",
+  includeLetterTitle: true,
+  letterTitle: "SURAT LAMARAN KERJA",
+  includeReferenceNumber: false,
+  includeAttachmentsHeader: false,
+  includeBiodataTable: false,
+};
+
 export default function CoverLetterWorkspace({
   cvId,
   cvData,
@@ -74,7 +109,7 @@ export default function CoverLetterWorkspace({
   }, []);
 
   // Active Tab: 'templates' | 'ai' | 'edit' | 'style'
-  const [activeTab, setActiveTab] = useState<"templates" | "ai" | "edit" | "style">("templates");
+  const [activeTab, setActiveTab] = useState<"templates" | "ai" | "edit" | "style">("edit");
   const [selectedTemplate, setSelectedTemplate] = useState<CoverLetterTemplateId>("standard-indonesian");
   const [templateCategory, setTemplateCategory] = useState<string>("Semua");
   const [templateSearch, setTemplateSearch] = useState<string>("");
@@ -84,16 +119,16 @@ export default function CoverLetterWorkspace({
   const [copiedSubject, setCopiedSubject] = useState(false);
 
   // AI input states
-  const [companyName, setCompanyName] = useState("PT Bank Mandiri (Persero) Tbk");
-  const [targetJob, setTargetJob] = useState(defaultRole || cvData?.cv.targetRole || "Full-Stack Software Engineer");
+  const [companyName, setCompanyName] = useState("Kementerian Ketenagakerjaan RI");
+  const [targetJob, setTargetJob] = useState("Assistant Retail Advisor");
   const [recipientName, setRecipientName] = useState("Pimpinan / Tim Rekrutmen");
-  const [recipientTitle, setRecipientTitle] = useState("Bapak/Ibu HRD");
+  const [recipientTitle, setRecipientTitle] = useState("Tim Rekrutmen MagangHub & HRD Mitra");
   const [companyAddress, setCompanyAddress] = useState("Di Tempat");
   const [jobDescription, setJobDescription] = useState("");
   const [tone, setTone] = useState<"professional" | "confident" | "enthusiastic" | "concise">("professional");
 
   // Cover Letter Data State
-  const initialName = cvData?.personalInfo?.fullName || "Josa Pratama";
+  const initialName = cvData?.personalInfo?.fullName || "JOSA PRATAMA";
   const initialEmail = cvData?.personalInfo?.email || "pratamajosa1234@gmail.com";
   const initialPhone = cvData?.personalInfo?.phone || "+6281291561139";
   const initialLocation = cvData?.personalInfo?.location || "Kota Prabumulih, Sumatera Selatan";
@@ -105,15 +140,15 @@ export default function CoverLetterWorkspace({
     phone: initialPhone,
     location: initialLocation,
     photoUrl: cvData?.personalInfo?.photoUrl || null,
-    targetRole: targetJob,
+    targetRole: "Assistant Retail Advisor",
     portfolioUrl: initialPortfolio,
 
     recipientName: "Bapak/Ibu HRD",
-    recipientTitle: "HRD Manager",
-    companyName: "PT Bank Mandiri (Persero) Tbk",
+    recipientTitle: "Tim Rekrutmen MagangHub & HRD Mitra",
+    companyName: "Kementerian Ketenagakerjaan RI",
     companyAddress: "Di Tempat",
-    jobTitle: targetJob,
-    jobSource: "Instagram / LinkedIn",
+    jobTitle: "Assistant Retail Advisor",
+    jobSource: "Portal Resmi MagangHub Kemnaker RI",
     date: new Date().toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" }),
     city: "Prabumulih",
 
@@ -123,25 +158,29 @@ export default function CoverLetterWorkspace({
     includeAttachmentsHeader: false,
     includeBiodataTable: false,
 
-    subject: `Lamaran Pekerjaan – ${targetJob}`,
+    subject: "Permohonan Program Magang Nasional – Assistant Retail Advisor",
     referenceNumber: "LP/2026/XI/01",
     salutation: "Dengan Hormat,",
-    opening: `Berdasarkan informasi lowongan pekerjaan yang saya peroleh mengenai posisi ${targetJob} di PT Bank Mandiri (Persero) Tbk, melalui surat ini saya bermaksud mengajukan permohonan diri untuk dapat bergabung dan berkontribusi sebagai tenaga profesional pada instansi/perusahaan yang Bapak/Ibu pimpin.`,
-    body: `Saya adalah lulusan ${cvData?.educations?.[0]?.degree || "S1 Informatika"} dari ${cvData?.educations?.[0]?.school || "Universitas Prabumulih"} (IPK 3.54) dengan keterampilan analitis yang kuat, ketelitian tinggi, dan manajemen waktu yang baik. Memiliki keahlian dalam administrasi dokumen, perancangan sistem, serta pengoperasian perangkat lunak produktivitas yang didukung oleh sertifikasi kompetensi resmi. Berbekal latar belakang tersebut, saya mampu beradaptasi dengan cepat dan siap mendukung proses operasional secara efektif dan profesional.`,
-    previousField: "Selain itu saya juga memiliki pengalaman dalam pengelolaan sistem data dan otomasi. Saya pernah melaksanakan kegiatan magang/kerja praktik yang semakin mengasah kemampuan saya dalam administrasi teknis, pengolahan data, verifikasi sistem, serta penyusunan dokumentasi secara akurat dan terstruktur.",
+    opening:
+      "Berdasarkan informasi lowongan yang saya peroleh melalui portal resmi MagangHub Kementerian Ketenagakerjaan RI, bersama surat ini saya bermaksud mengajukan permohonan diri untuk dapat bergabung dalam program Magang Nasional sebagai Assistant Retail Advisor pada mitra perusahaan yang Bapak/Ibu pimpin.",
+    body:
+      "Saya merupakan lulusan S1 Informatika dari Universitas Prabumulih (IPK 3.54) dan memiliki latar belakang pendidikan profesional 1 tahun di Palcomtech Prabumulih. Saya memiliki kemampuan berpikir analitis, ketelitian tinggi dalam pengolahan data kasir dan inventaris, serta pengoperasian perangkat lunak produktivitas (Microsoft Office, Excel, dan basis data komputerisasi) yang didukung oleh Sertifikat Kompetensi resmi. Berbekal keterampilan tersebut, saya mampu beradaptasi cepat serta siap mendukung kelancaran operasional toko secara profesional.",
+    previousField:
+      "Selain latar belakang akademis, saya juga memiliki pengalaman kerja praktik (magang) di Bass Oil Sukananti Limited (Prabumulih Field). Pengalaman tersebut telah membekali saya dengan pemahaman mendalam mengenai pentingnya kepatuhan terhadap Standar Operasional Prosedur (SOP), kedisiplinan kerja tim, ketelitian administrasi, serta kemampuan adaptasi cepat dalam ritme kerja yang dinamis.",
     skillsHighlight: [
-      "Pengembangan aplikasi web modern responsif dengan TypeScript & modern frameworks",
-      "Perancangan arsitektur backend andal, optimasi database, dan deployment cloud",
-      "Kemampuan problem-solving terstruktur dan adaptasi cepat pada ekosistem baru",
+      "Pelayanan pelanggan ramah, komunikatif, dan orientasi kepuasan konsumen",
+      "Ketelitian dalam pencatatan stok barang, kasir (POS), dan pelaporan data",
+      "Kedisiplinan kerja tim, kepatuhan SOP operasional, serta adaptasi cepat",
     ],
     attachments: [
-      "Surat Lamaran Pekerjaan",
       "Curriculum Vitae (CV) Terbaru",
-      "Salinan Ijazah dan Transkrip Nilai Terlegalisir",
-      "Salinan Sertifikat Kompetensi",
+      "Salinan Ijazah dan Transkrip Nilai (IPK 3.54)",
+      "Salinan Sertifikat Kompetensi Profesional",
       "Pas Foto Berwarna Terbaru",
+      "Dokumen Pendukung Lainnya",
     ],
-    closing: `Saya memiliki minat yang besar untuk bergabung dengan PT Bank Mandiri (Persero) Tbk dan mengembangkan kompetensi saya. Dengan latar belakang pendidikan, pengalaman, serta kemampuan yang saya miliki, saya siap memberikan kontribusi terbaik dalam mendukung operasional perusahaan secara profesional dan berintegritas.`,
+    closing:
+      "Besar harapan saya untuk diberikan kesempatan menghadiri tahapan wawancara agar dapat menjelaskan lebih mendalam mengenai dedikasi dan kontribusi positif yang dapat saya berikan bagi keberhasilan program magang ini. Atas perhatian dan kesempatan yang Bapak/Ibu berikan, saya ucapkan terima kasih.",
     signOff: "Hormat Saya,",
 
     educationDegree: cvData?.educations?.[0]?.degree || "S1 Informatika",
@@ -153,14 +192,38 @@ export default function CoverLetterWorkspace({
     includeSignature: true,
   });
 
-  // Load saved draft if exists in localStorage
+  // Load saved draft if exists in localStorage (auto-migrating any stale Telkom default draft)
   useEffect(() => {
     try {
       const saved = localStorage.getItem(`cover_letter_draft_${cvId}`);
       if (saved) {
         const parsed = JSON.parse(saved);
-        if (parsed.selectedTemplate) setSelectedTemplate(parsed.selectedTemplate);
-        if (parsed.letterData) setLetterData(prev => ({ ...prev, ...parsed.letterData }));
+        const isStaleDraft =
+          !parsed.letterData ||
+          parsed.letterData.companyName?.includes("Telkom") ||
+          parsed.letterData.subject?.includes("– sub") ||
+          parsed.letterData.opening?.includes("posisi sub");
+
+        if (isStaleDraft) {
+          setSelectedTemplate("standard-indonesian");
+          setLetterData(prev => ({
+            ...prev,
+            ...KEMNAKER_MAGANG_PRESET,
+            fullName: prev.fullName || "JOSA PRATAMA",
+            email: prev.email || "pratamajosa1234@gmail.com",
+            phone: prev.phone || "+6281291561139",
+            location: prev.location || "Kota Prabumulih",
+          }));
+        } else {
+          if (parsed.selectedTemplate) setSelectedTemplate(parsed.selectedTemplate);
+          if (parsed.letterData) setLetterData(prev => ({ ...prev, ...parsed.letterData }));
+        }
+      } else {
+        setSelectedTemplate("standard-indonesian");
+        setLetterData(prev => ({
+          ...prev,
+          ...KEMNAKER_MAGANG_PRESET,
+        }));
       }
     } catch {
       // ignore
@@ -361,6 +424,21 @@ ${letterData.fullName}`;
           <Button
             variant="outline"
             size="sm"
+            onClick={() => {
+              setSelectedTemplate("standard-indonesian");
+              setLetterData(prev => ({ ...prev, ...KEMNAKER_MAGANG_PRESET }));
+              toast.success("Draf Magang Kemnaker (Assistant Retail Advisor) berhasil diterapkan!");
+            }}
+            className="text-xs gap-1.5 h-8 border-indigo-200 bg-indigo-50/70 hover:bg-indigo-100 text-indigo-700 font-semibold"
+            title="Klik untuk mengisi otomatis seluruh kolom dengan draf lowongan Magang Kemnaker"
+          >
+            <Sparkles className="w-3.5 h-3.5 text-indigo-600" />
+            <span className="hidden sm:inline">Muat Draf Kemnaker</span>
+          </Button>
+
+          <Button
+            variant="outline"
+            size="sm"
             onClick={handleCopyText}
             className="text-xs gap-1.5 h-8 border-slate-200"
           >
@@ -402,7 +480,7 @@ ${letterData.fullName}`;
               }`}
             >
               <Layout className="w-3.5 h-3.5" />
-              <span>Format (25)</span>
+              <span>Format ({COVER_LETTER_TEMPLATES.length})</span>
             </button>
 
             <button
@@ -671,10 +749,11 @@ ${letterData.fullName}`;
 
                 <div className="grid grid-cols-2 gap-2">
                   <div>
-                    <Label className="text-xs font-semibold text-slate-700">Perusahaan Tujuan</Label>
+                    <Label className="text-xs font-semibold text-slate-700">Perusahaan / Instansi Tujuan</Label>
                     <Input
                       value={letterData.companyName}
                       onChange={e => setLetterData({ ...letterData, companyName: e.target.value })}
+                      placeholder="Contoh: PT Bank Mandiri / Kemnaker RI"
                       className="mt-1 border-slate-200 rounded-lg text-xs"
                     />
                   </div>
@@ -683,6 +762,27 @@ ${letterData.fullName}`;
                     <Input
                       value={letterData.city}
                       onChange={e => setLetterData({ ...letterData, city: e.target.value })}
+                      className="mt-1 border-slate-200 rounded-lg text-xs"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <Label className="text-xs font-semibold text-slate-700">Penerima Surat (Kepada Yth)</Label>
+                    <Input
+                      value={letterData.recipientTitle || ""}
+                      onChange={e => setLetterData({ ...letterData, recipientTitle: e.target.value })}
+                      placeholder="Contoh: HRD Manager / Tim Rekrutmen"
+                      className="mt-1 border-slate-200 rounded-lg text-xs"
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-xs font-semibold text-slate-700">Alamat / Lokasi Tujuan</Label>
+                    <Input
+                      value={letterData.companyAddress || ""}
+                      onChange={e => setLetterData({ ...letterData, companyAddress: e.target.value })}
+                      placeholder="Di Tempat"
                       className="mt-1 border-slate-200 rounded-lg text-xs"
                     />
                   </div>

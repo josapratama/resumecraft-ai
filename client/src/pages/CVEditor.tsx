@@ -459,6 +459,18 @@ export default function CVEditor() {
                 </DropdownMenuContent>
               </DropdownMenu>
 
+              {/* Cover Letter Quick Button */}
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowCoverLetterModal(true)}
+                className="gap-1.5 border-blue-200 text-blue-700 bg-blue-50/70 hover:bg-blue-100 h-8 sm:h-9 px-2 sm:px-3 rounded-lg"
+                title="Buat Surat Lamaran Kerja (10 Format)"
+              >
+                <FileText className="w-3.5 h-3.5 text-blue-600" />
+                <span className="hidden xl:inline text-xs font-semibold">{t("topbar.cover_letter", "Surat Lamaran")}</span>
+              </Button>
+
               {/* Theme & Typography Customizer */}
               <Button
                 variant="outline"
@@ -846,6 +858,7 @@ export default function CVEditor() {
         isOpen={showCoverLetterModal}
         onClose={() => setShowCoverLetterModal(false)}
         defaultRole={cvData.cv.targetRole || cvData.cv.title}
+        cvData={cvData}
       />
 
       <InterviewPrepModal

@@ -325,8 +325,12 @@ Return a VALID JSON object ONLY (strictly without markdown backticks or commenta
         cvId: z.number(),
         companyName: z.string().trim().min(1),
         jobTitle: z.string().trim().min(1),
+        recipientName: z.string().trim().optional(),
+        recipientTitle: z.string().trim().optional(),
         jobDescription: z.string().trim().optional(),
         tone: z.enum(["professional", "confident", "enthusiastic", "concise"]).default("professional"),
+        language: z.enum(["id", "en"]).default("id"),
+        templateStyle: z.string().optional(),
       })
     )
     .mutation(async ({ ctx, input }) => {
@@ -335,41 +339,108 @@ Return a VALID JSON object ONLY (strictly without markdown backticks or commenta
       if (cv.userId !== ctx.user.id) throw new TRPCError({ code: "FORBIDDEN", message: "Unauthorized" });
 
       const cvContext = await buildCVContext(input.cvId);
+      const isIndonesian = input.language === "id";
 
-      const prompt = `You are a high-level executive career coach.
-Write a personalized, compelling Cover Letter for the applicant applying to:
+      const prompt = isIndonesian
+        ? `Anda adalah konsultan karier profesional tingkat tinggi di Indonesia.
+Tulis Surat Lamaran Kerja (Cover Letter) resmi dan sangat meyakinkan yang disesuaikan secara akurat dengan data pelamar:
+Perusahaan Tujuan: ${input.companyName}
+Posisi yang Dilamar: ${input.jobTitle}
+Nama Penerima / Jabatan: ${input.recipientName || "Pimpinan / HRD Manager"} ${input.recipientTitle ? `(${input.recipientTitle})` : ""}
+Nada Bahasa (Tone): ${input.tone}
+Gaya Template: ${input.templateStyle || "Modern & Professional"}
+${input.jobDescription ? `Kualifikasi / Persyaratan Lowongan:\n${input.jobDescription}` : ""}
+
+${cvContext}
+
+Panduan Penulisan (Standar Baku EYD Bahasa Indonesia):
+1. Format Subjek email profesional: "[Lamaran Pekerjaan] - ${input.jobTitle} - [Nama Lengkap Pelamar]".
+2. Salam Pembuka resmi: "Dengan hormat,".
+3. Paragraf Pembuka: sebutkan antusiasme melamar ke posisi ${input.jobTitle} di ${input.companyName} dan motivasi bergabung.
+4. Paragraf Inti: hubungkan 2-3 pencapaian konkret atau keahlian dari CV dengan kebutuhan posisi tersebut. Gunakan bahasa persuasif dan percaya diri.
+5. Poin Keahlian Utama (skillsHighlight): 3-4 butir capaian/keahlian terpenting.
+6. Daftar Lampiran (attachments): 4-5 dokumen pendukung standar (Curriculum Vitae, Portofolio Proyek, Ijazah & Transkrip, Sertifikat Kompetensi, Pas Foto).
+7. Paragraf Penutup: nyatakan harapan wawancara kerja dan ucapan terima kasih secara santun dan profesional.
+8. Salam Penutup: "Hormat saya,".
+9. Tulis dalam Bahasa Indonesia yang baku, profesional, dan meyakinkan.
+
+KEMBALIKAN HANYA OBJEK JSON VALID dengan format berikut:
+{
+  "subject": "<Subjek email lamaran kerja>",
+  "salutation": "Dengan hormat,",
+  "opening": "<Paragraf pembuka lengkap>",
+  "body": "<Paragraf inti kualifikasi & pencapaian relevan>",
+  "skillsHighlight": ["<Poin keahlian 1>", "<Poin keahlian 2>", "<Poin keahlian 3>"],
+  "attachments": ["Curriculum Vitae (CV) Terbaru", "Portofolio Proyek Terkait", "Salinan Ijazah dan Transkrip Nilai", "Sertifikat Pelatihan / Kompetensi", "Pas Foto Terbaru"],
+  "closing": "<Paragraf penutup & permohonan wawancara>",
+  "signOff": "Hormat saya,",
+  "coverLetter": "<Teks lengkap surat lamaran kerja terangkai rapi dengan pemisah baris baru ganda>"
+}`
+        : `You are an executive career coach and cover letter specialist.
+Write a personalized, highly compelling Cover Letter for the applicant applying to:
 Company: ${input.companyName}
 Target Role: ${input.jobTitle}
+Recipient: ${input.recipientName || "Hiring Team"} ${input.recipientTitle ? `(${input.recipientTitle})` : ""}
 Desired Tone: ${input.tone}
+Template Style: ${input.templateStyle || "Modern Professional"}
 ${input.jobDescription ? `Job Description / Requirements:\n${input.jobDescription}` : ""}
 
 ${cvContext}
 
 Instructions:
-1. Address: "Dear Hiring Team at ${input.companyName},"
-2. Hook paragraph expressing genuine alignment with the company mission.
-3. Middle paragraphs: connect 2-3 specific accomplishments from their CV with measurable results to the target role.
-4. Professional call-to-action closing.
-5. Return a VALID JSON object ONLY:
+1. Subject line formatted as: "Job Application: ${input.jobTitle} - [Applicant Name]".
+2. Salutation: "Dear ${input.recipientName || `Hiring Team at ${input.companyName}`},".
+3. Hook paragraph expressing genuine enthusiasm for the role and mission alignment.
+4. Body paragraph: connect 2-3 specific accomplishments from their CV with measurable results to the target role.
+5. Key skills highlight (skillsHighlight): 3-4 high-impact bullets.
+6. Enclosures (attachments): list 3-4 documents (e.g. "Resume / Curriculum Vitae", "Project Portfolio", "Professional Certifications").
+7. Closing paragraph: strong call-to-action for an interview and expression of appreciation.
+8. Sign-off: "Sincerely,".
+9. Return a VALID JSON object ONLY with the following exact keys:
 {
   "subject": "<Subject line for email application>",
-  "coverLetter": "<Complete cover letter text with paragraphs separated by newlines>"
+  "salutation": "<Salutation line>",
+  "opening": "<Opening paragraph>",
+  "body": "<Core body paragraph connecting CV achievements to role>",
+  "skillsHighlight": ["<Highlight 1>", "<Highlight 2>", "<Highlight 3>"],
+  "attachments": ["Updated Resume / CV", "Project Portfolio", "Certifications & Credentials"],
+  "closing": "<Closing call to action>",
+  "signOff": "Sincerely,",
+  "coverLetter": "<Complete cover letter text with paragraphs separated by double newlines>"
 }`;
 
       const response = await invokeLLM({
         model: "gpt-4o-mini",
         messages: [{ role: "user", content: prompt }],
         responseFormat: { type: "json_object" },
-        max_tokens: 1200,
+        max_tokens: 1500,
       });
 
       const raw = response.choices[0]?.message?.content || "{}";
       const cleaned = typeof raw === "string" ? raw.replace(/```json\n?|```/g, "").trim() : JSON.stringify(raw);
       try {
-        return JSON.parse(cleaned);
+        const parsed = JSON.parse(cleaned);
+        return {
+          subject: parsed.subject || `Application for ${input.jobTitle} - ${input.companyName}`,
+          salutation: parsed.salutation || (isIndonesian ? "Dengan hormat," : "Dear Hiring Team,"),
+          opening: parsed.opening || "",
+          body: parsed.body || "",
+          skillsHighlight: Array.isArray(parsed.skillsHighlight) ? parsed.skillsHighlight : [],
+          attachments: Array.isArray(parsed.attachments) ? parsed.attachments : [],
+          closing: parsed.closing || "",
+          signOff: parsed.signOff || (isIndonesian ? "Hormat saya," : "Sincerely,"),
+          coverLetter: (typeof parsed.coverLetter === "string" ? parsed.coverLetter : (typeof raw === "string" ? raw : "")) as string,
+        };
       } catch {
         return {
-          subject: `Application for ${input.jobTitle} - ${input.companyName}`,
+          subject: isIndonesian ? `Lamaran Pekerjaan: ${input.jobTitle} - ${input.companyName}` : `Application for ${input.jobTitle} - ${input.companyName}`,
+          salutation: isIndonesian ? "Dengan hormat," : "Dear Hiring Team,",
+          opening: typeof raw === "string" ? raw : "",
+          body: "",
+          skillsHighlight: [],
+          attachments: [],
+          closing: "",
+          signOff: isIndonesian ? "Hormat saya," : "Sincerely,",
           coverLetter: typeof raw === "string" ? raw : "",
         };
       }

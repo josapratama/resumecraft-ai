@@ -119,3 +119,4 @@ export default function HealthcareMedicalTemplate({ data }: { data: CoverLetterD
     </div>
   );
 }
+

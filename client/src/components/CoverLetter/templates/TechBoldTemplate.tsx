@@ -113,3 +113,4 @@ export default function TechBoldTemplate({ data }: { data: CoverLetterData }) {
     </div>
   );
 }
+

@@ -1,6 +1,9 @@
 import React from "react";
 import type { CoverLetterData, CoverLetterTemplateId } from "../types";
 
+// Standard Popular Indonesian Template
+import StandardIndonesianTemplate from "./StandardIndonesianTemplate";
+
 // 1 - 10 Original Templates
 import FormalBUMNTemplate from "./FormalBUMNTemplate";
 import ModernTechTemplate from "./ModernTechTemplate";
@@ -34,6 +37,7 @@ export const COVER_LETTER_TEMPLATE_COMPONENTS: Record<
   CoverLetterTemplateId,
   React.ComponentType<{ data: CoverLetterData }>
 > = {
+  "standard-indonesian": StandardIndonesianTemplate,
   // 1-10
   "formal-bumn": FormalBUMNTemplate,
   "modern-tech": ModernTechTemplate,
@@ -65,6 +69,7 @@ export const COVER_LETTER_TEMPLATE_COMPONENTS: Record<
 };
 
 export {
+  StandardIndonesianTemplate,
   FormalBUMNTemplate,
   ModernTechTemplate,
   MinimalistTemplate,

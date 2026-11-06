@@ -75,7 +75,7 @@ export default function CoverLetterWorkspace({
 
   // Active Tab: 'templates' | 'ai' | 'edit' | 'style'
   const [activeTab, setActiveTab] = useState<"templates" | "ai" | "edit" | "style">("templates");
-  const [selectedTemplate, setSelectedTemplate] = useState<CoverLetterTemplateId>("formal-bumn");
+  const [selectedTemplate, setSelectedTemplate] = useState<CoverLetterTemplateId>("standard-indonesian");
   const [templateCategory, setTemplateCategory] = useState<string>("Semua");
   const [templateSearch, setTemplateSearch] = useState<string>("");
   const [language, setLanguage] = useState<"id" | "en">("id");
@@ -84,11 +84,11 @@ export default function CoverLetterWorkspace({
   const [copiedSubject, setCopiedSubject] = useState(false);
 
   // AI input states
-  const [companyName, setCompanyName] = useState("PT Telkom Indonesia (Persero) Tbk");
+  const [companyName, setCompanyName] = useState("PT Bank Mandiri (Persero) Tbk");
   const [targetJob, setTargetJob] = useState(defaultRole || cvData?.cv.targetRole || "Full-Stack Software Engineer");
   const [recipientName, setRecipientName] = useState("Pimpinan / Tim Rekrutmen");
-  const [recipientTitle, setRecipientTitle] = useState("HRD Manager");
-  const [companyAddress, setCompanyAddress] = useState("Jl. Japati No. 1, Bandung, Jawa Barat");
+  const [recipientTitle, setRecipientTitle] = useState("Bapak/Ibu HRD");
+  const [companyAddress, setCompanyAddress] = useState("Di Tempat");
   const [jobDescription, setJobDescription] = useState("");
   const [tone, setTone] = useState<"professional" | "confident" | "enthusiastic" | "concise">("professional");
 
@@ -108,40 +108,48 @@ export default function CoverLetterWorkspace({
     targetRole: targetJob,
     portfolioUrl: initialPortfolio,
 
-    recipientName: "Pimpinan / Tim Rekrutmen",
+    recipientName: "Bapak/Ibu HRD",
     recipientTitle: "HRD Manager",
-    companyName: "PT Telkom Indonesia (Persero) Tbk",
-    companyAddress: "Jl. Japati No. 1, Bandung, Jawa Barat",
+    companyName: "PT Bank Mandiri (Persero) Tbk",
+    companyAddress: "Di Tempat",
     jobTitle: targetJob,
-    jobSource: "LinkedIn",
+    jobSource: "Instagram / LinkedIn",
     date: new Date().toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" }),
     city: "Prabumulih",
 
+    includeLetterTitle: true,
+    letterTitle: "SURAT LAMARAN KERJA",
+    includeReferenceNumber: false,
+    includeAttachmentsHeader: false,
+    includeBiodataTable: false,
+
     subject: `Lamaran Pekerjaan – ${targetJob}`,
     referenceNumber: "LP/2026/XI/01",
-    salutation: "Dengan hormat,",
-    opening: `Berdasarkan informasi lowongan pekerjaan yang saya peroleh mengenai posisi ${targetJob} di PT Telkom Indonesia (Persero) Tbk, melalui surat ini saya bermaksud mengajukan permohonan diri untuk dapat bergabung dan berkontribusi sebagai tenaga profesional pada instansi/perusahaan yang Bapak/Ibu pimpin.`,
-    body: `Saya memiliki dedikasi tinggi, kemampuan analisis pemecahan masalah yang baik, serta pengalaman relevan dalam perancangan arsitektur backend, modern web development, dan implementasi otomasi server. Saya terbiasa bekerja secara mandiri maupun berkolaborasi dalam tim dengan kedisiplinan kerja yang tinggi sesuai dengan nilai-nilai profesionalisme.`,
+    salutation: "Dengan Hormat,",
+    opening: `Berdasarkan informasi lowongan pekerjaan yang saya peroleh mengenai posisi ${targetJob} di PT Bank Mandiri (Persero) Tbk, melalui surat ini saya bermaksud mengajukan permohonan diri untuk dapat bergabung dan berkontribusi sebagai tenaga profesional pada instansi/perusahaan yang Bapak/Ibu pimpin.`,
+    body: `Saya adalah lulusan ${cvData?.educations?.[0]?.degree || "S1 Informatika"} dari ${cvData?.educations?.[0]?.school || "Universitas Prabumulih"} (IPK 3.54) dengan keterampilan analitis yang kuat, ketelitian tinggi, dan manajemen waktu yang baik. Memiliki keahlian dalam administrasi dokumen, perancangan sistem, serta pengoperasian perangkat lunak produktivitas yang didukung oleh sertifikasi kompetensi resmi. Berbekal latar belakang tersebut, saya mampu beradaptasi dengan cepat dan siap mendukung proses operasional secara efektif dan profesional.`,
+    previousField: "Selain itu saya juga memiliki pengalaman dalam pengelolaan sistem data dan otomasi. Saya pernah melaksanakan kegiatan magang/kerja praktik yang semakin mengasah kemampuan saya dalam administrasi teknis, pengolahan data, verifikasi sistem, serta penyusunan dokumentasi secara akurat dan terstruktur.",
     skillsHighlight: [
       "Pengembangan aplikasi web modern responsif dengan TypeScript & modern frameworks",
       "Perancangan arsitektur backend andal, optimasi database, dan deployment cloud",
       "Kemampuan problem-solving terstruktur dan adaptasi cepat pada ekosistem baru",
     ],
     attachments: [
+      "Surat Lamaran Pekerjaan",
       "Curriculum Vitae (CV) Terbaru",
-      "Salinan Portofolio dan Bukti Hasil Karya",
       "Salinan Ijazah dan Transkrip Nilai Terlegalisir",
-      "Salinan Sertifikat Keahlian / Kompetensi",
+      "Salinan Sertifikat Kompetensi",
       "Pas Foto Berwarna Terbaru",
     ],
-    closing: `Demikian surat lamaran pekerjaan ini saya sampaikan. Besar harapan saya untuk diberikan kesempatan menghadiri tahapan wawancara agar dapat menjelaskan lebih mendalam mengenai kompetensi dan komitmen kerja yang saya miliki. Atas perhatian dan kesempatan yang Bapak/Ibu berikan, saya ucapkan terima kasih.`,
-    signOff: "Hormat saya,",
+    closing: `Saya memiliki minat yang besar untuk bergabung dengan PT Bank Mandiri (Persero) Tbk dan mengembangkan kompetensi saya. Dengan latar belakang pendidikan, pengalaman, serta kemampuan yang saya miliki, saya siap memberikan kontribusi terbaik dalam mendukung operasional perusahaan secara profesional dan berintegritas.`,
+    signOff: "Hormat Saya,",
 
     educationDegree: cvData?.educations?.[0]?.degree || "S1 Informatika",
     educationSchool: cvData?.educations?.[0]?.school || "Universitas Prabumulih",
+    educationGpa: "3.54",
 
     accentColor: cvData?.cv.accentColor || "#1e3a8a",
-    fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+    fontFamily: "'Times New Roman', Times, serif",
     includeSignature: true,
   });
 
@@ -680,6 +688,27 @@ ${letterData.fullName}`;
                   </div>
                 </div>
 
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <Label className="text-xs font-semibold text-slate-700">Sumber Info Lowongan</Label>
+                    <Input
+                      value={letterData.jobSource || ""}
+                      onChange={e => setLetterData({ ...letterData, jobSource: e.target.value })}
+                      placeholder="Instagram, LinkedIn, dll"
+                      className="mt-1 border-slate-200 rounded-lg text-xs"
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-xs font-semibold text-slate-700">IPK / Nilai Akademik</Label>
+                    <Input
+                      value={letterData.educationGpa || ""}
+                      onChange={e => setLetterData({ ...letterData, educationGpa: e.target.value })}
+                      placeholder="Contoh: 3.93 atau 3.54"
+                      className="mt-1 border-slate-200 rounded-lg text-xs"
+                    />
+                  </div>
+                </div>
+
                 <div>
                   <Label className="text-xs font-semibold text-slate-700">Salam Pembuka</Label>
                   <Input
@@ -700,12 +729,44 @@ ${letterData.fullName}`;
                 </div>
 
                 <div>
-                  <Label className="text-xs font-semibold text-slate-700">Paragraf Inti / Kualifikasi</Label>
+                  <Label className="text-xs font-semibold text-slate-700">Paragraf Inti / Kualifikasi & Pendidikan</Label>
                   <Textarea
                     value={letterData.body}
                     onChange={e => setLetterData({ ...letterData, body: e.target.value })}
                     rows={4}
                     className="mt-1 border-slate-200 rounded-lg text-xs leading-relaxed"
+                  />
+                </div>
+
+                <div>
+                  <Label className="text-xs font-semibold text-slate-700">
+                    Pengalaman Kerja / Magang Nyata (Paragraf Tambahan)
+                  </Label>
+                  <Textarea
+                    value={letterData.previousField || ""}
+                    onChange={e => setLetterData({ ...letterData, previousField: e.target.value })}
+                    placeholder="Contoh: Selain itu saya juga memiliki pengalaman di PT Pertamina... atau magang di PT PLN..."
+                    rows={3}
+                    className="mt-1 border-slate-200 rounded-lg text-xs leading-relaxed"
+                  />
+                </div>
+
+                <div>
+                  <div className="flex items-center justify-between">
+                    <Label className="text-xs font-semibold text-slate-700">Daftar Berkas Lampiran</Label>
+                    <span className="text-[10px] text-slate-400">1 berkas per baris</span>
+                  </div>
+                  <Textarea
+                    value={(letterData.attachments || []).join("\n")}
+                    onChange={e =>
+                      setLetterData({
+                        ...letterData,
+                        attachments: e.target.value.split("\n").filter(Boolean),
+                      })
+                    }
+                    rows={4}
+                    placeholder="Surat Lamaran Pekerjaan&#10;Curriculum Vitae (CV)&#10;Fotocopy Ijazah dan Transkrip Nilai"
+                    className="mt-1 border-slate-200 rounded-lg text-xs font-mono leading-relaxed"
                   />
                 </div>
 
@@ -734,10 +795,120 @@ ${letterData.fullName}`;
             {activeTab === "style" && (
               <div className="space-y-4">
                 <div>
-                  <h3 className="font-bold text-slate-900 text-sm">Kustomisasi Desain</h3>
+                  <h3 className="font-bold text-slate-900 text-sm">Kustomisasi Dokumen & Desain</h3>
                   <p className="text-slate-500 text-[11px] mt-0.5">
-                    Sesuaikan warna aksen, tipografi font, dan tanda tangan dokumen.
+                    Sesuaikan elemen surat (judul, nomor dinas, tabel), tipografi, dan warna.
                   </p>
+                </div>
+
+                {/* Struktur Khusus Surat (Custom Header & Element Toggles) */}
+                <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl space-y-3">
+                  <span className="text-xs font-bold text-slate-800 uppercase tracking-wider block">
+                    Elemen & Tata Letak Surat
+                  </span>
+
+                  {/* Toggle Judul SURAT LAMARAN KERJA */}
+                  <div className="space-y-1.5">
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={letterData.includeLetterTitle !== false}
+                        onChange={e =>
+                          setLetterData({ ...letterData, includeLetterTitle: e.target.checked })
+                        }
+                        className="w-4 h-4 rounded text-blue-600 focus:ring-blue-500 border-slate-300 cursor-pointer"
+                      />
+                      <span className="text-xs font-semibold text-slate-800">
+                        Judul Dokumen di Tengah Atas
+                      </span>
+                    </label>
+                    {letterData.includeLetterTitle !== false && (
+                      <Input
+                        value={letterData.letterTitle || "SURAT LAMARAN KERJA"}
+                        onChange={e =>
+                          setLetterData({ ...letterData, letterTitle: e.target.value })
+                        }
+                        placeholder="SURAT LAMARAN KERJA"
+                        className="h-7 text-xs border-slate-200 bg-white rounded-md mt-1"
+                      />
+                    )}
+                  </div>
+
+                  {/* Toggle Nomor Surat Kedinasan */}
+                  <div className="space-y-1.5 pt-2 border-t border-slate-200/60">
+                    <label className="flex items-start gap-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={Boolean(letterData.includeReferenceNumber)}
+                        onChange={e =>
+                          setLetterData({ ...letterData, includeReferenceNumber: e.target.checked })
+                        }
+                        className="w-4 h-4 rounded text-blue-600 focus:ring-blue-500 border-slate-300 cursor-pointer mt-0.5"
+                      />
+                      <div>
+                        <span className="text-xs font-semibold text-slate-800 block">
+                          Tampilkan Nomor Surat Kedinasan (Nomor : ...)
+                        </span>
+                        <span className="text-[10px] text-slate-500 leading-tight block">
+                          Nonaktifkan (OFF) untuk pelamar umum perseorangan. Hanya aktifkan bila instansi memerlukan penomoran arsip.
+                        </span>
+                      </div>
+                    </label>
+                    {letterData.includeReferenceNumber && (
+                      <Input
+                        value={letterData.referenceNumber || ""}
+                        onChange={e =>
+                          setLetterData({ ...letterData, referenceNumber: e.target.value })
+                        }
+                        placeholder="Contoh: LP/2026/XI/01"
+                        className="h-7 text-xs border-slate-200 bg-white rounded-md mt-1"
+                      />
+                    )}
+                  </div>
+
+                  {/* Toggle Baris Lampiran di Atas */}
+                  <div className="pt-2 border-t border-slate-200/60">
+                    <label className="flex items-start gap-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={Boolean(letterData.includeAttachmentsHeader)}
+                        onChange={e =>
+                          setLetterData({ ...letterData, includeAttachmentsHeader: e.target.checked })
+                        }
+                        className="w-4 h-4 rounded text-blue-600 focus:ring-blue-500 border-slate-300 cursor-pointer mt-0.5"
+                      />
+                      <div>
+                        <span className="text-xs font-semibold text-slate-800 block">
+                          Tampilkan Baris "Lampiran" di Header Atas
+                        </span>
+                        <span className="text-[10px] text-slate-500 leading-tight block">
+                          Menambahkan "Lampiran : 1 (Satu) Berkas Lengkap" tepat di bawah Perihal.
+                        </span>
+                      </div>
+                    </label>
+                  </div>
+
+                  {/* Toggle Tabel Biodata Ringkas */}
+                  <div className="pt-2 border-t border-slate-200/60">
+                    <label className="flex items-start gap-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={Boolean(letterData.includeBiodataTable)}
+                        onChange={e =>
+                          setLetterData({ ...letterData, includeBiodataTable: e.target.checked })
+                        }
+                        className="w-4 h-4 rounded text-blue-600 focus:ring-blue-500 border-slate-300 cursor-pointer mt-0.5"
+                      />
+                      <div>
+                        <span className="text-xs font-semibold text-slate-800 block">
+                          Tampilkan Tabel Biodata Ringkas
+                        </span>
+                        <span className="text-[10px] text-slate-500 leading-tight block">
+                          Menampilkan tabel Nama, Pendidikan, Domisili, dan No. HP di tengah surat.
+                        </span>
+                      </div>
+                    </label>
+                  </div>
                 </div>
 
                 <div>
@@ -774,14 +945,14 @@ ${letterData.fullName}`;
                       <SelectValue placeholder="Pilih font" />
                     </SelectTrigger>
                     <SelectContent className="rounded-xl border-slate-200">
+                      <SelectItem value="'Times New Roman', Times, serif" className="text-xs">
+                        Formal Times New Roman (Standar Surat Lamaran Indonesia & BUMN)
+                      </SelectItem>
                       <SelectItem value="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" className="text-xs">
                         Modern Sans (Inter / Segoe UI / Roboto)
                       </SelectItem>
                       <SelectItem value="Georgia, Cambria, serif" className="text-xs">
                         Classic Serif (Georgia / Cambria)
-                      </SelectItem>
-                      <SelectItem value="'Times New Roman', Times, serif" className="text-xs">
-                        Formal Times New Roman (Standar Internasional)
                       </SelectItem>
                       <SelectItem value="'Palatino Linotype', Palatino, serif" className="text-xs">
                         Executive Palatino (Elegan)

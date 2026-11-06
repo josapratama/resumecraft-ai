@@ -15,18 +15,22 @@ export default function FormalBUMNTemplate({ data }: { data: CoverLetterData }) 
           {data.city || "Jakarta"}, {data.date || new Date().toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })}
         </div>
 
-        {/* Hal & Lampiran (Kiri Atas) */}
+        {/* Hal & Lampiran (Kiri Atas) - Bersyarat: Hanya tampil jika diaktifkan/diisi */}
         <div className="mb-6 space-y-1">
-          <div className="flex">
-            <span className="w-24 text-slate-600">Nomor</span>
-            <span className="mr-2">:</span>
-            <span className="text-slate-800 font-mono text-xs">{data.referenceNumber || "-"}</span>
-          </div>
-          <div className="flex">
-            <span className="w-24 text-slate-600">Lampiran</span>
-            <span className="mr-2">:</span>
-            <span className="text-slate-800 font-medium">1 (Satu) Berkas Lengkap</span>
-          </div>
+          {data.includeReferenceNumber && data.referenceNumber && (
+            <div className="flex">
+              <span className="w-24 text-slate-600">Nomor</span>
+              <span className="mr-2">:</span>
+              <span className="text-slate-800 font-mono text-xs">{data.referenceNumber}</span>
+            </div>
+          )}
+          {data.includeAttachmentsHeader && (
+            <div className="flex">
+              <span className="w-24 text-slate-600">Lampiran</span>
+              <span className="mr-2">:</span>
+              <span className="text-slate-800 font-medium">1 (Satu) Berkas Lengkap</span>
+            </div>
+          )}
           <div className="flex">
             <span className="w-24 text-slate-600">Perihal</span>
             <span className="mr-2">:</span>
@@ -59,36 +63,38 @@ export default function FormalBUMNTemplate({ data }: { data: CoverLetterData }) 
             `Berdasarkan informasi lowongan pekerjaan yang saya peroleh mengenai posisi ${data.jobTitle} di ${data.companyName}, melalui surat ini saya bermaksud mengajukan permohonan diri untuk dapat bergabung dan berkontribusi sebagai tenaga profesional pada instansi/perusahaan yang Bapak/Ibu pimpin.`}
         </p>
 
-        {/* Biodata Singkat */}
-        <div className="my-3 pl-8 py-2 bg-slate-50/70 border-l-2 rounded-r-md border-slate-300 space-y-1 text-xs">
-          <div className="grid grid-cols-[130px_10px_1fr]">
-            <span className="text-slate-600">Nama Lengkap</span>
-            <span>:</span>
-            <span className="font-bold text-slate-900">{data.fullName}</span>
+        {/* Biodata Singkat (Opsional) */}
+        {data.includeBiodataTable && (
+          <div className="my-3 pl-8 py-2 bg-slate-50/70 border-l-2 rounded-r-md border-slate-300 space-y-1 text-xs">
+            <div className="grid grid-cols-[130px_10px_1fr]">
+              <span className="text-slate-600">Nama Lengkap</span>
+              <span>:</span>
+              <span className="font-bold text-slate-900">{data.fullName}</span>
+            </div>
+            <div className="grid grid-cols-[130px_10px_1fr]">
+              <span className="text-slate-600">Pendidikan Terakhir</span>
+              <span>:</span>
+              <span className="text-slate-800 font-medium">
+                {data.educationDegree ? `${data.educationDegree} - ${data.educationSchool || ""}` : "S1 Informatika"}
+              </span>
+            </div>
+            <div className="grid grid-cols-[130px_10px_1fr]">
+              <span className="text-slate-600">Domisili</span>
+              <span>:</span>
+              <span className="text-slate-800">{data.location || "Indonesia"}</span>
+            </div>
+            <div className="grid grid-cols-[130px_10px_1fr]">
+              <span className="text-slate-600">Nomor Telepon/WA</span>
+              <span>:</span>
+              <span className="text-slate-800 font-mono">{data.phone}</span>
+            </div>
+            <div className="grid grid-cols-[130px_10px_1fr]">
+              <span className="text-slate-600">Alamat Email</span>
+              <span>:</span>
+              <span className="text-slate-800 font-mono">{data.email}</span>
+            </div>
           </div>
-          <div className="grid grid-cols-[130px_10px_1fr]">
-            <span className="text-slate-600">Pendidikan Terakhir</span>
-            <span>:</span>
-            <span className="text-slate-800 font-medium">
-              {data.educationDegree ? `${data.educationDegree} - ${data.educationSchool || ""}` : "S1 Informatika"}
-            </span>
-          </div>
-          <div className="grid grid-cols-[130px_10px_1fr]">
-            <span className="text-slate-600">Domisili</span>
-            <span>:</span>
-            <span className="text-slate-800">{data.location || "Indonesia"}</span>
-          </div>
-          <div className="grid grid-cols-[130px_10px_1fr]">
-            <span className="text-slate-600">Nomor Telepon/WA</span>
-            <span>:</span>
-            <span className="text-slate-800 font-mono">{data.phone}</span>
-          </div>
-          <div className="grid grid-cols-[130px_10px_1fr]">
-            <span className="text-slate-600">Alamat Email</span>
-            <span>:</span>
-            <span className="text-slate-800 font-mono">{data.email}</span>
-          </div>
-        </div>
+        )}
 
         {/* Paragraf Inti & Kualifikasi */}
         <p className="text-justify mb-3 leading-relaxed indent-8">

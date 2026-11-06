@@ -108,3 +108,4 @@ export default function HospitalityTourismTemplate({ data }: { data: CoverLetter
     </div>
   );
 }
+

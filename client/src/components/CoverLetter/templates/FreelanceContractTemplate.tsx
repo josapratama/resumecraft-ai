@@ -121,3 +121,4 @@ export default function FreelanceContractTemplate({ data }: { data: CoverLetterD
     </div>
   );
 }
+

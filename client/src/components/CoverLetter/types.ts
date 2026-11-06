@@ -1,4 +1,5 @@
 export type CoverLetterTemplateId =
+  | "standard-indonesian"
   | "formal-bumn"
   | "modern-tech"
   | "minimalist"
@@ -66,6 +67,13 @@ export interface CoverLetterData {
   yearsOfExperience?: string;
   researchInterests?: string;
 
+  // Layout & Visibility Toggles
+  includeLetterTitle?: boolean;
+  letterTitle?: string;
+  includeReferenceNumber?: boolean;
+  includeAttachmentsHeader?: boolean;
+  includeBiodataTable?: boolean;
+
   // Visual Styling
   accentColor: string;
   fontFamily: string;
@@ -83,6 +91,15 @@ export interface CoverLetterTemplateMeta {
 }
 
 export const COVER_LETTER_TEMPLATES: CoverLetterTemplateMeta[] = [
+  {
+    id: "standard-indonesian",
+    name: "Standar Umum Pelamar Indonesia",
+    nameId: "Format Populer Tanpa Nomor",
+    badge: "Paling Populer",
+    description: "Format surat lamaran perorangan Indonesia: judul tengah bergaris bawah, tanpa nomor dinas, narasi mengalir alami dengan lampiran berkas.",
+    category: "Resmi / Nasional",
+    recommendedFor: "Semua Pelamar Kerja Umum, Bank Swasta/BUMN, Perusahaan Swasta, Fresh Graduate, Staf Administrasi",
+  },
   // 1-10 Original Templates
   {
     id: "formal-bumn",

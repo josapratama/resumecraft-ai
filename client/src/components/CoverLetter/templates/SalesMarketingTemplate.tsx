@@ -114,3 +114,4 @@ export default function SalesMarketingTemplate({ data }: { data: CoverLetterData
     </div>
   );
 }
+

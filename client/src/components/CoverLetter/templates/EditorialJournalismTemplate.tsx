@@ -103,3 +103,4 @@ export default function EditorialJournalismTemplate({ data }: { data: CoverLette
     </div>
   );
 }
+

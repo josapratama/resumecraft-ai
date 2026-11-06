@@ -84,3 +84,4 @@ export default function NordicCleanTemplate({ data }: { data: CoverLetterData })
     </div>
   );
 }
+

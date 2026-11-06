@@ -98,3 +98,4 @@ export default function ClassicVintageTemplate({ data }: { data: CoverLetterData
     </div>
   );
 }
+

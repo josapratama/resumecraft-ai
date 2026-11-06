@@ -114,3 +114,4 @@ export default function RemoteWorkTemplate({ data }: { data: CoverLetterData }) 
     </div>
   );
 }
+

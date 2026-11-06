@@ -105,3 +105,4 @@ export default function NonprofitNGOTemplate({ data }: { data: CoverLetterData }
     </div>
   );
 }
+

@@ -109,3 +109,4 @@ export default function LegalConsultingTemplate({ data }: { data: CoverLetterDat
     </div>
   );
 }
+

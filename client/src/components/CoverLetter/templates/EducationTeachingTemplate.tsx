@@ -110,3 +110,4 @@ export default function EducationTeachingTemplate({ data }: { data: CoverLetterD
     </div>
   );
 }
+

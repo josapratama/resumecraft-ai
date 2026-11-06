@@ -96,3 +96,4 @@ export default function StartupPitchTemplate({ data }: { data: CoverLetterData }
     </div>
   );
 }
+

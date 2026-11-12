@@ -1,5 +1,6 @@
 import React from "react";
 import type { CoverLetterData } from "../types";
+import SignatureDisplay from "../SignatureDisplay";
 
 export default function MinimalistTemplate({ data }: { data: CoverLetterData }) {
   const accent = data.accentColor || "#0f172a";
@@ -81,6 +82,9 @@ export default function MinimalistTemplate({ data }: { data: CoverLetterData }) 
       {/* Clean Sign-off */}
       <div className="pt-6 border-t border-neutral-200">
         <p className="text-xs text-neutral-500">{data.signOff || "Respectfully,"}</p>
+        {data.includeSignature && (
+          <SignatureDisplay data={data} className="h-12 flex items-center justify-start my-1" />
+        )}
         <p className="text-sm font-bold text-neutral-900 mt-2">{data.fullName}</p>
       </div>
     </div>

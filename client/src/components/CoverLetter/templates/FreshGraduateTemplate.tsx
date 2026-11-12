@@ -1,5 +1,6 @@
 import React from "react";
 import type { CoverLetterData } from "../types";
+import SignatureDisplay from "../SignatureDisplay";
 import { GraduationCap, Award, BookOpen } from "lucide-react";
 
 export default function FreshGraduateTemplate({ data }: { data: CoverLetterData }) {
@@ -105,9 +106,7 @@ export default function FreshGraduateTemplate({ data }: { data: CoverLetterData 
       <div className="pt-4 border-t border-slate-100 flex justify-end">
         <div className="text-center min-w-[180px]">
           <p className="text-xs text-slate-600">{data.signOff || "Hormat saya,"}</p>
-          <div className="h-14 flex items-center justify-center italic text-slate-500">
-            {data.includeSignature ? data.fullName : ""}
-          </div>
+          <SignatureDisplay data={data} className="h-14 flex items-center justify-center" />
           <p className="font-bold text-slate-900 text-xs border-b border-slate-800 pb-0.5 inline-block">
             {data.fullName}
           </p>

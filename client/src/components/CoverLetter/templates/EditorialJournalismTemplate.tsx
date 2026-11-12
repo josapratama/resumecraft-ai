@@ -1,5 +1,6 @@
 import React from "react";
 import type { CoverLetterData } from "../types";
+import SignatureDisplay from "../SignatureDisplay";
 import { Newspaper, Feather, Quote } from "lucide-react";
 
 export default function EditorialJournalismTemplate({ data }: { data: CoverLetterData }) {
@@ -92,9 +93,7 @@ export default function EditorialJournalismTemplate({ data }: { data: CoverLette
       <div className="pt-4 border-t border-stone-300 flex justify-end font-sans">
         <div className="text-center min-w-[180px]">
           <p className="text-xs text-stone-600">{data.signOff || "Salam takzim,"}</p>
-          <div className="h-14 flex items-center justify-center italic text-stone-600 font-serif text-sm">
-            {data.includeSignature ? data.fullName : ""}
-          </div>
+          <SignatureDisplay data={data} className="h-14 flex items-center justify-center" />
           <p className="font-bold text-stone-900 text-xs border-b border-stone-800 pb-0.5 inline-block">
             {data.fullName}
           </p>

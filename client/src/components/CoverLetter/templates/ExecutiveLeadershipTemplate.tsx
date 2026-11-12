@@ -1,5 +1,6 @@
 import React from "react";
 import type { CoverLetterData } from "../types";
+import SignatureDisplay from "../SignatureDisplay";
 import { ShieldCheck, TrendingUp, Users } from "lucide-react";
 
 export default function ExecutiveLeadershipTemplate({ data }: { data: CoverLetterData }) {
@@ -112,9 +113,7 @@ export default function ExecutiveLeadershipTemplate({ data }: { data: CoverLette
       {/* Executive Sign-off */}
       <div className="pt-6 border-t border-slate-200">
         <p className="text-xs text-slate-600">{data.signOff || "Respectfully submitted,"}</p>
-        <div className="h-14 flex items-center italic text-slate-700 text-base">
-          {data.includeSignature ? data.fullName : ""}
-        </div>
+        <SignatureDisplay data={data} className="h-14 flex items-center justify-start" />
         <p className="font-bold text-slate-900 text-sm tracking-wide">{data.fullName}</p>
       </div>
     </div>

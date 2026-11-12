@@ -78,6 +78,8 @@ export interface CoverLetterData {
   accentColor: string;
   fontFamily: string;
   includeSignature: boolean;
+  signatureDataUrl?: string;
+  signatureType?: "draw" | "upload" | "font" | "text";
 }
 
 export interface CoverLetterTemplateMeta {

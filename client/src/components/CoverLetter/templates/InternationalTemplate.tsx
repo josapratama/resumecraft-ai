@@ -1,5 +1,6 @@
 import React from "react";
 import type { CoverLetterData } from "../types";
+import SignatureDisplay from "../SignatureDisplay";
 
 export default function InternationalTemplate({ data }: { data: CoverLetterData }) {
   const accent = data.accentColor || "#1e293b";
@@ -75,15 +76,7 @@ export default function InternationalTemplate({ data }: { data: CoverLetterData 
       {/* Formal US/UK Sign-off */}
       <div className="pt-6">
         <p className="text-xs text-slate-700">{data.signOff || "Sincerely,"}</p>
-        <div className="h-16 flex items-center">
-          {data.includeSignature ? (
-            <span className="font-serif italic text-base text-slate-700">
-              {data.fullName}
-            </span>
-          ) : (
-            <div className="h-12" />
-          )}
-        </div>
+        <SignatureDisplay data={data} className="h-16 flex items-center justify-start" />
         <p className="font-bold text-slate-900 text-sm">{data.fullName}</p>
         <p className="text-xs text-slate-500 mt-0.5">Enclosures: Resume, Portfolio</p>
       </div>

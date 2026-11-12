@@ -1,5 +1,6 @@
 import React from "react";
 import type { CoverLetterData } from "../types";
+import SignatureDisplay from "../SignatureDisplay";
 import { Utensils, Star, Smile } from "lucide-react";
 
 export default function HospitalityTourismTemplate({ data }: { data: CoverLetterData }) {
@@ -97,9 +98,7 @@ export default function HospitalityTourismTemplate({ data }: { data: CoverLetter
       <div className="pt-4 border-t border-slate-200 flex justify-end font-sans">
         <div className="text-center min-w-[180px]">
           <p className="text-xs text-slate-600">{data.signOff || "Salam hangat & hormat saya,"}</p>
-          <div className="h-14 flex items-center justify-center italic text-slate-600 font-serif text-sm">
-            {data.includeSignature ? data.fullName : ""}
-          </div>
+          <SignatureDisplay data={data} className="h-14 flex items-center justify-center" />
           <p className="font-bold text-slate-900 text-xs border-b border-slate-800 pb-0.5 inline-block">
             {data.fullName}
           </p>

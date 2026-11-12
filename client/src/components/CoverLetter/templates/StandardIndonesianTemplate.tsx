@@ -1,5 +1,6 @@
 import React from "react";
 import type { CoverLetterData } from "../types";
+import SignatureDisplay from "../SignatureDisplay";
 
 export default function StandardIndonesianTemplate({ data }: { data: CoverLetterData }) {
   return (
@@ -135,15 +136,7 @@ export default function StandardIndonesianTemplate({ data }: { data: CoverLetter
       <div className="pt-4 flex justify-end">
         <div className="text-center min-w-[200px]">
           <p className="text-slate-800 font-medium">{data.signOff || "Hormat Saya,"}</p>
-          <div className="h-16 flex items-center justify-center">
-            {data.includeSignature ? (
-              <span className="font-serif italic text-lg text-slate-700">
-                {data.fullName}
-              </span>
-            ) : (
-              <div className="h-12" />
-            )}
-          </div>
+          <SignatureDisplay data={data} />
           <p className="font-bold text-slate-900 text-sm">
             {data.fullName}
           </p>

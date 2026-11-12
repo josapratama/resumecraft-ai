@@ -8,6 +8,7 @@ import {
 } from "./types";
 import { COVER_LETTER_TEMPLATE_COMPONENTS } from "./templates";
 import { exportCoverLetterToPDF } from "./exportCoverLetterPDF";
+import { SignaturePadModal } from "./SignaturePadModal";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -36,6 +37,9 @@ import {
   Maximize2,
   Filter,
   RotateCcw,
+  PenTool,
+  Trash2,
+  Image as ImageIcon,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -162,6 +166,7 @@ export default function CoverLetterWorkspace({
   const [zoomLevel, setZoomLevel] = useState<number>(85);
   const [copied, setCopied] = useState(false);
   const [copiedSubject, setCopiedSubject] = useState(false);
+  const [isSignatureModalOpen, setIsSignatureModalOpen] = useState(false);
 
   // AI input states with generic professional defaults
   const [companyName, setCompanyName] = useState("PT Perusahaan Tujuan");
@@ -1074,17 +1079,83 @@ ${letterData.fullName}`;
                       </Select>
                     </div>
 
-                    <div className="pt-2 border-t border-slate-100 flex items-center justify-between">
-                      <div>
-                        <p className="font-semibold text-slate-900 text-xs">Tanda Tangan Digital</p>
-                        <p className="text-[11px] text-slate-500">Tampilkan tulisan tanda tangan di atas nama</p>
+                    <div className="pt-2 border-t border-slate-100 space-y-2">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="font-semibold text-slate-900 text-xs">Tanda Tangan Digital</p>
+                          <p className="text-[11px] text-slate-500">Tampilkan tanda tangan di atas nama</p>
+                        </div>
+                        <input
+                          type="checkbox"
+                          checked={letterData.includeSignature}
+                          onChange={e => setLetterData({ ...letterData, includeSignature: e.target.checked })}
+                          className="w-4 h-4 rounded text-blue-600 focus:ring-blue-500 border-slate-300 cursor-pointer"
+                        />
                       </div>
-                      <input
-                        type="checkbox"
-                        checked={letterData.includeSignature}
-                        onChange={e => setLetterData({ ...letterData, includeSignature: e.target.checked })}
-                        className="w-4 h-4 rounded text-blue-600 focus:ring-blue-500 border-slate-300 cursor-pointer"
-                      />
+
+                      {letterData.includeSignature && (
+                        <div>
+                          {letterData.signatureDataUrl ? (
+                            <div className="p-2.5 bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-between gap-2">
+                              <div className="flex items-center gap-2.5 min-w-0">
+                                <div className="w-16 h-10 bg-white rounded-lg border border-slate-200 flex items-center justify-center p-1 shrink-0 shadow-2xs overflow-hidden">
+                                  <img
+                                    src={letterData.signatureDataUrl}
+                                    alt="Tanda Tangan Digital"
+                                    className="max-h-full max-w-full object-contain mix-blend-multiply"
+                                  />
+                                </div>
+                                <div className="min-w-0">
+                                  <p className="text-xs font-semibold text-slate-800 truncate">
+                                    Tanda Tangan Khusus
+                                  </p>
+                                  <span className="inline-flex items-center text-[10px] text-emerald-600 font-medium">
+                                    ● Terpasang di Dokumen
+                                  </span>
+                                </div>
+                              </div>
+                              <div className="flex items-center gap-1 shrink-0">
+                                <button
+                                  type="button"
+                                  onClick={() => setIsSignatureModalOpen(true)}
+                                  className="p-1.5 text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-lg text-xs font-medium transition-colors"
+                                  title="Ubah / Gambar Ulang"
+                                >
+                                  <PenTool className="w-3.5 h-3.5" />
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    setLetterData({
+                                      ...letterData,
+                                      signatureDataUrl: undefined,
+                                      signatureType: undefined,
+                                    })
+                                  }
+                                  className="p-1.5 text-rose-500 hover:text-rose-700 hover:bg-rose-50 rounded-lg text-xs font-medium transition-colors"
+                                  title="Hapus (Gunakan Font Standar)"
+                                >
+                                  <Trash2 className="w-3.5 h-3.5" />
+                                </button>
+                              </div>
+                            </div>
+                          ) : (
+                            <div className="space-y-1.5">
+                              <button
+                                type="button"
+                                onClick={() => setIsSignatureModalOpen(true)}
+                                className="w-full py-2 px-3 bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200/80 rounded-xl text-xs font-semibold flex items-center justify-center gap-2 transition-colors shadow-2xs cursor-pointer"
+                              >
+                                <PenTool className="w-3.5 h-3.5" />
+                                Gambar / Upload Tanda Tangan
+                              </button>
+                              <p className="text-[10px] text-slate-400 text-center">
+                                Bisa gambar dengan jari/mouse, upload file PNG, atau pilih kaligrafi
+                              </p>
+                            </div>
+                          )}
+                        </div>
+                      )}
                     </div>
                   </div>
                 )}
@@ -1146,6 +1217,23 @@ ${letterData.fullName}`;
           </div>
         </main>
       </div>
+
+      {/* Interactive Digital Signature Drawing / Upload Modal */}
+      <SignaturePadModal
+        isOpen={isSignatureModalOpen}
+        onClose={() => setIsSignatureModalOpen(false)}
+        initialSignature={letterData.signatureDataUrl}
+        fullName={letterData.fullName}
+        onSave={(dataUrl, type) => {
+          setLetterData(prev => ({
+            ...prev,
+            includeSignature: true,
+            signatureDataUrl: dataUrl,
+            signatureType: type,
+          }));
+          toast.success("Tanda tangan digital berhasil diterapkan!");
+        }}
+      />
     </div>
   );
 }

@@ -1,5 +1,6 @@
 import React from "react";
 import type { CoverLetterData } from "../types";
+import SignatureDisplay from "../SignatureDisplay";
 import { RefreshCw, ArrowRight } from "lucide-react";
 
 export default function CareerSwitchTemplate({ data }: { data: CoverLetterData }) {
@@ -96,6 +97,9 @@ export default function CareerSwitchTemplate({ data }: { data: CoverLetterData }
       <div className="pt-4 border-t border-slate-100 flex justify-between items-center">
         <div>
           <p className="text-xs text-slate-500">{data.signOff || "Hormat saya,"}</p>
+          {data.includeSignature && (
+            <SignatureDisplay data={data} className="h-12 flex items-center justify-start my-1" />
+          )}
           <p className="text-sm font-bold text-slate-900 mt-1">{data.fullName}</p>
         </div>
         <div className="text-right text-[11px] text-slate-400 font-mono">

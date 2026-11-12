@@ -1,5 +1,6 @@
 import React from "react";
 import type { CoverLetterData } from "../types";
+import SignatureDisplay from "../SignatureDisplay";
 import { Mail, Phone, MapPin, Globe, CheckCircle2, ArrowUpRight } from "lucide-react";
 
 export default function ModernTechTemplate({ data }: { data: CoverLetterData }) {
@@ -111,6 +112,9 @@ export default function ModernTechTemplate({ data }: { data: CoverLetterData }) 
       <div className="pt-4 border-t border-slate-100 flex items-center justify-between">
         <div>
           <p className="text-xs text-slate-500">{data.signOff || "Sincerely,"}</p>
+          {data.includeSignature && (
+            <SignatureDisplay data={data} className="h-12 flex items-center justify-start my-1" />
+          )}
           <p className="text-sm font-bold text-slate-900 mt-1">{data.fullName}</p>
           <p className="text-[11px] text-slate-500 font-mono">{data.email} · {data.phone}</p>
         </div>

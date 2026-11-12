@@ -1,5 +1,6 @@
 import React from "react";
 import type { CoverLetterData } from "../types";
+import SignatureDisplay from "../SignatureDisplay";
 import { BookOpen, FileCode, Milestone } from "lucide-react";
 
 export default function AcademicResearchTemplate({ data }: { data: CoverLetterData }) {
@@ -113,9 +114,7 @@ export default function AcademicResearchTemplate({ data }: { data: CoverLetterDa
       <div className="pt-4 border-t border-slate-200 flex justify-end">
         <div className="text-center min-w-[200px]">
           <p className="text-xs text-slate-600">{data.signOff || "Hormat saya,"}</p>
-          <div className="h-14 flex items-center justify-center italic text-slate-600 text-sm">
-            {data.includeSignature ? data.fullName : ""}
-          </div>
+          <SignatureDisplay data={data} className="h-14 flex items-center justify-center" />
           <p className="font-bold text-slate-900 text-xs border-b border-slate-900 pb-0.5 inline-block">
             {data.fullName}
           </p>

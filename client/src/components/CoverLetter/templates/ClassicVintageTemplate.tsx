@@ -1,5 +1,6 @@
 import React from "react";
 import type { CoverLetterData } from "../types";
+import SignatureDisplay from "../SignatureDisplay";
 
 export default function ClassicVintageTemplate({ data }: { data: CoverLetterData }) {
   const accent = data.accentColor || "#1e293b";
@@ -87,9 +88,7 @@ export default function ClassicVintageTemplate({ data }: { data: CoverLetterData
       <div className="pt-4 border-t border-slate-300 flex justify-end font-sans">
         <div className="text-center min-w-[200px]">
           <p className="text-xs text-slate-700 italic font-serif">{data.signOff || "Hormat dan takzim saya,"}</p>
-          <div className="h-14 flex items-center justify-center italic text-slate-700 text-base font-serif">
-            {data.includeSignature ? data.fullName : ""}
-          </div>
+          <SignatureDisplay data={data} className="h-14 flex items-center justify-center" />
           <p className="font-bold text-slate-900 text-xs border-b border-slate-900 pb-0.5 inline-block">
             {data.fullName}
           </p>

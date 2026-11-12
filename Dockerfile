@@ -23,6 +23,7 @@ COPY client ./client
 COPY server ./server
 COPY shared ./shared
 COPY drizzle ./drizzle
+COPY scripts ./scripts
 
 # Build frontend (Vite) and backend (esbuild)
 RUN pnpm build

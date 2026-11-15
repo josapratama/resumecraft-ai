@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 import { toast } from "sonner";
 import { trpc } from "@/lib/trpc";
-import { Sparkles, User, Lock, ArrowRight, CheckCircle2 } from "lucide-react";
+import { Sparkles, User, Lock, ArrowRight, CheckCircle2, Shield } from "lucide-react";
 import { Spinner } from "@/components/ui/spinner";
 
 type Mode = "login" | "register";
@@ -18,7 +18,35 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
   const [loading, setLoading] = useState(false);
+  const [authHubConfig, setAuthHubConfig] = useState<{
+    enabled: boolean;
+    authhub_url: string;
+    client_id: string;
+  } | null>(null);
   const utils = trpc.useUtils();
+
+  useEffect(() => {
+    fetch("/api/auth/authhub/config")
+      .then((r) => r.json())
+      .then((data) => {
+        if (data?.enabled) setAuthHubConfig(data);
+      })
+      .catch(() => {});
+  }, []);
+
+  const handleAuthHubLogin = () => {
+    if (!authHubConfig) return;
+    const state = Math.random().toString(36).substring(2) + Date.now().toString(36);
+    sessionStorage.setItem("authhub_sso_state", state);
+    const params = new URLSearchParams({
+      client_id: authHubConfig.client_id,
+      redirect_uri: `${window.location.origin}/auth/callback`,
+      response_type: "code",
+      state,
+      scope: "openid profile email roles permissions",
+    });
+    window.location.href = `${authHubConfig.authhub_url}/oauth/authorize?${params.toString()}`;
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -121,6 +149,28 @@ export default function Login() {
               Register
             </button>
           </div>
+
+          {authHubConfig?.enabled && (
+            <div className="space-y-3 mb-5">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handleAuthHubLogin}
+                className="w-full flex items-center justify-center gap-2 border-neutral-200 hover:bg-neutral-50 text-neutral-800 font-semibold py-2.5 h-11 rounded-xl transition-all shadow-xs"
+              >
+                <Shield className="w-4 h-4 text-amber-500 flex-shrink-0" />
+                <span>Masuk via AuthHub SSO (YubiKey PIN)</span>
+              </Button>
+
+              <div className="relative flex items-center justify-center pt-2">
+                <div className="border-t border-neutral-200 w-full" />
+                <span className="bg-white px-3 text-[11px] uppercase tracking-wider text-neutral-400 font-medium">
+                  atau login lokal
+                </span>
+                <div className="border-t border-neutral-200 w-full" />
+              </div>
+            </div>
+          )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
             {mode === "register" && (

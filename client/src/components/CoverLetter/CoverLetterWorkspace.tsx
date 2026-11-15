@@ -181,6 +181,24 @@ export default function CoverLetterWorkspace({
   const [letterData, setLetterData] = useState<CoverLetterData>(() =>
     getInitialCoverLetterData(cvData, defaultRole)
   );
+  const [cloudSaved, setCloudSaved] = useState<boolean>(false);
+  const [isSavingCloud, setIsSavingCloud] = useState<boolean>(false);
+
+  // tRPC query to load persisted cover letter from MySQL database
+  const coverLetterQuery = trpc.cv.coverLetter.get.useQuery(
+    { cvId },
+    { enabled: !!cvId }
+  );
+
+  const saveCoverLetterMutation = trpc.cv.coverLetter.save.useMutation({
+    onSuccess: () => {
+      setCloudSaved(true);
+      setIsSavingCloud(false);
+    },
+    onError: () => {
+      setIsSavingCloud(false);
+    },
+  });
 
   // Local state for raw attachments textarea so Enter newline is never stripped
   const [attachmentsText, setAttachmentsText] = useState<string>(() =>
@@ -202,8 +220,27 @@ export default function CoverLetterWorkspace({
     }
   }, [letterData.attachments]);
 
-  // Load saved draft if exists in localStorage
+  // Load saved draft: First check MySQL cloud DB via tRPC, fallback to localStorage
   useEffect(() => {
+    if (coverLetterQuery.data) {
+      const dbRecord = coverLetterQuery.data;
+      if (dbRecord.template) {
+        setSelectedTemplate(dbRecord.template as CoverLetterTemplateId);
+      }
+      if (dbRecord.data && typeof dbRecord.data === "object") {
+        const d = dbRecord.data as Partial<CoverLetterData>;
+        setLetterData(prev => ({
+          ...prev,
+          ...d,
+          fullName: cvData?.personalInfo?.fullName || d.fullName || prev.fullName,
+          email: cvData?.personalInfo?.email || d.email || prev.email,
+          phone: cvData?.personalInfo?.phone || d.phone || prev.phone,
+        }));
+      }
+      setCloudSaved(true);
+      return;
+    }
+
     try {
       const saved = localStorage.getItem(`cover_letter_draft_${cvId}`);
       if (saved) {
@@ -213,7 +250,6 @@ export default function CoverLetterWorkspace({
           setLetterData(prev => ({
             ...prev,
             ...parsed.letterData,
-            // Sync personal identity from active CV data if present
             fullName: cvData?.personalInfo?.fullName || parsed.letterData.fullName || prev.fullName,
             email: cvData?.personalInfo?.email || parsed.letterData.email || prev.email,
             phone: cvData?.personalInfo?.phone || parsed.letterData.phone || prev.phone,
@@ -225,9 +261,9 @@ export default function CoverLetterWorkspace({
     } catch {
       // ignore
     }
-  }, [cvId, cvData, defaultRole]);
+  }, [cvId, cvData, defaultRole, coverLetterQuery.data]);
 
-  // Auto-save draft
+  // Auto-save draft to localStorage and debounce persist to MySQL
   useEffect(() => {
     try {
       localStorage.setItem(
@@ -237,6 +273,21 @@ export default function CoverLetterWorkspace({
     } catch {
       // ignore
     }
+
+    setIsSavingCloud(true);
+    const timer = setTimeout(() => {
+      saveCoverLetterMutation.mutate({
+        cvId,
+        template: selectedTemplate,
+        title: letterData.subject || "Surat Lamaran Kerja",
+        recipientCompany: letterData.companyName,
+        recipientName: letterData.recipientName,
+        jobTitle: letterData.jobTitle,
+        data: letterData as any,
+      });
+    }, 1500);
+
+    return () => clearTimeout(timer);
   }, [cvId, selectedTemplate, letterData]);
 
   // Filter templates
@@ -385,6 +436,15 @@ ${letterData.fullName}`;
               <span className="text-[10px] font-semibold bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">
                 25 Format Standar
               </span>
+              {cloudSaved ? (
+                <span className="text-[10px] font-medium bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full flex items-center gap-1">
+                  <Check className="w-3 h-3" /> Tersimpan di Database
+                </span>
+              ) : isSavingCloud ? (
+                <span className="text-[10px] text-slate-500 animate-pulse">
+                  Menyimpan ke Cloud...
+                </span>
+              ) : null}
             </h1>
             <p className="text-[11px] text-slate-500 hidden sm:block">
               {COVER_LETTER_TEMPLATES.find(t => t.id === selectedTemplate)?.name}

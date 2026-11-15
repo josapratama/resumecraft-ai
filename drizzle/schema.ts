@@ -1,5 +1,6 @@
 import {
   int,
+  json,
   mysqlEnum,
   mysqlTable,
   text,
@@ -14,6 +15,8 @@ export const users = mysqlTable("users", {
   name: text("name"),
   email: varchar("email", { length: 320 }),
   role: mysqlEnum("role", ["user", "admin"]).default("user").notNull(),
+  authProvider: varchar("authProvider", { length: 32 }).default("local").notNull(),
+  authHubId: varchar("authHubId", { length: 128 }),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
   lastSignedIn: timestamp("lastSignedIn").defaultNow().notNull(),
@@ -219,3 +222,24 @@ export const customSections = mysqlTable("customSections", {
 
 export type CustomSection = typeof customSections.$inferSelect;
 export type InsertCustomSection = typeof customSections.$inferInsert;
+
+export const coverLetters = mysqlTable("coverLetters", {
+  id: int("id").autoincrement().primaryKey(),
+  cvId: int("cvId")
+    .notNull()
+    .references(() => cvs.id),
+  userId: int("userId")
+    .notNull()
+    .references(() => users.id),
+  template: varchar("template", { length: 64 }).default("standard-indonesian").notNull(),
+  title: varchar("title", { length: 255 }).default("Surat Lamaran Kerja").notNull(),
+  recipientCompany: varchar("recipientCompany", { length: 255 }),
+  recipientName: varchar("recipientName", { length: 255 }),
+  jobTitle: varchar("jobTitle", { length: 255 }),
+  data: json("data").notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type CoverLetter = typeof coverLetters.$inferSelect;
+export type InsertCoverLetter = typeof coverLetters.$inferInsert;

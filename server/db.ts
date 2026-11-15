@@ -23,6 +23,9 @@ import {
   InsertLanguage,
   customSections,
   InsertCustomSection,
+  coverLetters,
+  CoverLetter,
+  InsertCoverLetter,
 } from "../drizzle/schema";
 
 // Pool-based connection — required for Drizzle transactions (which need a
@@ -88,6 +91,84 @@ export async function getUserByUsername(username: string) {
     .where(eq(users.username, username))
     .limit(1);
   return result[0];
+}
+
+export async function getUserByAuthHubId(authHubId: string) {
+  const db = await getDb();
+  if (!db) return undefined;
+  const result = await db
+    .select()
+    .from(users)
+    .where(eq(users.authHubId, authHubId))
+    .limit(1);
+  return result[0];
+}
+
+export async function getUserByEmail(email: string) {
+  const db = await getDb();
+  if (!db) return undefined;
+  const result = await db
+    .select()
+    .from(users)
+    .where(eq(users.email, email))
+    .limit(1);
+  return result[0];
+}
+
+export async function upsertAuthHubUser(data: {
+  authHubId: string;
+  email?: string;
+  username: string;
+  name?: string;
+  role?: "user" | "admin";
+}) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  // 1. Try finding by authHubId
+  let user = await getUserByAuthHubId(data.authHubId);
+
+  // 2. Try finding by email or username if not linked yet
+  if (!user && data.email) {
+    user = await getUserByEmail(data.email);
+  }
+  if (!user) {
+    user = await getUserByUsername(data.username);
+  }
+
+  if (user) {
+    // Update existing user with authHub link & role
+    await db
+      .update(users)
+      .set({
+        authHubId: data.authHubId,
+        authProvider: "authhub",
+        email: data.email || user.email,
+        name: data.name || user.name,
+        role: data.role || user.role,
+        lastSignedIn: new Date(),
+      })
+      .where(eq(users.id, user.id));
+
+    const updated = await getUserById(user.id);
+    return updated!;
+  }
+
+  // 3. Create new user
+  const randomPwdHash = "$2a$10$AuthHubSSO" + Math.random().toString(36).substring(2);
+  await db.insert(users).values({
+    username: data.username,
+    passwordHash: randomPwdHash,
+    name: data.name ?? data.username,
+    email: data.email,
+    role: data.role ?? "user",
+    authProvider: "authhub",
+    authHubId: data.authHubId,
+    lastSignedIn: new Date(),
+  });
+
+  const created = await getUserByUsername(data.username);
+  return created!;
 }
 
 export async function getUserById(userId: number) {
@@ -299,6 +380,7 @@ export async function deleteCV(cvId: number) {
   // Run all deletes inside a transaction so a mid-flight crash
   // doesn't leave orphaned rows or a ghost CV entry.
   await db.transaction(async tx => {
+    await tx.delete(coverLetters).where(eq(coverLetters.cvId, cvId));
     await tx.delete(languages).where(eq(languages.cvId, cvId));
     await tx.delete(customSections).where(eq(customSections.cvId, cvId));
     await tx.delete(certifications).where(eq(certifications.cvId, cvId));
@@ -1209,4 +1291,79 @@ export async function bulkCreateCVFromParsedData(
 
     return newCV;
   });
+}
+
+// ─── Cover Letter Operations ──────────────────────────────────────────────────
+
+export async function getCoverLetterByCvId(cvId: number) {
+  const db = await getDb();
+  if (!db) return undefined;
+  const result = await db
+    .select()
+    .from(coverLetters)
+    .where(eq(coverLetters.cvId, cvId))
+    .limit(1);
+  return result[0];
+}
+
+export async function listCoverLettersByUserId(userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  return db
+    .select()
+    .from(coverLetters)
+    .where(eq(coverLetters.userId, userId))
+    .orderBy(sql`${coverLetters.updatedAt} DESC`);
+}
+
+export async function saveCoverLetter(data: {
+  cvId: number;
+  userId: number;
+  template: string;
+  title: string;
+  recipientCompany?: string;
+  recipientName?: string;
+  jobTitle?: string;
+  data: any;
+}) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  const existing = await getCoverLetterByCvId(data.cvId);
+  if (existing) {
+    await db
+      .update(coverLetters)
+      .set({
+        template: data.template,
+        title: data.title,
+        recipientCompany: data.recipientCompany ?? null,
+        recipientName: data.recipientName ?? null,
+        jobTitle: data.jobTitle ?? null,
+        data: data.data,
+        updatedAt: new Date(),
+      })
+      .where(eq(coverLetters.id, existing.id));
+
+    return getCoverLetterByCvId(data.cvId);
+  }
+
+  await db.insert(coverLetters).values({
+    cvId: data.cvId,
+    userId: data.userId,
+    template: data.template,
+    title: data.title,
+    recipientCompany: data.recipientCompany ?? null,
+    recipientName: data.recipientName ?? null,
+    jobTitle: data.jobTitle ?? null,
+    data: data.data,
+  });
+
+  return getCoverLetterByCvId(data.cvId);
+}
+
+export async function deleteCoverLetter(cvId: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.delete(coverLetters).where(eq(coverLetters.cvId, cvId));
+  return { success: true };
 }

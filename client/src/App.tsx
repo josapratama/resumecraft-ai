@@ -9,12 +9,14 @@ import Home from "./pages/Home";
 import CVEditor from "./pages/CVEditor";
 import Login from "./pages/Login";
 import PublicCV from "./pages/PublicCV";
+import AuthCallback from "./pages/AuthCallback";
 
 function Router() {
   return (
     <Switch>
       <Route path="/" component={Home} />
       <Route path="/login" component={Login} />
+      <Route path="/auth/callback" component={AuthCallback} />
       <Route path="/cv/:cvId" component={CVEditor} />
       <Route path="/p/:slug" component={PublicCV} />
       <Route path="/share/:slug" component={PublicCV} />
@@ -27,7 +29,7 @@ function Router() {
 function App() {
   return (
     <ErrorBoundary>
-      <ThemeProvider defaultTheme="light">
+      <ThemeProvider defaultTheme="light" switchable={true}>
         <I18nProvider>
           <TooltipProvider>
             <Toaster />

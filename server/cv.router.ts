@@ -52,6 +52,10 @@ import {
   reorderCustomSections,
   getCVByShareSlug,
   incrementCVViews,
+  getCoverLetterByCvId,
+  saveCoverLetter,
+  deleteCoverLetter,
+  listCoverLettersByUserId,
 } from "./db";
 
 const templateEnum = z.enum([
@@ -916,4 +920,58 @@ export const cvRouter = router({
         targetRole: input.targetRole,
       });
     }),
+
+  coverLetter: router({
+    get: protectedProcedure
+      .input(z.object({ cvId: z.number() }))
+      .query(async ({ ctx, input }) => {
+        const cv = await getCVById(input.cvId);
+        if (!cv) throw new TRPCError({ code: "NOT_FOUND", message: "CV not found" });
+        if (cv.userId !== ctx.user.id) throw new TRPCError({ code: "FORBIDDEN", message: "Unauthorized" });
+        return getCoverLetterByCvId(input.cvId);
+      }),
+
+    save: protectedProcedure
+      .input(
+        z.object({
+          cvId: z.number(),
+          template: z.string().default("standard-indonesian"),
+          title: z.string().default("Surat Lamaran Kerja"),
+          recipientCompany: z.string().optional(),
+          recipientName: z.string().optional(),
+          jobTitle: z.string().optional(),
+          data: z.record(z.string(), z.any()),
+        })
+      )
+      .mutation(async ({ ctx, input }) => {
+        const cv = await getCVById(input.cvId);
+        if (!cv) throw new TRPCError({ code: "NOT_FOUND", message: "CV not found" });
+        if (cv.userId !== ctx.user.id) throw new TRPCError({ code: "FORBIDDEN", message: "Unauthorized" });
+
+        return saveCoverLetter({
+          cvId: input.cvId,
+          userId: ctx.user.id,
+          template: input.template,
+          title: input.title,
+          recipientCompany: input.recipientCompany,
+          recipientName: input.recipientName,
+          jobTitle: input.jobTitle,
+          data: input.data,
+        });
+      }),
+
+    delete: protectedProcedure
+      .input(z.object({ cvId: z.number() }))
+      .mutation(async ({ ctx, input }) => {
+        const cv = await getCVById(input.cvId);
+        if (!cv) throw new TRPCError({ code: "NOT_FOUND", message: "CV not found" });
+        if (cv.userId !== ctx.user.id) throw new TRPCError({ code: "FORBIDDEN", message: "Unauthorized" });
+        return deleteCoverLetter(input.cvId);
+      }),
+
+    list: protectedProcedure
+      .query(async ({ ctx }) => {
+        return listCoverLettersByUserId(ctx.user.id);
+      }),
+  }),
 });

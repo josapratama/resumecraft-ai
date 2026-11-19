@@ -37,6 +37,7 @@ import {
   Maximize2,
   Filter,
   RotateCcw,
+  RefreshCw,
   PenTool,
   Trash2,
   Image as ImageIcon,
@@ -413,6 +414,38 @@ ${letterData.fullName}`;
     }
   };
 
+  const handleSyncFromCV = () => {
+    if (!cvData) {
+      toast.error("Data CV belum termuat");
+      return;
+    }
+    const fullName = cvData.personalInfo?.fullName || letterData.fullName;
+    const email = cvData.personalInfo?.email || letterData.email;
+    const phone = cvData.personalInfo?.phone || letterData.phone;
+    const location = cvData.personalInfo?.location || letterData.location;
+    const targetRole = cvData.cv.targetRole || defaultRole || letterData.targetRole;
+    const photoUrl = cvData.personalInfo?.photoUrl ?? letterData.photoUrl;
+    const portfolioUrl = cvData.cv.portfolioUrl || cvData.projects?.[0]?.link || letterData.portfolioUrl;
+    const educationDegree = cvData.educations?.[0]?.degree || letterData.educationDegree;
+    const educationSchool = cvData.educations?.[0]?.school || letterData.educationSchool;
+    const educationGpa = cvData.educations?.[0]?.description?.match(/\d+\.\d+/)?.[0] || letterData.educationGpa;
+
+    setLetterData(prev => ({
+      ...prev,
+      fullName,
+      email,
+      phone,
+      location,
+      targetRole,
+      photoUrl,
+      portfolioUrl,
+      educationDegree,
+      educationSchool,
+      educationGpa,
+    }));
+    toast.success("Biodata & profil surat berhasil disinkronkan dengan CV terkini!");
+  };
+
   // Render the selected template component
   const ActiveTemplateComponent =
     COVER_LETTER_TEMPLATE_COMPONENTS[selectedTemplate] ||
@@ -488,6 +521,17 @@ ${letterData.fullName}`;
               EN (Global)
             </button>
           </div>
+
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleSyncFromCV}
+            className="text-xs gap-1.5 h-8 border-slate-200 hover:bg-slate-50 text-slate-700 font-medium"
+            title="Sinkronkan nama, kontak, foto, dan posisi terbaru dari CV ke surat ini"
+          >
+            <RefreshCw className="w-3.5 h-3.5 text-blue-600" />
+            <span className="hidden lg:inline">Sinkronkan dari CV</span>
+          </Button>
 
           <Button
             variant="outline"

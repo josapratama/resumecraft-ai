@@ -3,7 +3,7 @@ import { formatEducationTitle } from "@/lib/cvFormatters";
  * Sidebar Light — light lavender sidebar, white main, clean and airy.
  */
 import type { FullCVData } from "@/types/cv";
-import { groupSkills, PROF_WIDTH, TechChips, CustomSectionsDisplay, TargetRoleDisplay } from "./_shared";
+import { groupSkills, PROF_WIDTH, TechChips, CustomSectionsDisplay, TargetRoleDisplay, TemplateQRCode } from "./_shared";
 
 export default function SidebarLightTemplate({
   cvData,
@@ -129,6 +129,8 @@ export default function SidebarLightTemplate({
             </div>
           </div>
         )}
+
+        <TemplateQRCode cvData={cvData} className="mt-auto pt-2" />
       </div>
 
       {/* Main */}

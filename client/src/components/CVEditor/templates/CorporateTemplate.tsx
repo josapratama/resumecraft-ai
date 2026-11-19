@@ -2,7 +2,7 @@
  * Corporate — blue/grey palette, formal layout, suited for big companies.
  */
 import type { FullCVData } from "@/types/cv";
-import { groupSkills, TechChips, CustomSectionsDisplay, TargetRoleDisplay } from "./_shared";
+import { groupSkills, TechChips, CustomSectionsDisplay, TargetRoleDisplay, TemplateQRCode } from "./_shared";
 
 export default function CorporateTemplate({ cvData }: { cvData: FullCVData }) {
   const grouped = groupSkills(cvData.skills);
@@ -43,6 +43,7 @@ export default function CorporateTemplate({ cvData }: { cvData: FullCVData }) {
               )}
             </div>
           </div>
+          <TemplateQRCode cvData={cvData} isDark={true} className="hidden sm:block shrink-0" />
         </div>
       </div>
       <div className="h-1.5 bg-[#4a90c4]" />

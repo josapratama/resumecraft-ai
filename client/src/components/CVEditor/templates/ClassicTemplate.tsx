@@ -1,6 +1,6 @@
 import { formatEducationTitle } from "@/lib/cvFormatters";
 import type { FullCVData } from "@/types/cv";
-import { LanguagesDisplay, CustomSectionsDisplay, TargetRoleDisplay } from "./_shared";
+import { LanguagesDisplay, CustomSectionsDisplay, TargetRoleDisplay, TemplateQRCode } from "./_shared";
 
 interface ClassicTemplateProps {
   cvData: FullCVData;
@@ -37,13 +37,16 @@ export default function ClassicTemplate({ cvData }: ClassicTemplateProps) {
           </p>
         )}
         {/* Contact line */}
-        <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-gray-600 mt-2">
-          {cvData.personalInfo?.email && (
-            <span>{cvData.personalInfo.email}</span>
-          )}
-          {cvData.personalInfo?.phone && (
-            <span>{cvData.personalInfo.phone}</span>
-          )}
+        <div className="flex flex-wrap items-center justify-between gap-2 mt-2">
+          <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-gray-600">
+            {cvData.personalInfo?.email && (
+              <span>{cvData.personalInfo.email}</span>
+            )}
+            {cvData.personalInfo?.phone && (
+              <span>{cvData.personalInfo.phone}</span>
+            )}
+          </div>
+          <TemplateQRCode cvData={cvData} size={46} className="hidden sm:block" />
         </div>
         {/* Red underline */}
         <div className="mt-4 h-0.5 bg-red-600" />

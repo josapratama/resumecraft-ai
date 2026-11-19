@@ -36,6 +36,7 @@ import {
   SlidersHorizontal,
   Bot,
   SpellCheck,
+  Mail,
 } from "lucide-react";
 import { toast } from "sonner";
 import {
@@ -60,6 +61,8 @@ import TranslateCVModal from "@/components/CVEditor/TranslateCVModal";
 import SharePublicModal from "@/components/CVEditor/SharePublicModal";
 import StyleCustomizerModal from "@/components/CVEditor/StyleCustomizerModal";
 import GrammarCheckModal from "@/components/CVEditor/GrammarCheckModal";
+import EmailDraftModal from "@/components/CVEditor/EmailDraftModal";
+import JobTrackerModal from "@/components/JobTracker/JobTrackerModal";
 import CVPreview from "@/components/CVEditor/CVPreview";
 import { AIChatBox } from "@/components/AIChatBox";
 import { useAuth } from "@/_core/hooks/useAuth";
@@ -176,6 +179,8 @@ export default function CVEditor() {
   const [showShareModal, setShowShareModal] = useState(false);
   const [showStyleModal, setShowStyleModal] = useState(false);
   const [showGrammarModal, setShowGrammarModal] = useState(false);
+  const [showEmailDraftModal, setShowEmailDraftModal] = useState(false);
+  const [showJobTrackerModal, setShowJobTrackerModal] = useState(false);
 
   // Only user/assistant messages — system prompt is injected server-side
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
@@ -472,6 +477,19 @@ export default function CVEditor() {
                       <p className="text-[10px] text-neutral-500">Koreksi typo, tata bahasa baku & EYD</p>
                     </div>
                   </DropdownMenuItem>
+
+                  <DropdownMenuItem
+                    onClick={() => setShowJobTrackerModal(true)}
+                    className="gap-2.5 p-2 rounded-lg cursor-pointer hover:bg-indigo-50"
+                  >
+                    <div className="w-7 h-7 rounded-md bg-indigo-100 text-indigo-700 flex items-center justify-center flex-shrink-0">
+                      <Briefcase className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <p className="text-xs font-semibold text-neutral-900">Pelacak Lamaran Kerja</p>
+                      <p className="text-[10px] text-neutral-500">Papan Kanban status & catatan wawancara</p>
+                    </div>
+                  </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
 
@@ -481,10 +499,22 @@ export default function CVEditor() {
                 size="sm"
                 onClick={() => setShowCoverLetterModal(true)}
                 className="gap-1.5 border-blue-200 text-blue-700 bg-blue-50/70 hover:bg-blue-100 h-8 sm:h-9 px-2 sm:px-3 rounded-lg"
-                title="Buat Surat Lamaran Kerja (10 Format)"
+                title="Buat Surat Lamaran Kerja (25 Format)"
               >
                 <FileText className="w-3.5 h-3.5 text-blue-600" />
                 <span className="hidden xl:inline text-xs font-semibold">{t("topbar.cover_letter", "Surat Lamaran")}</span>
+              </Button>
+
+              {/* Email & WA Draft Button */}
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowEmailDraftModal(true)}
+                className="gap-1.5 border-emerald-200 text-emerald-700 bg-emerald-50/70 hover:bg-emerald-100 h-8 sm:h-9 px-2 sm:px-3 rounded-lg"
+                title="Buat Teks Email & WhatsApp Pengantar Lamaran Kerja"
+              >
+                <Mail className="w-3.5 h-3.5 text-emerald-600" />
+                <span className="hidden xl:inline text-xs font-semibold">Draf Email HRD</span>
               </Button>
 
               {/* Theme & Typography Customizer */}
@@ -938,6 +968,18 @@ export default function CVEditor() {
         cvId={cvIdNum}
         isOpen={showGrammarModal}
         onClose={() => setShowGrammarModal(false)}
+      />
+
+      <EmailDraftModal
+        isOpen={showEmailDraftModal}
+        onClose={() => setShowEmailDraftModal(false)}
+        cvData={cvData}
+      />
+
+      <JobTrackerModal
+        isOpen={showJobTrackerModal}
+        onClose={() => setShowJobTrackerModal(false)}
+        defaultCvId={cvIdNum}
       />
     </div>
   );

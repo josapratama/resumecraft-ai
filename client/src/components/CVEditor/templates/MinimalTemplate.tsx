@@ -1,6 +1,6 @@
 import { formatEducationTitle } from "@/lib/cvFormatters";
 import type { FullCVData } from "@/types/cv";
-import { LanguagesDisplay, CustomSectionsDisplay, TargetRoleDisplay } from "./_shared";
+import { LanguagesDisplay, CustomSectionsDisplay, TargetRoleDisplay, TemplateQRCode } from "./_shared";
 
 interface MinimalTemplateProps {
   cvData: FullCVData;
@@ -215,6 +215,8 @@ export default function MinimalTemplate({ cvData }: MinimalTemplateProps) {
           <CustomSectionsDisplay customSections={cvData.customSections} />
         </MinSection>
       )}
+
+      <TemplateQRCode cvData={cvData} size={48} className="pt-4 flex justify-center" />
     </div>
   );
 }

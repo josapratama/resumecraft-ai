@@ -4,6 +4,7 @@ import { systemRouter } from "./_core/systemRouter";
 import { publicProcedure, router } from "./_core/trpc";
 import { cvRouter } from "./cv.router";
 import { cvAIRouter } from "./cv.ai.router";
+import { jobTrackerRouter } from "./jobTracker.router";
 
 export const appRouter = router({
   system: systemRouter,
@@ -23,6 +24,7 @@ export const appRouter = router({
   }),
   cv: cvRouter,
   cvAI: cvAIRouter,
+  jobTracker: jobTrackerRouter,
 });
 
 export type AppRouter = typeof appRouter;

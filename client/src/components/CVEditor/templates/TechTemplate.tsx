@@ -4,7 +4,7 @@ import { formatEducationTitle } from "@/lib/cvFormatters";
  * Developer / hacker aesthetic.
  */
 import type { FullCVData } from "@/types/cv";
-import { groupSkills, PROF_WIDTH, TechChips } from "./_shared";
+import { groupSkills, PROF_WIDTH, TechChips, TemplateQRCode } from "./_shared";
 
 export default function TechTemplate({ cvData }: { cvData: FullCVData }) {
   const grouped = groupSkills(cvData.skills);
@@ -195,6 +195,8 @@ export default function TechTemplate({ cvData }: { cvData: FullCVData }) {
           ))}
         </div>
       )}
+
+      <TemplateQRCode cvData={cvData} isDark={true} size={48} className="pt-4 flex justify-end" />
     </div>
   );
 }

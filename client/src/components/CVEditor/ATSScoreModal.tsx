@@ -24,6 +24,7 @@ import {
   Camera,
   UploadCloud,
   FileImage,
+  Printer,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -110,6 +111,81 @@ export default function ATSScoreModal({
       jobDescription: jobDescription.trim(),
       targetRole: targetRole.trim() || undefined,
     });
+  };
+
+  const handlePrintReport = () => {
+    if (!result) return;
+    const printContent = `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8"/>
+  <title>Laporan Evaluasi ATS - ${targetRole || "CV"}</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; padding: 30px; color: #1e293b; max-width: 800px; margin: 0 auto; line-height: 1.5; }
+    h1 { font-size: 20px; color: #0f172a; margin-bottom: 4px; }
+    .badge { display: inline-block; padding: 4px 10px; border-radius: 9999px; font-weight: bold; font-size: 14px; background: #e0e7ff; color: #3730a3; margin-bottom: 20px; }
+    .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 25px; }
+    .card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px 16px; }
+    .card h4 { margin: 0 0 6px 0; font-size: 12px; color: #64748b; text-transform: uppercase; }
+    .card .val { font-size: 18px; font-weight: bold; color: #0f172a; }
+    .section-title { font-size: 13px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.05em; margin: 20px 0 10px; color: #334155; }
+    .tag { display: inline-block; padding: 3px 8px; border-radius: 6px; font-size: 11px; margin: 2px; }
+    .tag-green { background: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0; }
+    .tag-red { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
+    ul { padding-left: 20px; font-size: 12px; }
+    li { margin-bottom: 6px; }
+  </style>
+</head>
+<body>
+  <h1>Laporan Analisis & Evaluasi ATS ResumeCraft</h1>
+  <p style="font-size: 12px; color: #64748b; margin-top: 0;">Posisi Target: <strong>${targetRole || "Umum"}</strong> · Tanggal Evaluasi: ${new Date().toLocaleDateString("id-ID")}</p>
+  <div class="badge">Skor Keseluruhan: ${result.overallScore} / 100 (${result.summaryRating})</div>
+
+  <div class="grid">
+    <div class="card">
+      <h4>Kecocokan Hard Skills</h4>
+      <div class="val">${result.breakdown?.hardSkills || 0}%</div>
+    </div>
+    <div class="card">
+      <h4>Relevansi Pengalaman</h4>
+      <div class="val">${result.breakdown?.experienceMatch || 0}%</div>
+    </div>
+    <div class="card">
+      <h4>Struktur & Format ATS</h4>
+      <div class="val">${result.breakdown?.structureAndFormat || 0}%</div>
+    </div>
+    <div class="card">
+      <h4>Kepadatan Kata Kunci</h4>
+      <div class="val">${result.breakdown?.keywordDensity || 0}%</div>
+    </div>
+  </div>
+
+  <div class="section-title">Kata Kunci Ditemukan di CV (${result.matchingKeywords?.length || 0}):</div>
+  <div>
+    ${(result.matchingKeywords || []).map(k => `<span class="tag tag-green">✓ ${k}</span>`).join(" ")}
+  </div>
+
+  <div class="section-title">Kata Kunci yang Perlu Ditambahkan (${result.missingKeywords?.length || 0}):</div>
+  <div>
+    ${(result.missingKeywords || []).map(k => `<span class="tag tag-red">+ ${k}</span>`).join(" ")}
+  </div>
+
+  <div class="section-title">Rekomendasi Tindakan Nyata Lolos Skrining:</div>
+  <ul>
+    ${(result.recommendations || []).map(r => `<li>${r}</li>`).join("")}
+  </ul>
+  <script>
+    window.onload = function() { window.print(); };
+  </script>
+</body>
+</html>`;
+
+    const printWin = window.open("", "_blank", "width=850,height=750");
+    if (printWin) {
+      printWin.document.open();
+      printWin.document.write(printContent);
+      printWin.document.close();
+    }
   };
 
   const getScoreColor = (score: number) => {
@@ -348,9 +424,20 @@ export default function ATSScoreModal({
               >
                 ← Test Another Vacancy
               </Button>
-              <Button onClick={onClose} size="sm" className="bg-neutral-900 text-white hover:bg-neutral-800 rounded-xl text-xs font-semibold px-4">
-                Done
-              </Button>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handlePrintReport}
+                  className="gap-1.5 text-xs rounded-xl border-neutral-200 text-neutral-700 hover:bg-neutral-100 font-medium"
+                >
+                  <Printer className="w-3.5 h-3.5 text-indigo-600" />
+                  <span>Unduh Laporan ATS (PDF)</span>
+                </Button>
+                <Button onClick={onClose} size="sm" className="bg-neutral-900 text-white hover:bg-neutral-800 rounded-xl text-xs font-semibold px-4">
+                  Done
+                </Button>
+              </div>
             </div>
           </div>
         )}

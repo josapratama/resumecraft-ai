@@ -4,7 +4,7 @@ import { formatEducationTitle } from "@/lib/cvFormatters";
  * Authoritative, C-suite feel.
  */
 import type { FullCVData } from "@/types/cv";
-import { groupSkills, TechChips, LanguagesDisplay, CustomSectionsDisplay, TargetRoleDisplay } from "./_shared";
+import { groupSkills, TechChips, LanguagesDisplay, CustomSectionsDisplay, TargetRoleDisplay, TemplateQRCode } from "./_shared";
 
 export default function ExecutiveTemplate({ cvData }: { cvData: FullCVData }) {
   const grouped = groupSkills(cvData.skills);
@@ -30,9 +30,10 @@ export default function ExecutiveTemplate({ cvData }: { cvData: FullCVData }) {
               </p>
             )}
           </div>
-          <div className="text-right text-xs text-blue-200 space-y-1">
+          <div className="text-right text-xs text-blue-200 space-y-1 flex flex-col items-end">
             {cvData.personalInfo?.email && <p>{cvData.personalInfo.email}</p>}
             {cvData.personalInfo?.phone && <p>{cvData.personalInfo.phone}</p>}
+            <TemplateQRCode cvData={cvData} isDark={true} className="mt-1" />
           </div>
         </div>
         {/* Gold rule */}

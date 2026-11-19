@@ -1,6 +1,38 @@
 import type { FullCVData, Skill } from "@/types/cv";
 import { useI18n } from "@/lib/i18n";
 import { formatProficiency, formatDisplayUrl } from "@/lib/cvFormatters";
+import CVQRCode from "../CVQRCode";
+
+export function getQRTargetUrl(cvData: FullCVData): string | null {
+  if (cvData.cv?.showQrCode === 0) return null;
+  return (
+    cvData.cv?.portfolioUrl ||
+    (cvData.personalInfo?.fullName?.toLowerCase().includes("irma") ? "https://irma-iryani.josapratama.com" : null) ||
+    (cvData.cv?.shareSlug ? `https://resumecraft-ai.josapratama.com/p/${cvData.cv.shareSlug}` : null) ||
+    cvData.projects?.find(p => p.link)?.link ||
+    null
+  );
+}
+
+export function TemplateQRCode({
+  cvData,
+  isDark = false,
+  size = 50,
+  className = "",
+}: {
+  cvData: FullCVData;
+  isDark?: boolean;
+  size?: number;
+  className?: string;
+}) {
+  const url = getQRTargetUrl(cvData);
+  if (!url) return null;
+  return (
+    <div className={`min-w-0 ${className}`}>
+      <CVQRCode url={url} size={size} isDark={isDark} />
+    </div>
+  );
+}
 
 // ─── Skill grouping ────────────────────────────────────────────────────────────
 

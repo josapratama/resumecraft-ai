@@ -26,6 +26,9 @@ import {
   coverLetters,
   CoverLetter,
   InsertCoverLetter,
+  jobApplications,
+  JobApplication,
+  InsertJobApplication,
 } from "../drizzle/schema";
 
 // Pool-based connection — required for Drizzle transactions (which need a
@@ -1384,5 +1387,50 @@ export async function deleteCoverLetter(cvId: number) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   await db.delete(coverLetters).where(eq(coverLetters.cvId, cvId));
+  return { success: true };
+}
+
+// ─── Job Applications (Tracker) ─────────────────────────────────────────────
+
+export async function getJobApplicationsByUserId(userId: number): Promise<JobApplication[]> {
+  const db = await getDb();
+  if (!db) return [];
+  return db
+    .select()
+    .from(jobApplications)
+    .where(eq(jobApplications.userId, userId))
+    .orderBy(sql`${jobApplications.createdAt} DESC`);
+}
+
+export async function createJobApplication(data: InsertJobApplication): Promise<JobApplication> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const [result] = await db.insert(jobApplications).values(data);
+  const insertedId = result.insertId;
+  const [row] = await db.select().from(jobApplications).where(eq(jobApplications.id, insertedId));
+  return row;
+}
+
+export async function updateJobApplication(
+  id: number,
+  userId: number,
+  data: Partial<InsertJobApplication>
+): Promise<JobApplication | null> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db
+    .update(jobApplications)
+    .set({ ...data, updatedAt: new Date() })
+    .where(sql`${jobApplications.id} = ${id} AND ${jobApplications.userId} = ${userId}`);
+  const [row] = await db.select().from(jobApplications).where(eq(jobApplications.id, id));
+  return row || null;
+}
+
+export async function deleteJobApplication(id: number, userId: number): Promise<{ success: boolean }> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db
+    .delete(jobApplications)
+    .where(sql`${jobApplications.id} = ${id} AND ${jobApplications.userId} = ${userId}`);
   return { success: true };
 }

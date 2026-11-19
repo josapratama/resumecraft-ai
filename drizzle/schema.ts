@@ -245,3 +245,24 @@ export const coverLetters = mysqlTable("coverLetters", {
 
 export type CoverLetter = typeof coverLetters.$inferSelect;
 export type InsertCoverLetter = typeof coverLetters.$inferInsert;
+
+export const jobApplications = mysqlTable("jobApplications", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId")
+    .notNull()
+    .references(() => users.id),
+  cvId: int("cvId").references(() => cvs.id),
+  companyName: varchar("companyName", { length: 255 }).notNull(),
+  jobTitle: varchar("jobTitle", { length: 255 }).notNull(),
+  location: varchar("location", { length: 255 }),
+  jobUrl: varchar("jobUrl", { length: 512 }),
+  status: varchar("status", { length: 32 }).default("applied").notNull(),
+  appliedDate: varchar("appliedDate", { length: 64 }),
+  notes: text("notes"),
+  salaryExpectation: varchar("salaryExpectation", { length: 128 }),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type JobApplication = typeof jobApplications.$inferSelect;
+export type InsertJobApplication = typeof jobApplications.$inferInsert;

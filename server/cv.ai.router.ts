@@ -642,12 +642,13 @@ Return a VALID JSON object ONLY matching this structure:
       ) {
         try {
           const backendBase = "https://irma-backend.josapratama.com/api";
-          const [profileRes, expRes, eduRes, skillsRes, certsRes] = await Promise.all([
+          const [profileRes, expRes, eduRes, skillsRes, certsRes, projectsRes] = await Promise.all([
             fetch(`${backendBase}/profile`, { signal: AbortSignal.timeout(10000) }).then(r => r.json()).catch(() => null),
             fetch(`${backendBase}/experiences`, { signal: AbortSignal.timeout(10000) }).then(r => r.json()).catch(() => null),
             fetch(`${backendBase}/educations`, { signal: AbortSignal.timeout(10000) }).then(r => r.json()).catch(() => null),
             fetch(`${backendBase}/skills`, { signal: AbortSignal.timeout(10000) }).then(r => r.json()).catch(() => null),
             fetch(`${backendBase}/certificates`, { signal: AbortSignal.timeout(10000) }).then(r => r.json()).catch(() => null),
+            fetch(`${backendBase}/projects`, { signal: AbortSignal.timeout(10000) }).then(r => r.json()).catch(() => null),
           ]);
 
           const profile = profileRes?.data || {};
@@ -655,6 +656,30 @@ Return a VALID JSON object ONLY matching this structure:
           const educations = eduRes?.data || [];
           const skillGroups = skillsRes?.data || [];
           const certificates = certsRes?.data || [];
+          const rawProjects = projectsRes?.data || [];
+
+          // Format projects
+          const formattedProjects = rawProjects
+            .filter((p: any) => p.isVisible !== false)
+            .map((p: any) => {
+              const pTitle = p.title?.id || p.title?.en || (typeof p.title === "string" ? p.title : "Portofolio Proyek");
+              const pDesc = p.description?.id || p.description?.en || (typeof p.description === "string" ? p.description : "");
+              const pTechs = Array.isArray(p.tags) ? p.tags.join(", ") : (p.technologies || "");
+              let pLink = "";
+              if (p.pdfPath) {
+                pLink = p.pdfPath.startsWith("http") ? p.pdfPath : `https://irma-iryani.josapratama.com${p.pdfPath}`;
+              } else if (p.link) {
+                pLink = p.link;
+              }
+              return {
+                projectName: pTitle,
+                description: pDesc,
+                technologies: pTechs,
+                link: pLink,
+                startDate: "2025",
+                endDate: "2026",
+              };
+            });
 
           // Format flattened skills
           const formattedSkills: Array<{ category: string; skillName: string; proficiency: string }> = [];
@@ -760,7 +785,7 @@ Return a VALID JSON object ONLY matching this structure:
             workExperiences: formattedExperiences,
             educations: formattedEducations,
             skills: formattedSkills,
-            projects: [],
+            projects: formattedProjects,
             certifications: formattedCerts,
             languages: [
               { language: "Bahasa Indonesia", proficiency: "Native / Penutur Asli" },

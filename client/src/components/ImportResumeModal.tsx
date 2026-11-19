@@ -24,6 +24,7 @@ import {
   GraduationCap,
   Briefcase,
   Layers,
+  FolderKanban,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useLocation } from "wouter";
@@ -368,6 +369,29 @@ export default function ImportResumeModal({
                   )}
                 </div>
               </div>
+
+              {/* Projects */}
+              {parsedResult.projects && parsedResult.projects.length > 0 && (
+                <div className="p-3 bg-white border rounded-lg">
+                  <div className="flex items-center gap-1.5 font-semibold text-gray-800 mb-1.5">
+                    <FolderKanban className="w-3.5 h-3.5 text-blue-600" />
+                    Proyek & Portofolio ({parsedResult.projects.length})
+                  </div>
+                  <div className="space-y-1.5">
+                    {parsedResult.projects.map((p: any, i: number) => (
+                      <div key={i} className="text-xs bg-blue-50/50 p-2 rounded border border-blue-100/60">
+                        <div className="font-medium text-gray-900">{p.projectName}</div>
+                        {p.technologies && (
+                          <div className="text-[11px] text-blue-700/80 mt-0.5">{p.technologies}</div>
+                        )}
+                        {p.description && (
+                          <p className="text-[11px] text-gray-600 line-clamp-2 mt-0.5">{p.description}</p>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               {/* Skills */}
               {parsedResult.skills && parsedResult.skills.length > 0 && (

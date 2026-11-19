@@ -1270,7 +1270,7 @@ ${letterData.fullName}`;
           >
             <div
               id="cover-letter-preview-root"
-              className="w-full max-w-[794px] min-h-[1123px] bg-white rounded-md shadow-xl border border-slate-200/80 overflow-hidden relative"
+              className="w-full max-w-[794px] min-h-[1123px] bg-white rounded-md shadow-xl border border-slate-200/80 relative"
             >
               <ActiveTemplateComponent data={letterData} />
             </div>

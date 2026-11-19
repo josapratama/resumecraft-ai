@@ -44,8 +44,20 @@ export async function exportCoverLetterToPDF(
       print-color-adjust: exact !important;
       color-adjust: exact !important;
     }
-    * {
+    .cover-letter-paper,
+    .print-wrapper {
       max-height: none !important;
+    }
+    .cover-letter-signature-img,
+    img[alt*="Tanda Tangan"] {
+      height: 46px !important;
+      max-height: 50px !important;
+      width: auto !important;
+      max-width: 180px !important;
+      object-fit: contain !important;
+      display: block !important;
+      margin: 0 auto !important;
+      mix-blend-mode: normal !important;
     }
     .cover-letter-paper {
       width: 100% !important;
@@ -171,8 +183,20 @@ export async function exportBundleToPDF(
       print-color-adjust: exact !important;
       color-adjust: exact !important;
     }
-    * {
+    .cover-letter-paper,
+    .print-wrapper {
       max-height: none !important;
+    }
+    .cover-letter-signature-img,
+    img[alt*="Tanda Tangan"] {
+      height: 46px !important;
+      max-height: 50px !important;
+      width: auto !important;
+      max-width: 180px !important;
+      object-fit: contain !important;
+      display: block !important;
+      margin: 0 auto !important;
+      mix-blend-mode: normal !important;
     }
     .bundle-page-1 {
       box-sizing: border-box;

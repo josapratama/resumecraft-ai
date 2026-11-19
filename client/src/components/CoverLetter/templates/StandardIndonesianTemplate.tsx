@@ -136,16 +136,16 @@ export default function StandardIndonesianTemplate({ data }: { data: CoverLetter
 
       {/* Tanda Tangan Kanan Bawah */}
       <div
-        className={`${hasBiodata ? "pt-1" : "pt-3"} flex justify-end`}
+        className={`${hasBiodata ? "pt-1.5" : "pt-3"} flex justify-end`}
         style={{ breakInside: "avoid", pageBreakInside: "avoid" }}
       >
         <div className="text-center min-w-[170px]">
-          <p className="text-slate-800 font-medium mb-0.5">{data.signOff || "Hormat Saya,"}</p>
+          <p className="text-slate-800 font-medium mb-1">{data.signOff || "Hormat Saya,"}</p>
           <SignatureDisplay
             data={data}
-            className={hasBiodata ? "h-10 flex items-center justify-center" : "h-12 flex items-center justify-center"}
+            className={hasBiodata ? "h-12 flex items-center justify-center my-0.5" : "h-14 flex items-center justify-center my-1"}
           />
-          <p className="font-bold text-slate-900 text-xs sm:text-[13px] mt-0.5 underline decoration-slate-400">
+          <p className="font-bold text-slate-900 text-xs sm:text-[13px] mt-1 underline decoration-slate-400">
             {data.fullName}
           </p>
         </div>

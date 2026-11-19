@@ -48,7 +48,7 @@ async function buildCVContext(cvId: number): Promise<string> {
     experiences.forEach(e =>
       lines.push(
         `  • ${e.jobTitle} at ${e.company} (${e.startDate ?? "?"} – ${e.endDate || "Present"})` +
-          (e.description ? `\n    ${e.description}` : "")
+        (e.description ? `\n    ${e.description}` : "")
       )
     );
   }
@@ -81,8 +81,8 @@ async function buildCVContext(cvId: number): Promise<string> {
     projects.forEach(p =>
       lines.push(
         `  • ${p.projectName}` +
-          (p.technologies ? ` [${p.technologies}]` : "") +
-          (p.description ? `\n    ${p.description}` : "")
+        (p.technologies ? ` [${p.technologies}]` : "") +
+        (p.description ? `\n    ${p.description}` : "")
       )
     );
   }
@@ -302,13 +302,12 @@ The description should be 2-3 bullet points highlighting achievements and impact
 
       const prompt = isIndonesian
         ? `Tingkatkan teks CV berikut agar sangat profesional, formal, menggunakan kata kerja aksi yang kuat (action verbs seperti 'Mengembangkan', 'Mengkoordinasikan', 'Merancang', 'Memfasilitasi', 'Meningkatkan'), dan menonjolkan capaian terukur.
-Konteks: ${
-            input.context === "summary"
-              ? "Ringkasan Profil Profesional (Professional Summary)"
-              : input.context === "description"
-              ? "Tanggung Jawab & Capaian Pekerjaan (Action-verb bullet points)"
-              : "Keahlian"
-          }
+Konteks: ${input.context === "summary"
+          ? "Ringkasan Profil Profesional (Professional Summary)"
+          : input.context === "description"
+            ? "Tanggung Jawab & Capaian Pekerjaan (Action-verb bullet points)"
+            : "Keahlian"
+        }
 
 Teks Asli:
 "${input.text}"
@@ -786,16 +785,16 @@ Do NOT make a word-for-word translation; use strong action verbs, standard indus
 
 Original CV:
 ${JSON.stringify({
-  title: cv.title,
-  personalInfo: personal,
-  workExperiences: experiences,
-  educations: educations,
-  skills: skills,
-  projects: projects,
-  certifications: certifications,
-  languages: langs,
-  customSections: customs,
-}, null, 2)}
+        title: cv.title,
+        personalInfo: personal,
+        workExperiences: experiences,
+        educations: educations,
+        skills: skills,
+        projects: projects,
+        certifications: certifications,
+        languages: langs,
+        customSections: customs,
+      }, null, 2)}
 
 Return a VALID JSON object ONLY matching this structure:
 {

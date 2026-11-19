@@ -443,19 +443,6 @@ export default function ModernTemplate({ cvData }: ModernTemplateProps) {
             </div>
           </div>
         )}
-
-        {/* QR Code Portofolio / CV Online */}
-        {showQr && qrTargetUrl && (
-          <div className="pt-2 min-w-0">
-            <CVQRCode
-              url={qrTargetUrl}
-              label={t("template_headers.scan_portfolio", "Portofolio Digital")}
-              size={52}
-              isDark={true}
-              className="w-full"
-            />
-          </div>
-        )}
       </div>
     </div>
   );

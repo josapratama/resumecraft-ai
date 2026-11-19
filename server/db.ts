@@ -68,6 +68,17 @@ export async function runMigrations() {
         throw new Error("Database pool could not be initialized");
       }
       await migrate(db, { migrationsFolder });
+
+      // Ensure flexible date column lengths in existing databases
+      try {
+        await db.execute(sql`ALTER TABLE workExperiences MODIFY startDate VARCHAR(100), MODIFY endDate VARCHAR(100);`);
+        await db.execute(sql`ALTER TABLE educations MODIFY graduationDate VARCHAR(100);`);
+        await db.execute(sql`ALTER TABLE certifications MODIFY issueDate VARCHAR(100), MODIFY expiryDate VARCHAR(100);`);
+        await db.execute(sql`ALTER TABLE projects MODIFY startDate VARCHAR(100), MODIFY endDate VARCHAR(100);`);
+      } catch (err: any) {
+        // Safe to ignore if columns are already widened
+      }
+
       console.log("[Database] Database migrations applied successfully!");
       return;
     } catch (err: any) {
@@ -1142,6 +1153,12 @@ export interface ParsedResumePayload {
   }>;
 }
 
+function safeStr(val: any, maxLen = 250): string | null {
+  if (val === null || val === undefined) return null;
+  const s = String(val).trim();
+  return s.length > maxLen ? s.slice(0, maxLen) : s;
+}
+
 export async function bulkCreateCVFromParsedData(
   userId: number,
   title: string,
@@ -1155,7 +1172,7 @@ export async function bulkCreateCVFromParsedData(
     // 1. Insert CV
     await tx.insert(cvs).values({
       userId,
-      title,
+      title: safeStr(title, 250) || "Imported CV",
       template,
     });
     const [newCV] = await tx
@@ -1171,10 +1188,10 @@ export async function bulkCreateCVFromParsedData(
     if (data.personalInfo) {
       await tx.insert(personalInfos).values({
         cvId: newCV.id,
-        fullName: data.personalInfo.fullName ?? null,
-        email: data.personalInfo.email ?? null,
-        phone: data.personalInfo.phone ?? null,
-        location: data.personalInfo.location ?? null,
+        fullName: safeStr(data.personalInfo.fullName, 250),
+        email: safeStr(data.personalInfo.email, 300),
+        phone: safeStr(data.personalInfo.phone, 50),
+        location: safeStr(data.personalInfo.location, 250),
         professionalSummary: data.personalInfo.professionalSummary ?? null,
       });
     }
@@ -1186,11 +1203,11 @@ export async function bulkCreateCVFromParsedData(
         await tx.insert(workExperiences).values({
           cvId: newCV.id,
           position: i,
-          jobTitle: exp.jobTitle,
-          company: exp.company,
-          location: exp.location ?? null,
-          startDate: exp.startDate ?? null,
-          endDate: exp.endDate ?? null,
+          jobTitle: safeStr(exp.jobTitle, 250) || "Position",
+          company: safeStr(exp.company, 250) || "Company",
+          location: safeStr(exp.location, 250),
+          startDate: safeStr(exp.startDate, 95),
+          endDate: safeStr(exp.endDate, 95),
           description: exp.description ?? null,
         });
       }
@@ -1203,11 +1220,11 @@ export async function bulkCreateCVFromParsedData(
         await tx.insert(educations).values({
           cvId: newCV.id,
           position: i,
-          degree: edu.degree,
-          field: edu.field,
-          school: edu.school,
-          location: edu.location ?? null,
-          graduationDate: edu.graduationDate ?? null,
+          degree: safeStr(edu.degree, 250) || "Degree",
+          field: safeStr(edu.field, 250) || "Field",
+          school: safeStr(edu.school, 250) || "School",
+          location: safeStr(edu.location, 250),
+          graduationDate: safeStr(edu.graduationDate, 95),
           description: edu.description ?? null,
         });
       }
@@ -1220,8 +1237,8 @@ export async function bulkCreateCVFromParsedData(
         await tx.insert(skills).values({
           cvId: newCV.id,
           position: i,
-          category: s.category || "General",
-          skillName: s.skillName,
+          category: safeStr(s.category, 250) || "General",
+          skillName: safeStr(s.skillName, 250) || "Skill",
           proficiency: s.proficiency ?? null,
         });
       }
@@ -1234,12 +1251,12 @@ export async function bulkCreateCVFromParsedData(
         await tx.insert(projects).values({
           cvId: newCV.id,
           position: i,
-          projectName: p.projectName,
+          projectName: safeStr(p.projectName, 250) || "Project",
           description: p.description ?? null,
           technologies: p.technologies ?? null,
-          link: p.link ?? null,
-          startDate: p.startDate ?? null,
-          endDate: p.endDate ?? null,
+          link: safeStr(p.link, 2000),
+          startDate: safeStr(p.startDate, 95),
+          endDate: safeStr(p.endDate, 95),
         });
       }
     }
@@ -1251,11 +1268,11 @@ export async function bulkCreateCVFromParsedData(
         await tx.insert(certifications).values({
           cvId: newCV.id,
           position: i,
-          certificationName: c.certificationName,
-          issuer: c.issuer,
-          issueDate: c.issueDate ?? null,
-          expiryDate: c.expiryDate ?? null,
-          link: c.link ?? null,
+          certificationName: safeStr(c.certificationName, 250) || "Certificate",
+          issuer: safeStr(c.issuer, 250) || "Issuer",
+          issueDate: safeStr(c.issueDate, 95),
+          expiryDate: safeStr(c.expiryDate, 95),
+          link: safeStr(c.link, 2000),
         });
       }
     }
@@ -1267,8 +1284,8 @@ export async function bulkCreateCVFromParsedData(
         await tx.insert(languages).values({
           cvId: newCV.id,
           position: i,
-          language: l.language,
-          proficiency: l.proficiency ?? "Professional Working",
+          language: safeStr(l.language, 120) || "Language",
+          proficiency: safeStr(l.proficiency, 60) || "Professional Working",
         });
       }
     }
@@ -1280,10 +1297,10 @@ export async function bulkCreateCVFromParsedData(
         await tx.insert(customSections).values({
           cvId: newCV.id,
           position: i,
-          category: cs.category || "Other",
-          title: cs.title,
-          subtitle: cs.subtitle ?? null,
-          date: cs.date ?? null,
+          category: safeStr(cs.category, 120) || "Other",
+          title: safeStr(cs.title, 250) || "Title",
+          subtitle: safeStr(cs.subtitle, 250),
+          date: safeStr(cs.date, 60),
           description: cs.description ?? null,
         });
       }

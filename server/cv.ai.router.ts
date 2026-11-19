@@ -675,41 +675,55 @@ Return a VALID JSON object ONLY matching this structure:
 
           // Format experiences
           const formattedExperiences = experiences.map((exp: any) => {
+            const periodStr = typeof exp.period === "string" ? exp.period : exp.period?.id || "";
+            const periodParts = periodStr.split(/[–—-]/);
+            const start = periodParts[0]?.trim() || "2024";
+            const end = periodParts.length > 1 ? periodParts[1]?.trim() : "Present";
+
             let desc = "";
-            if (exp.description?.id) {
+            if (Array.isArray(exp.points) && exp.points.length > 0) {
+              const ptLines = exp.points.map((p: any) => `• ${p.id || p}`);
+              desc = ptLines.join("\n");
+            } else if (exp.description?.id) {
               desc = exp.description.id;
             }
-            if (Array.isArray(exp.activities) && exp.activities.length > 0) {
-              const actLines = exp.activities.map((a: any) => {
-                const title = a.name?.id || a.name || "";
-                const role = a.role?.id || a.role || "";
-                const points = Array.isArray(a.points)
-                  ? a.points.map((p: any) => `  • ${p.id || p}`).join("\n")
-                  : "";
-                return `• ${title}${role ? ` (${role})` : ""}${points ? `\n${points}` : ""}`;
+
+            if (Array.isArray(exp.events) && exp.events.length > 0) {
+              const eventLines = exp.events.map((e: any) => {
+                const eName = e.name?.id || e.name || "";
+                const eRole = e.role?.id || e.role || "";
+                const ePeriod = e.period || "";
+                return `• ${eName}${eRole ? ` (${eRole})` : ""}${ePeriod ? ` - ${ePeriod}` : ""}`;
               });
-              desc = desc ? `${desc}\n\nKegiatan & Kontribusi:\n${actLines.join("\n")}` : actLines.join("\n");
+              desc = desc ? `${desc}\n\nKepanitiaan & Kegiatan:\n${eventLines.join("\n")}` : eventLines.join("\n");
             }
 
+            const title = exp.title?.id || exp.title || exp.role?.id || "Pendidik / Anggota Organisasi";
+            const company = exp.org || exp.company?.id || exp.company || exp.institution || "Institusi";
+
             return {
-              jobTitle: exp.role?.id || exp.title?.id || "Pendidik / Pengurus",
-              company: exp.company?.id || exp.organization?.id || exp.title?.id || "Institusi",
+              jobTitle: title,
+              company: company,
               location: profile.location || "Sumatera Selatan, Indonesia",
-              startDate: exp.period?.id || exp.period || "2024",
-              endDate: exp.period?.id || exp.period || "Present",
+              startDate: start,
+              endDate: end,
               description: desc || "Pengalaman profesional dan organisasi akademik.",
             };
           });
 
           // Format educations
-          const formattedEducations = educations.map((edu: any) => ({
-            degree: edu.degree?.id || "S1 Pendidikan Kimia",
-            field: "Pendidikan Kimia (MIPA)",
-            school: edu.university?.id || "Universitas Sriwijaya",
-            location: "Palembang / Indralaya, Sumatera Selatan",
-            graduationDate: edu.period?.id || "2026",
-            description: `${edu.description?.id || "Fakultas Keguruan dan Ilmu Pendidikan"} - IPK: ${edu.gpa || profile.gpa || "3.90"} (Cum Laude)`,
-          }));
+          const formattedEducations = educations.map((edu: any) => {
+            const eduPeriod = edu.period?.id || edu.period || "";
+            const gradYear = eduPeriod.split(/[–—-]/).pop()?.trim() || "2026";
+            return {
+              degree: edu.degree?.id || "S1 Pendidikan Kimia",
+              field: "Pendidikan Kimia (MIPA)",
+              school: edu.university?.id || "Universitas Sriwijaya",
+              location: "Palembang / Indralaya, Sumatera Selatan",
+              graduationDate: gradYear,
+              description: `${edu.description?.id || "Fakultas Keguruan dan Ilmu Pendidikan"} - IPK: ${edu.gpa || profile.gpa || "3,90"} (Dengan Pujian / Cum Laude)`,
+            };
+          });
 
           // Format certifications
           const formattedCerts = certificates.map((cert: any) => ({

@@ -35,6 +35,7 @@ import {
   Eye,
   SlidersHorizontal,
   Bot,
+  SpellCheck,
 } from "lucide-react";
 import { toast } from "sonner";
 import {
@@ -58,6 +59,7 @@ import InterviewPrepModal from "@/components/CVEditor/InterviewPrepModal";
 import TranslateCVModal from "@/components/CVEditor/TranslateCVModal";
 import SharePublicModal from "@/components/CVEditor/SharePublicModal";
 import StyleCustomizerModal from "@/components/CVEditor/StyleCustomizerModal";
+import GrammarCheckModal from "@/components/CVEditor/GrammarCheckModal";
 import CVPreview from "@/components/CVEditor/CVPreview";
 import { AIChatBox } from "@/components/AIChatBox";
 import { useAuth } from "@/_core/hooks/useAuth";
@@ -173,6 +175,7 @@ export default function CVEditor() {
   const [showTranslateModal, setShowTranslateModal] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
   const [showStyleModal, setShowStyleModal] = useState(false);
+  const [showGrammarModal, setShowGrammarModal] = useState(false);
 
   // Only user/assistant messages — system prompt is injected server-side
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
@@ -456,6 +459,19 @@ export default function CVEditor() {
                       <p className="text-[10px] text-neutral-500">EN ↔ ID Professional localized copy</p>
                     </div>
                   </DropdownMenuItem>
+
+                  <DropdownMenuItem
+                    onClick={() => setShowGrammarModal(true)}
+                    className="gap-2.5 p-2 rounded-lg cursor-pointer hover:bg-purple-50"
+                  >
+                    <div className="w-7 h-7 rounded-md bg-purple-100 text-purple-700 flex items-center justify-center flex-shrink-0">
+                      <SpellCheck className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <p className="text-xs font-semibold text-neutral-900">Periksa Ejaan & EYD V</p>
+                      <p className="text-[10px] text-neutral-500">Koreksi typo, tata bahasa baku & EYD</p>
+                    </div>
+                  </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
 
@@ -708,11 +724,19 @@ export default function CVEditor() {
                   cvId={cvIdNum}
                   initialData={cvData.personalInfo}
                   initialTargetRole={cvData.cv.targetRole}
+                  initialPortfolioUrl={cvData.cv.portfolioUrl}
+                  initialShowQrCode={cvData.cv.showQrCode}
                   onDataChange={personalInfo =>
                     handleDataChange({ personalInfo })
                   }
                   onTargetRoleChange={role =>
                     handleDataChange({ cv: { ...cvData.cv, targetRole: role } })
+                  }
+                  onPortfolioUrlChange={url =>
+                    handleDataChange({ cv: { ...cvData.cv, portfolioUrl: url } })
+                  }
+                  onShowQrCodeChange={show =>
+                    handleDataChange({ cv: { ...cvData.cv, showQrCode: show } })
                   }
                 />
               )}
@@ -908,6 +932,12 @@ export default function CVEditor() {
               : prev
           );
         }}
+      />
+
+      <GrammarCheckModal
+        cvId={cvIdNum}
+        isOpen={showGrammarModal}
+        onClose={() => setShowGrammarModal(false)}
       />
     </div>
   );

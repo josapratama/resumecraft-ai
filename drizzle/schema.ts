@@ -66,6 +66,8 @@ export const cvs = mysqlTable("cvs", {
   accentColor: varchar("accentColor", { length: 32 }),
   fontFamily: varchar("fontFamily", { length: 64 }),
   targetRole: varchar("targetRole", { length: 255 }),
+  portfolioUrl: varchar("portfolioUrl", { length: 512 }),
+  showQrCode: int("showQrCode").default(1).notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });

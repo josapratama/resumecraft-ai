@@ -138,6 +138,8 @@ export interface CV {
   accentColor?: string | null;
   fontFamily?: string | null;
   targetRole?: string | null;
+  portfolioUrl?: string | null;
+  showQrCode?: number;
   createdAt: Date;
   updatedAt: Date;
 }

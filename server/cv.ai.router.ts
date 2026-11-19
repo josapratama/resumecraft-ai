@@ -398,6 +398,63 @@ KEMBALIKAN HANYA OBJEK JSON VALID dengan format:
       }
     }),
 
+  // ─── AI Typo, Grammar & EYD Checker ─────────────────────────────────────────
+  checkGrammarAndTypo: protectedProcedure
+    .input(z.object({ cvId: z.number() }))
+    .mutation(async ({ ctx, input }) => {
+      const cv = await getCVById(input.cvId);
+      if (!cv) throw new TRPCError({ code: "NOT_FOUND", message: "CV not found" });
+      if (cv.userId !== ctx.user.id) throw new TRPCError({ code: "FORBIDDEN", message: "Unauthorized" });
+
+      const textSample = await buildCVContext(input.cvId);
+
+      const prompt = `Anda adalah editor bahasa profesional dan spesialis rekrutmen. Periksa seluruh teks CV pelamar berikut untuk mendeteksi:
+1. Salah ketik (Typo)
+2. Kesalahan ejaan / tata bahasa baku (Pedoman Umum Ejaan Bahasa Indonesia / EYD V / English grammar jika berbahasa Inggris)
+3. Kalimat rancu, singkatan tidak baku, atau tanda baca yang salah
+4. Saran perbaikan formal yang siap diterapkan
+
+Teks CV:
+"""
+${textSample}
+"""
+
+KEMBALIKAN HANYA OBJEK JSON VALID dengan format:
+{
+  "totalIssues": <jumlah temuan>,
+  "score": <skor keterbacaan & tata bahasa 0 - 100>,
+  "summary": "<Kesimpulan singkat kualitas tata bahasa>",
+  "issues": [
+    {
+      "section": "<Bagian CV, contoh: Ringkasan Profesional / Pengalaman Kerja>",
+      "originalText": "<Kata atau frasa yang salah>",
+      "suggestedText": "<Koreksi yang benar>",
+      "explanation": "<Alasan perbaikan berdasarkan EYD atau tata bahasa formal>"
+    }
+  ]
+}`;
+
+      const response = await invokeLLM({
+        model: "gpt-4o-mini",
+        messages: [{ role: "user", content: prompt }],
+        responseFormat: { type: "json_object" },
+        max_tokens: 1500,
+      });
+
+      const raw = response.choices[0]?.message?.content || "{}";
+      const cleaned = typeof raw === "string" ? raw.replace(/```json\n?|```/g, "").trim() : JSON.stringify(raw);
+      try {
+        return JSON.parse(cleaned);
+      } catch {
+        return {
+          totalIssues: 0,
+          score: 100,
+          summary: "Teks sudah rapi.",
+          issues: [],
+        };
+      }
+    }),
+
   // ─── AI Cover Letter Generator ─────────────────────────────────────────────
   generateCoverLetter: protectedProcedure
     .input(

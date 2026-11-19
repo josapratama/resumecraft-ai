@@ -20,7 +20,9 @@ export default function ModernTemplate({ cvData }: ModernTemplateProps) {
   const accent = cvData.cv?.accentColor || "#ef4444";
   const fontFamily = cvData.cv?.fontFamily || "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
 
+  const showQr = cvData.cv?.showQrCode !== 0;
   const qrTargetUrl =
+    cvData.cv?.portfolioUrl ||
     (cvData.personalInfo?.fullName?.toLowerCase().includes("irma") ? "https://irma-iryani.josapratama.com" : null) ||
     (cvData.cv?.shareSlug ? `https://resumecraft-ai.josapratama.com/p/${cvData.cv.shareSlug}` : null) ||
     cvData.projects?.find(p => p.link)?.link ||
@@ -207,7 +209,7 @@ export default function ModernTemplate({ cvData }: ModernTemplateProps) {
         )}
 
         {/* QR Code Portofolio / CV Online */}
-        {qrTargetUrl && (
+        {showQr && qrTargetUrl && (
           <div className="pt-2 min-w-0">
             <CVQRCode
               url={qrTargetUrl}
@@ -443,7 +445,7 @@ export default function ModernTemplate({ cvData }: ModernTemplateProps) {
         )}
 
         {/* QR Code Portofolio / CV Online */}
-        {qrTargetUrl && (
+        {showQr && qrTargetUrl && (
           <div className="pt-2 min-w-0">
             <CVQRCode
               url={qrTargetUrl}

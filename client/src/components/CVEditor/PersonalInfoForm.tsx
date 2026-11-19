@@ -6,7 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Spinner } from "@/components/ui/spinner";
-import { Wand2, Circle, User, Mail, Phone, MapPin, Check, Save, Camera, Trash2, Upload, Briefcase } from "lucide-react";
+import { Wand2, Circle, User, Mail, Phone, MapPin, Check, Save, Camera, Trash2, Upload, Briefcase, QrCode, Globe } from "lucide-react";
 import AIAssistant from "./AIAssistant";
 import { toast } from "sonner";
 import { useI18n } from "@/lib/i18n";
@@ -16,20 +16,33 @@ interface PersonalInfoFormProps {
   cvId: number;
   initialData: PersonalInfo | null;
   initialTargetRole?: string | null;
+  initialPortfolioUrl?: string | null;
+  initialShowQrCode?: number;
   onDataChange?: (personalInfo: PersonalInfo) => void;
   onTargetRoleChange?: (targetRole: string) => void;
+  onPortfolioUrlChange?: (portfolioUrl: string) => void;
+  onShowQrCodeChange?: (showQrCode: number) => void;
 }
 
 export default function PersonalInfoForm({
   cvId,
   initialData,
   initialTargetRole,
+  initialPortfolioUrl,
+  initialShowQrCode,
   onDataChange,
   onTargetRoleChange,
+  onPortfolioUrlChange,
+  onShowQrCodeChange,
 }: PersonalInfoFormProps) {
   const { t } = useI18n();
   const [targetRole, setTargetRole] = useState(initialTargetRole || "");
   const [savedTargetRole, setSavedTargetRole] = useState(initialTargetRole || "");
+  const [portfolioUrl, setPortfolioUrl] = useState(initialPortfolioUrl || "");
+  const [savedPortfolioUrl, setSavedPortfolioUrl] = useState(initialPortfolioUrl || "");
+  const [showQrCode, setShowQrCode] = useState(initialShowQrCode !== undefined ? initialShowQrCode !== 0 : true);
+  const [savedShowQrCode, setSavedShowQrCode] = useState(initialShowQrCode !== undefined ? initialShowQrCode !== 0 : true);
+
   const [savedData, setSavedData] = useState({
     fullName: initialData?.fullName || "",
     email: initialData?.email || "",
@@ -46,10 +59,12 @@ export default function PersonalInfoForm({
   const isDirty = useMemo(
     () =>
       targetRole !== savedTargetRole ||
+      portfolioUrl !== savedPortfolioUrl ||
+      showQrCode !== savedShowQrCode ||
       (Object.keys(formData) as (keyof typeof formData)[]).some(
         k => formData[k] !== savedData[k]
       ),
-    [formData, savedData, targetRole, savedTargetRole]
+    [formData, savedData, targetRole, savedTargetRole, portfolioUrl, savedPortfolioUrl, showQrCode, savedShowQrCode]
   );
 
   const updateMutation = trpc.cv.personalInfo.update.useMutation({
@@ -68,7 +83,11 @@ export default function PersonalInfoForm({
   const updateDesignMutation = trpc.cv.updateDesign.useMutation({
     onSuccess: () => {
       setSavedTargetRole(targetRole);
+      setSavedPortfolioUrl(portfolioUrl);
+      setSavedShowQrCode(showQrCode);
       onTargetRoleChange?.(targetRole);
+      onPortfolioUrlChange?.(portfolioUrl);
+      onShowQrCodeChange?.(showQrCode ? 1 : 0);
     },
   });
 
@@ -140,8 +159,17 @@ export default function PersonalInfoForm({
 
   const handleSave = () => {
     updateMutation.mutate({ cvId, ...formData });
-    if (targetRole !== savedTargetRole) {
-      updateDesignMutation.mutate({ cvId, targetRole });
+    if (
+      targetRole !== savedTargetRole ||
+      portfolioUrl !== savedPortfolioUrl ||
+      showQrCode !== savedShowQrCode
+    ) {
+      updateDesignMutation.mutate({
+        cvId,
+        targetRole,
+        portfolioUrl: portfolioUrl.trim(),
+        showQrCode: showQrCode ? 1 : 0,
+      });
     }
   };
 
@@ -353,6 +381,50 @@ export default function PersonalInfoForm({
             placeholder={t("personal.summary_placeholder", "Write 2-4 sentences highlighting your years of experience, core expertise, and notable career achievements...")}
             className="border-neutral-200 focus:border-neutral-900 rounded-xl min-h-28 text-sm leading-relaxed"
           />
+        </div>
+
+        {/* QR Code Portofolio & Web Link Setting */}
+        <div className="p-3.5 bg-neutral-50/80 rounded-xl border border-neutral-200 space-y-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <div className="w-7 h-7 rounded-lg bg-indigo-50 border border-indigo-200 flex items-center justify-center text-indigo-600">
+                <QrCode className="w-4 h-4" />
+              </div>
+              <div>
+                <Label htmlFor="toggle-qr" className="text-xs font-semibold text-neutral-800 cursor-pointer block">
+                  Tampilkan QR Code Portofolio di CV
+                </Label>
+                <p className="text-[11px] text-neutral-500">
+                  Scan langsung membuka situs portofolio atau link profil Anda
+                </p>
+              </div>
+            </div>
+            <input
+              type="checkbox"
+              id="toggle-qr"
+              checked={showQrCode}
+              onChange={e => setShowQrCode(e.target.checked)}
+              className="w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500 cursor-pointer accent-indigo-600"
+            />
+          </div>
+
+          {showQrCode && (
+            <div className="pt-2 border-t border-neutral-200">
+              <Label className="text-[11px] font-semibold text-neutral-600 uppercase tracking-wider flex items-center gap-1.5 mb-1.5">
+                <Globe className="w-3.5 h-3.5 text-neutral-400" />
+                Tautan Portofolio / Web Pribadi
+              </Label>
+              <Input
+                value={portfolioUrl}
+                onChange={e => setPortfolioUrl(e.target.value)}
+                placeholder="https://irma-iryani.josapratama.com atau profil LinkedIn"
+                className="text-xs h-9 border-neutral-200 focus:border-neutral-900 rounded-lg bg-white"
+              />
+              <p className="text-[10px] text-neutral-500 mt-1">
+                Jika dikosongkan, sistem otomatis mengarahkan ke link portofolio bawaan atau publik CV Anda.
+              </p>
+            </div>
+          )}
         </div>
 
         {/* Save Button */}

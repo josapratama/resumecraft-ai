@@ -7,7 +7,7 @@ import {
   COVER_LETTER_TEMPLATES,
 } from "./types";
 import { COVER_LETTER_TEMPLATE_COMPONENTS } from "./templates";
-import { exportCoverLetterToPDF } from "./exportCoverLetterPDF";
+import { exportCoverLetterToPDF, exportBundleToPDF } from "./exportCoverLetterPDF";
 import { SignaturePadModal } from "./SignaturePadModal";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -400,6 +400,19 @@ ${letterData.fullName}`;
     }
   };
 
+  const handleExportBundle = async () => {
+    try {
+      await exportBundleToPDF(
+        "cover-letter-preview-root",
+        "cv-preview-content",
+        `Paket_Lamaran_${letterData.fullName.replace(/\s+/g, "_")}.pdf`
+      );
+      toast.info("Jendela cetak dibuka. Pilih 'Save as PDF' untuk menyimpan paket Surat Lamaran + CV (1 file PDF).");
+    } catch (err: any) {
+      toast.error(err.message || "Gagal mencetak dokumen paket");
+    }
+  };
+
   // Render the selected template component
   const ActiveTemplateComponent =
     COVER_LETTER_TEMPLATE_COMPONENTS[selectedTemplate] ||
@@ -505,11 +518,22 @@ ${letterData.fullName}`;
 
           <Button
             size="sm"
+            onClick={handleExportBundle}
+            className="text-xs gap-1.5 h-8 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold shadow-xs"
+            title="Gabungkan Surat Lamaran (Halaman 1) dan CV (Halaman 2) menjadi 1 file PDF siap kirim"
+          >
+            <FileText className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">Paket Komplit (Surat + CV 1 PDF)</span>
+            <span className="sm:hidden">Paket 1 PDF</span>
+          </Button>
+
+          <Button
+            size="sm"
             onClick={handleExportPDF}
             className="text-xs gap-1.5 h-8 bg-blue-600 hover:bg-blue-700 text-white font-semibold shadow-xs"
           >
             <Printer className="w-3.5 h-3.5" />
-            <span>Unduh PDF A4</span>
+            <span>Unduh Surat Saja</span>
           </Button>
 
           <button

@@ -358,6 +358,8 @@ export async function updateCV(
     accentColor?: string | null;
     fontFamily?: string | null;
     targetRole?: string | null;
+    portfolioUrl?: string | null;
+    showQrCode?: number;
   }
 ) {
   const db = await getDb();

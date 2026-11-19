@@ -750,6 +750,8 @@ export const cvRouter = router({
         accentColor: z.string().trim().max(32).optional(),
         fontFamily: z.string().trim().max(64).optional(),
         targetRole: z.string().trim().max(255).optional(),
+        portfolioUrl: z.string().trim().max(512).optional(),
+        showQrCode: z.number().int().min(0).max(1).optional(),
       })
     )
     .mutation(async ({ ctx, input }) => {
@@ -760,6 +762,8 @@ export const cvRouter = router({
         accentColor: input.accentColor,
         fontFamily: input.fontFamily,
         targetRole: input.targetRole !== undefined ? (input.targetRole.trim() || null) : undefined,
+        portfolioUrl: input.portfolioUrl !== undefined ? (input.portfolioUrl.trim() || null) : undefined,
+        showQrCode: input.showQrCode !== undefined ? input.showQrCode : undefined,
       });
     }),
 

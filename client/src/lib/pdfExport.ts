@@ -52,7 +52,7 @@ export async function exportCVToPDF(
   <style>
     @page {
       size: A4;
-      margin: 15mm 15mm 15mm 15mm;
+      margin: 0;
     }
     html, body {
       margin: 0;
@@ -70,9 +70,20 @@ export async function exportCVToPDF(
     /* Reset any preview scaling transforms */
     .cv-template-root {
       transform: none !important;
-      width: auto !important;
-      min-height: auto !important;
+      width: 100% !important;
+      min-height: 100vh !important;
       margin: 0 !important;
+    }
+    /* Anti-split protection: prevent experiences, educations & cards from splitting horizontally across pages */
+    .cv-template-root h2,
+    .cv-template-root h3,
+    .cv-template-root [class*="space-y-"] > div {
+      break-inside: avoid !important;
+      page-break-inside: avoid !important;
+    }
+    h2, h3 {
+      break-after: avoid !important;
+      page-break-after: avoid !important;
     }
     /* Only show the CV content — no browser chrome artifacts */
     @media screen {
@@ -99,15 +110,29 @@ export async function exportCVToPDF(
   const printWindow = window.open("", "_blank", "width=900,height=700");
 
   if (!printWindow) {
-    // Popup was blocked — fallback: open as data URL in same tab
-    const blob = new Blob([htmlContent], { type: "text/html" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.target = "_blank";
-    a.rel = "noopener";
-    a.click();
-    setTimeout(() => URL.revokeObjectURL(url), 10000);
+    // Popup was blocked by browser — use a hidden iframe to trigger print directly without popup!
+    const iframe = document.createElement("iframe");
+    iframe.style.position = "fixed";
+    iframe.style.right = "0";
+    iframe.style.bottom = "0";
+    iframe.style.width = "0";
+    iframe.style.height = "0";
+    iframe.style.border = "0";
+    document.body.appendChild(iframe);
+
+    const doc = iframe.contentWindow?.document;
+    if (doc) {
+      doc.open();
+      doc.write(htmlContent);
+      doc.close();
+      iframe.contentWindow?.focus();
+      setTimeout(() => {
+        iframe.contentWindow?.print();
+        setTimeout(() => {
+          if (iframe.parentNode) iframe.parentNode.removeChild(iframe);
+        }, 3000);
+      }, 600);
+    }
     return;
   }
 

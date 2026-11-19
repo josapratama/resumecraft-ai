@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ZoomIn, ZoomOut, Maximize2, RotateCcw } from "lucide-react";
+import { ZoomIn, ZoomOut, Maximize2, RotateCcw, FileCheck } from "lucide-react";
 import ModernTemplate from "./templates/ModernTemplate";
 import ClassicTemplate from "./templates/ClassicTemplate";
 import MinimalTemplate from "./templates/MinimalTemplate";
@@ -71,6 +71,7 @@ export default function CVPreview({ template, cvData }: CVPreviewProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [zoom, setZoom] = useState<number>(100);
   const [isAutoFit, setIsAutoFit] = useState<boolean>(true);
+  const [isOnePageMode, setIsOnePageMode] = useState<boolean>(false);
 
   // Auto-fit scale on mount and container resize so it never clips on mobile or narrow split-views
   useEffect(() => {
@@ -128,6 +129,20 @@ export default function CVPreview({ template, cvData }: CVPreviewProps) {
           <Badge variant="outline" className="text-[10px] py-0 px-1.5 border-neutral-700 text-neutral-300">
             A4 Standard
           </Badge>
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={() => setIsOnePageMode(!isOnePageMode)}
+            className={`h-5.5 px-2 text-[10px] gap-1 rounded font-medium transition-colors ${
+              isOnePageMode
+                ? "bg-emerald-600 text-white hover:bg-emerald-700 shadow-xs"
+                : "text-neutral-300 hover:text-white hover:bg-neutral-800 border border-neutral-700"
+            }`}
+            title="Padatkan konten CV agar pas di 1 lembar A4"
+          >
+            <FileCheck className="w-3 h-3 text-emerald-400" />
+            <span>{isOnePageMode ? "Mode 1 Hal: Aktif" : "Pas 1 Halaman"}</span>
+          </Button>
         </div>
 
         <div className="flex items-center gap-1">
@@ -194,7 +209,9 @@ export default function CVPreview({ template, cvData }: CVPreviewProps) {
         >
           {/* A4 Document Root */}
           <div
-            className="cv-template-root bg-white shadow-2xl mx-auto rounded-xs overflow-hidden"
+            className={`cv-template-root bg-white shadow-2xl mx-auto rounded-xs overflow-hidden ${
+              isOnePageMode ? "cv-one-page-compact" : ""
+            }`}
             style={{
               width: "794px",
               minHeight: "1123px",

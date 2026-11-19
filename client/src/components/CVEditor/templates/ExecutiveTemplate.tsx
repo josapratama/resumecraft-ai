@@ -4,7 +4,7 @@ import { formatEducationTitle } from "@/lib/cvFormatters";
  * Authoritative, C-suite feel.
  */
 import type { FullCVData } from "@/types/cv";
-import { groupSkills, TechChips, LanguagesDisplay, CustomSectionsDisplay } from "./_shared";
+import { groupSkills, TechChips, LanguagesDisplay, CustomSectionsDisplay, TargetRoleDisplay } from "./_shared";
 
 export default function ExecutiveTemplate({ cvData }: { cvData: FullCVData }) {
   const grouped = groupSkills(cvData.skills);
@@ -20,6 +20,10 @@ export default function ExecutiveTemplate({ cvData }: { cvData: FullCVData }) {
             <h1 className="text-3xl font-bold tracking-tight">
               {cvData.personalInfo?.fullName || "Your Name"}
             </h1>
+            <TargetRoleDisplay
+              role={cvData.cv?.targetRole}
+              className="text-sm font-semibold text-amber-300 uppercase tracking-widest mt-1"
+            />
             {cvData.personalInfo?.location && (
               <p className="text-sm text-blue-300 mt-1">
                 {cvData.personalInfo.location}

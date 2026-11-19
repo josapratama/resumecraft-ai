@@ -175,3 +175,22 @@
     }
   }
 }
+
+/* 1-Page Fit Compact Mode */
+.cv-one-page-compact {
+  font-size: 91% !important;
+}
+.cv-one-page-compact .space-y-4 {
+  gap: 0.5rem !important;
+}
+.cv-one-page-compact .space-y-3\.5 {
+  gap: 0.45rem !important;
+}
+.cv-one-page-compact .p-7,
+.cv-one-page-compact .p-8 {
+  padding: 1.25rem !important;
+}
+.cv-one-page-compact .mb-3,
+.cv-one-page-compact .mb-4 {
+  margin-bottom: 0.5rem !important;
+}

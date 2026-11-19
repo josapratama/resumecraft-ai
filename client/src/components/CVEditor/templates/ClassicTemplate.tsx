@@ -1,6 +1,6 @@
 import { formatEducationTitle } from "@/lib/cvFormatters";
 import type { FullCVData } from "@/types/cv";
-import { LanguagesDisplay, CustomSectionsDisplay } from "./_shared";
+import { LanguagesDisplay, CustomSectionsDisplay, TargetRoleDisplay } from "./_shared";
 
 interface ClassicTemplateProps {
   cvData: FullCVData;
@@ -27,6 +27,10 @@ export default function ClassicTemplate({ cvData }: ClassicTemplateProps) {
         <h1 className="text-3xl font-bold text-black tracking-tight">
           {cvData.personalInfo?.fullName || "Your Name"}
         </h1>
+        <TargetRoleDisplay
+          role={cvData.cv?.targetRole}
+          className="text-sm font-semibold uppercase tracking-wider text-red-700 mt-1"
+        />
         {cvData.personalInfo?.location && (
           <p className="text-sm text-gray-600 mt-1">
             {cvData.personalInfo.location}

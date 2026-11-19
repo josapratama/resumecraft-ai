@@ -125,6 +125,23 @@ export function LanguagesDisplay({
   );
 }
 
+export function TargetRoleDisplay({
+  role,
+  className = "text-xs font-semibold uppercase tracking-wider mt-1 text-slate-500",
+  style,
+}: {
+  role?: string | null;
+  className?: string;
+  style?: React.CSSProperties;
+}) {
+  if (!role) return null;
+  return (
+    <p className={className} style={style}>
+      {role}
+    </p>
+  );
+}
+
 export function ProjectLinkDisplay({
   url,
   className = "text-xs hover:underline shrink-0 font-medium inline-flex items-center gap-1 break-all",

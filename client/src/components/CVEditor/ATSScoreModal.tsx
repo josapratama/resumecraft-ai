@@ -21,6 +21,9 @@ import {
   ArrowRight,
   Check,
   Plus,
+  Camera,
+  UploadCloud,
+  FileImage,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -56,6 +59,36 @@ export default function ATSScoreModal({
   const [targetRole, setTargetRole] = useState(defaultRole);
   const [jobDescription, setJobDescription] = useState("");
   const [result, setResult] = useState<ATSResult | null>(null);
+  const [isExtractingImage, setIsExtractingImage] = useState(false);
+
+  const extractMutation = trpc.cvAI.extractJobVacancyFromImage.useMutation({
+    onSuccess: (data: any) => {
+      setIsExtractingImage(false);
+      if (data.jobTitle) setTargetRole(data.jobTitle);
+      if (data.jobDescription) setJobDescription(data.jobDescription);
+      toast.success(
+        `Poster berhasil di-scan! ${data.companyName ? `(${data.companyName})` : ""}`
+      );
+    },
+    onError: (err: any) => {
+      setIsExtractingImage(false);
+      toast.error(`Gagal memindai poster: ${err.message}`);
+    },
+  });
+
+  const handleImageFile = (file: File) => {
+    if (!file.type.startsWith("image/")) {
+      toast.error("Pilih file gambar poster (JPG, PNG, WebP)");
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => {
+      const base64 = reader.result as string;
+      setIsExtractingImage(true);
+      extractMutation.mutate({ imageBase64: base64 });
+    };
+    reader.readAsDataURL(file);
+  };
 
   const analyzeMutation = trpc.cvAI.analyzeATS.useMutation({
     onSuccess: data => {
@@ -101,6 +134,46 @@ export default function ATSScoreModal({
               Paste the vacancy or Job Description (JD) you want to target.
               The AI parses required qualifications, measures keyword overlap, and computes your screening pass rate.
             </p>
+
+            {/* Poster / Screenshot OCR Vision Scan */}
+            <div className="p-3 bg-gradient-to-r from-indigo-50/70 to-purple-50/70 border border-indigo-100 rounded-xl">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-lg bg-indigo-600 text-white flex items-center justify-center shrink-0 shadow-xs">
+                    {isExtractingImage ? (
+                      <Spinner className="w-4 h-4 text-white" />
+                    ) : (
+                      <Camera className="w-4 h-4" />
+                    )}
+                  </div>
+                  <div>
+                    <p className="text-xs font-bold text-neutral-900 leading-tight">
+                      Punya Foto / Poster Lowongan Kerja?
+                    </p>
+                    <p className="text-[11px] text-neutral-500">
+                      {isExtractingImage
+                        ? "AI sedang membaca seluruh teks poster loker..."
+                        : "Unggah gambar poster loker, AI langsung mengekstrak kualifikasi otomatis."}
+                    </p>
+                  </div>
+                </div>
+
+                <label className="cursor-pointer inline-flex items-center justify-center gap-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold px-3 py-1.5 rounded-lg shadow-xs transition-colors shrink-0">
+                  <UploadCloud className="w-3.5 h-3.5" />
+                  <span>{isExtractingImage ? "Memindai..." : "Scan Poster Loker"}</span>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    disabled={isExtractingImage}
+                    onChange={e => {
+                      const file = e.target.files?.[0];
+                      if (file) handleImageFile(file);
+                    }}
+                    className="hidden"
+                  />
+                </label>
+              </div>
+            </div>
 
             <div>
               <Label htmlFor="targetRole" className="text-xs font-semibold text-neutral-600 uppercase tracking-wider">

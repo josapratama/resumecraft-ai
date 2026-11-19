@@ -3,7 +3,7 @@ import { formatEducationTitle } from "@/lib/cvFormatters";
  * Sidebar Light — light lavender sidebar, white main, clean and airy.
  */
 import type { FullCVData } from "@/types/cv";
-import { groupSkills, PROF_WIDTH, TechChips, CustomSectionsDisplay } from "./_shared";
+import { groupSkills, PROF_WIDTH, TechChips, CustomSectionsDisplay, TargetRoleDisplay } from "./_shared";
 
 export default function SidebarLightTemplate({
   cvData,
@@ -24,6 +24,10 @@ export default function SidebarLightTemplate({
           <h1 className="text-xl font-bold text-gray-900 leading-tight break-words">
             {cvData.personalInfo?.fullName || "Your Name"}
           </h1>
+          <TargetRoleDisplay
+            role={cvData.cv?.targetRole}
+            className="text-xs font-semibold text-[#7c5cbf] uppercase tracking-wider mt-1"
+          />
           <div className="w-8 h-0.5 bg-[#7c5cbf] mt-2 mb-2" />
           <div className="space-y-0.5 text-xs text-gray-600 min-w-0">
             {cvData.personalInfo?.location && (

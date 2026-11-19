@@ -192,13 +192,30 @@ The description should be 2-3 bullet points highlighting achievements and impact
       if (cv.userId !== ctx.user.id)
         throw new TRPCError({ code: "FORBIDDEN", message: "Unauthorized" });
 
+      const isIndonesian =
+        /meng|di|dan|yang|dengan|pada|ke|untuk|saya|tugas|kerja|sekolah|guru|siswa|pengalaman/i.test(input.text);
+
       const contextGuide = {
         summary: "Make it more compelling and professional for a CV summary",
-        description: "Improve the job description with action verbs and impact",
+        description: "Improve the job description with strong action verbs and measurable impact",
         skill: "Enhance the skill description to be more professional",
       };
 
-      const prompt = `Improve the following CV text to be more professional and impactful. ${contextGuide[input.context]}
+      const prompt = isIndonesian
+        ? `Tingkatkan teks CV berikut agar sangat profesional, formal, menggunakan kata kerja aksi yang kuat (action verbs seperti 'Mengembangkan', 'Mengkoordinasikan', 'Merancang', 'Memfasilitasi', 'Meningkatkan'), dan menonjolkan capaian terukur.
+Konteks: ${
+            input.context === "summary"
+              ? "Ringkasan Profil Profesional (Professional Summary)"
+              : input.context === "description"
+              ? "Tanggung Jawab & Capaian Pekerjaan (Action-verb bullet points)"
+              : "Keahlian"
+          }
+
+Teks Asli:
+"${input.text}"
+
+KEMBALIKAN HANYA teks yang telah disempurnakan (tanpa tanda petik, tanpa kata pengantar apa pun). Jika berupa deskripsi tugas/pekerjaan, sajikan dalam butir-butir poin rapi menggunakan tanda '• '.`
+        : `Improve the following CV text to be more professional and impactful. ${contextGuide[input.context]}. Start bullets with strong action verbs and highlight accomplishments.
 
 Original text: "${input.text}"
 
@@ -315,6 +332,69 @@ Return a VALID JSON object ONLY (strictly without markdown backticks or commenta
           code: "INTERNAL_SERVER_ERROR",
           message: "Failed to parse ATS analysis response",
         });
+      }
+    }),
+
+  // ─── Extract Job Vacancy from Poster / Image (AI Vision OCR) ───────────────
+  extractJobVacancyFromImage: protectedProcedure
+    .input(
+      z.object({
+        imageBase64: z.string().min(20),
+      })
+    )
+    .mutation(async ({ input }) => {
+      const mimeMatch = input.imageBase64.match(/^data:(image\/[a-zA-Z0-9.+-]+);base64,/);
+      const mimeType = mimeMatch ? mimeMatch[1] : "image/jpeg";
+      const cleanUrl = input.imageBase64.startsWith("data:")
+        ? input.imageBase64
+        : `data:${mimeType};base64,${input.imageBase64}`;
+
+      const prompt = `Anda adalah asisten karir dan rekrutmen profesional. Analisis gambar poster lowongan pekerjaan / pamflet loker ini.
+Ekstrak seluruh informasi kunci ke dalam format JSON yang terstruktur dan detail.
+
+KEMBALIKAN HANYA OBJEK JSON VALID dengan format:
+{
+  "companyName": "<Nama Sekolah / Perusahaan / Lembaga, contoh: SMP Angelly Secondary>",
+  "jobTitle": "<Posisi / Jabatan yang Dibuka, contoh: Guru Matematika>",
+  "requirements": ["<Syarat 1>", "<Syarat 2>", "<Syarat 3>"],
+  "location": "<Kota / Alamat jika tercantum>",
+  "contactInfo": "<Nomor Telepon / Email / Alamat pengiriman CV>",
+  "jobDescription": "<Teks terangkai lengkap dari seluruh persyaratan, kualifikasi, deskripsi lowongan untuk analisis kecocokan ATS>"
+}`;
+
+      const response = await invokeLLM({
+        model: "gpt-4o",
+        messages: [
+          {
+            role: "user",
+            content: [
+              { type: "text", text: prompt },
+              {
+                type: "image_url",
+                image_url: {
+                  url: cleanUrl,
+                },
+              },
+            ],
+          },
+        ],
+        responseFormat: { type: "json_object" },
+        max_tokens: 1500,
+      });
+
+      const raw = response.choices[0]?.message?.content || "{}";
+      const cleaned = typeof raw === "string" ? raw.replace(/```json\n?|```/g, "").trim() : JSON.stringify(raw);
+      try {
+        return JSON.parse(cleaned);
+      } catch {
+        return {
+          companyName: "",
+          jobTitle: "",
+          requirements: [],
+          location: "",
+          contactInfo: "",
+          jobDescription: typeof raw === "string" ? raw : "",
+        };
       }
     }),
 

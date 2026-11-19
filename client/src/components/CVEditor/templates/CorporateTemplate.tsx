@@ -2,7 +2,7 @@
  * Corporate — blue/grey palette, formal layout, suited for big companies.
  */
 import type { FullCVData } from "@/types/cv";
-import { groupSkills, TechChips, CustomSectionsDisplay } from "./_shared";
+import { groupSkills, TechChips, CustomSectionsDisplay, TargetRoleDisplay } from "./_shared";
 
 export default function CorporateTemplate({ cvData }: { cvData: FullCVData }) {
   const grouped = groupSkills(cvData.skills);
@@ -25,6 +25,10 @@ export default function CorporateTemplate({ cvData }: { cvData: FullCVData }) {
             <h1 className="text-2xl font-bold text-white break-words">
               {cvData.personalInfo?.fullName || "Your Name"}
             </h1>
+            <TargetRoleDisplay
+              role={cvData.cv?.targetRole}
+              className="text-xs font-semibold text-blue-200 uppercase tracking-wider mt-0.5"
+            />
             <div className="flex flex-wrap gap-x-4 text-xs text-blue-200 mt-1 min-w-0">
               {cvData.personalInfo?.email && (
                 <span className="break-all">{cvData.personalInfo.email}</span>

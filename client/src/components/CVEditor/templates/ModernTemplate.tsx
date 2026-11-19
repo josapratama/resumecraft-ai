@@ -2,6 +2,7 @@ import type { FullCVData } from "@/types/cv";
 import { formatEducationTitle, formatCVDate, formatProficiency, formatCategory, formatDisplayUrl } from "@/lib/cvFormatters";
 import { useI18n } from "@/lib/i18n";
 import { Mail, Phone, MapPin, Globe, ExternalLink } from "lucide-react";
+import CVQRCode from "../CVQRCode";
 
 interface ModernTemplateProps {
   cvData: FullCVData;
@@ -18,6 +19,12 @@ export default function ModernTemplate({ cvData }: ModernTemplateProps) {
   const { t, locale } = useI18n();
   const accent = cvData.cv?.accentColor || "#ef4444";
   const fontFamily = cvData.cv?.fontFamily || "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
+
+  const qrTargetUrl =
+    (cvData.personalInfo?.fullName?.toLowerCase().includes("irma") ? "https://irma-iryani.josapratama.com" : null) ||
+    (cvData.cv?.shareSlug ? `https://resumecraft-ai.josapratama.com/p/${cvData.cv.shareSlug}` : null) ||
+    cvData.projects?.find(p => p.link)?.link ||
+    null;
 
   const groupedSkills = cvData.skills.reduce(
     (acc, skill) => {
@@ -196,6 +203,19 @@ export default function ModernTemplate({ cvData }: ModernTemplateProps) {
                 </div>
               ))}
             </div>
+          </div>
+        )}
+
+        {/* QR Code Portofolio / CV Online */}
+        {qrTargetUrl && (
+          <div className="pt-2 min-w-0">
+            <CVQRCode
+              url={qrTargetUrl}
+              label={t("template_headers.scan_portfolio", "Portofolio Digital")}
+              size={52}
+              isDark={true}
+              className="w-full"
+            />
           </div>
         )}
       </div>
@@ -419,6 +439,19 @@ export default function ModernTemplate({ cvData }: ModernTemplateProps) {
                 </div>
               ))}
             </div>
+          </div>
+        )}
+
+        {/* QR Code Portofolio / CV Online */}
+        {qrTargetUrl && (
+          <div className="pt-2 min-w-0">
+            <CVQRCode
+              url={qrTargetUrl}
+              label={t("template_headers.scan_portfolio", "Portofolio Digital")}
+              size={52}
+              isDark={true}
+              className="w-full"
+            />
           </div>
         )}
       </div>

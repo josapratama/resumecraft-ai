@@ -1,6 +1,6 @@
 import { formatEducationTitle } from "@/lib/cvFormatters";
 import type { FullCVData } from "@/types/cv";
-import { LanguagesDisplay, CustomSectionsDisplay } from "./_shared";
+import { LanguagesDisplay, CustomSectionsDisplay, TargetRoleDisplay } from "./_shared";
 
 interface MinimalTemplateProps {
   cvData: FullCVData;
@@ -29,6 +29,10 @@ export default function MinimalTemplate({ cvData }: MinimalTemplateProps) {
         <h1 className="text-3xl font-light text-black tracking-widest uppercase">
           {cvData.personalInfo?.fullName || "Your Name"}
         </h1>
+        <TargetRoleDisplay
+          role={cvData.cv?.targetRole}
+          className="text-xs font-medium text-gray-600 tracking-widest uppercase mt-1"
+        />
         <div className="flex items-center justify-center flex-wrap gap-x-3 gap-y-1 text-xs text-gray-500 mt-2">
           {cvData.personalInfo?.location && (
             <span>{cvData.personalInfo.location}</span>

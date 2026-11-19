@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { useParams, useLocation } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { exportCVToPDF } from "@/lib/pdfExport";
+import { exportCVToDOCX } from "@/lib/docxExport";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -38,6 +39,8 @@ import {
   SpellCheck,
   Mail,
   FileCheck2,
+  DollarSign,
+  FileCode2,
 } from "lucide-react";
 import { toast } from "sonner";
 import {
@@ -65,6 +68,7 @@ import GrammarCheckModal from "@/components/CVEditor/GrammarCheckModal";
 import EmailDraftModal from "@/components/CVEditor/EmailDraftModal";
 import JobTrackerModal from "@/components/JobTracker/JobTrackerModal";
 import DocumentChecklistModal from "@/components/CVEditor/DocumentChecklistModal";
+import SalaryBenchmarkModal from "@/components/CVEditor/SalaryBenchmarkModal";
 import CVPreview from "@/components/CVEditor/CVPreview";
 import { AIChatBox } from "@/components/AIChatBox";
 import { useAuth } from "@/_core/hooks/useAuth";
@@ -184,6 +188,7 @@ export default function CVEditor() {
   const [showEmailDraftModal, setShowEmailDraftModal] = useState(false);
   const [showJobTrackerModal, setShowJobTrackerModal] = useState(false);
   const [showChecklistModal, setShowChecklistModal] = useState(false);
+  const [showSalaryModal, setShowSalaryModal] = useState(false);
 
   const handleBackupCV = () => {
     if (!cvData) return;
@@ -516,6 +521,19 @@ export default function CVEditor() {
                       <p className="text-[10px] text-neutral-500">Kesiapan ijazah, SKCK, foto & backup CV</p>
                     </div>
                   </DropdownMenuItem>
+
+                  <DropdownMenuItem
+                    onClick={() => setShowSalaryModal(true)}
+                    className="gap-2.5 p-2 rounded-lg cursor-pointer hover:bg-emerald-50"
+                  >
+                    <div className="w-7 h-7 rounded-md bg-emerald-100 text-emerald-700 flex items-center justify-center flex-shrink-0">
+                      <DollarSign className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <p className="text-xs font-semibold text-neutral-900">Benchmark Gaji Pasar</p>
+                      <p className="text-[10px] text-neutral-500">Estimasi gaji Indonesia (IDR) & Remote (USD)</p>
+                    </div>
+                  </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
 
@@ -635,33 +653,92 @@ export default function CVEditor() {
                 </DropdownMenuContent>
               </DropdownMenu>
 
-              {/* PDF Export Button */}
-              <Button
-                onClick={async () => {
-                  try {
-                    setIsExporting(true);
-                    await exportCVToPDF(
-                      "cv-preview-content",
-                      `${cvData.cv.title || "resume"}.pdf`
-                    );
-                    toast.info("Print dialog opened. Select 'Save as PDF' to download.", {
-                      duration: 5000,
-                    });
-                  } catch (err: any) {
-                    toast.error(`Export failed: ${err.message || String(err)}`);
-                  } finally {
-                    setIsExporting(false);
-                  }
-                }}
-                disabled={isExporting}
-                size="sm"
-                className="gap-1.5 bg-neutral-900 text-white hover:bg-neutral-800 h-8 sm:h-9 px-3 sm:px-4 rounded-lg shadow-sm"
-              >
-                <Download className="w-3.5 h-3.5" />
-                <span className="font-semibold text-xs">
-                  {isExporting ? "Exporting..." : t("topbar.pdf", "PDF")}
-                </span>
-              </Button>
+              {/* Unified Export Dropdown (PDF, Word DOCX, Backup JSON) */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    disabled={isExporting}
+                    size="sm"
+                    className="gap-1.5 bg-neutral-900 text-white hover:bg-neutral-800 h-8 sm:h-9 px-3 sm:px-4 rounded-lg shadow-sm"
+                  >
+                    <Download className="w-3.5 h-3.5" />
+                    <span className="font-semibold text-xs">
+                      {isExporting ? "Mengunduh..." : "Unduh"}
+                    </span>
+                    <ChevronDown className="w-3 h-3 opacity-60" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-60 p-1.5 rounded-xl shadow-xl border-neutral-200">
+                  <DropdownMenuItem
+                    onClick={async () => {
+                      try {
+                        setIsExporting(true);
+                        await exportCVToPDF(
+                          "cv-preview-content",
+                          `${cvData.cv.title || "resume"}.pdf`
+                        );
+                        toast.info("Pilih 'Save as PDF' pada dialog cetak untuk mengunduh PDF.", {
+                          duration: 5000,
+                        });
+                      } catch (err: any) {
+                        toast.error(`Export PDF gagal: ${err.message || String(err)}`);
+                      } finally {
+                        setIsExporting(false);
+                      }
+                    }}
+                    className="flex items-center gap-2.5 text-xs font-medium cursor-pointer rounded-lg py-2"
+                  >
+                    <div className="w-7 h-7 rounded-md bg-red-50 text-red-600 flex items-center justify-center shrink-0">
+                      <FileText className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <p className="font-bold text-neutral-900">Format PDF (A4 Standar)</p>
+                      <p className="text-[10px] text-neutral-500">Tajam, vektor, siap cetak fisik</p>
+                    </div>
+                  </DropdownMenuItem>
+
+                  <DropdownMenuItem
+                    onClick={async () => {
+                      try {
+                        setIsExporting(true);
+                        await exportCVToDOCX(
+                          cvData,
+                          `${cvData.cv.title || "CV"}.docx`
+                        );
+                        toast.success("Dokumen Microsoft Word (.docx) berhasil diunduh!");
+                      } catch (err: any) {
+                        toast.error(`Export Word gagal: ${err.message || String(err)}`);
+                      } finally {
+                        setIsExporting(false);
+                      }
+                    }}
+                    className="flex items-center gap-2.5 text-xs font-medium cursor-pointer rounded-lg py-2"
+                  >
+                    <div className="w-7 h-7 rounded-md bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
+                      <FileCode2 className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <p className="font-bold text-neutral-900">Format Word (.docx)</p>
+                      <p className="text-[10px] text-neutral-500">Bisa diedit di Microsoft Word / WPS</p>
+                    </div>
+                  </DropdownMenuItem>
+
+                  <DropdownMenuSeparator />
+
+                  <DropdownMenuItem
+                    onClick={handleBackupCV}
+                    className="flex items-center gap-2.5 text-xs font-medium cursor-pointer rounded-lg py-2"
+                  >
+                    <div className="w-7 h-7 rounded-md bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+                      <Download className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <p className="font-bold text-neutral-900">Backup Data (JSON)</p>
+                      <p className="text-[10px] text-neutral-500">Simpan arsip data untuk restore</p>
+                    </div>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
 
               {/* Multilingual Switcher (Polyglot Hub) */}
               <LanguageSwitcher />
@@ -1013,6 +1090,13 @@ export default function CVEditor() {
         onClose={() => setShowChecklistModal(false)}
         cvId={cvIdNum}
         onBackupCV={handleBackupCV}
+      />
+
+      <SalaryBenchmarkModal
+        isOpen={showSalaryModal}
+        onClose={() => setShowSalaryModal(false)}
+        defaultRole={cvData.cv.targetRole || ""}
+        defaultLocation={cvData.personalInfo?.location || "Indonesia"}
       />
     </div>
   );

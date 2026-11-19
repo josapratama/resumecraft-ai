@@ -1,9 +1,9 @@
-import { formatEducationTitle } from "@/lib/cvFormatters";
+import { formatEducationTitle, ensureAbsoluteUrl } from "@/lib/cvFormatters";
 /**
  * Nordic — Scandinavian minimalism, teal/seafoam accents, extreme whitespace.
  */
 import type { FullCVData } from "@/types/cv";
-import { groupSkills, TechChips, LanguagesDisplay, CustomSectionsDisplay } from "./_shared";
+import { groupSkills, TechChips, LanguagesDisplay, CustomSectionsDisplay, TargetRoleDisplay, TemplateQRCode } from "./_shared";
 
 export default function NordicTemplate({ cvData }: { cvData: FullCVData }) {
   const grouped = groupSkills(cvData.skills);
@@ -23,6 +23,7 @@ export default function NordicTemplate({ cvData }: { cvData: FullCVData }) {
           <h1 className="text-3xl font-light text-gray-900 tracking-wide">
             {cvData.personalInfo?.fullName || "Your Name"}
           </h1>
+        <TargetRoleDisplay role={cvData.cv?.targetRole} />
           <div className="w-12 h-0.5 bg-[#2d9b8a] mt-2 mb-2" />
           <div className="flex flex-wrap gap-x-4 text-xs text-gray-500">
             {cvData.personalInfo?.location && (
@@ -35,6 +36,7 @@ export default function NordicTemplate({ cvData }: { cvData: FullCVData }) {
               <span>{cvData.personalInfo.phone}</span>
             )}
           </div>
+        <TemplateQRCode cvData={cvData} size={48} className="mt-2.5 print:mt-1" />
         </div>
 
         {/* Summary */}
@@ -139,7 +141,7 @@ export default function NordicTemplate({ cvData }: { cvData: FullCVData }) {
                     </h3>
                     {proj.link && (
                       <a
-                        href={proj.link}
+                        href={ensureAbsoluteUrl(proj.link)}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-xs text-[#2d9b8a] hover:underline"

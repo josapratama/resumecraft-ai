@@ -1,10 +1,10 @@
-import { formatEducationTitle } from "@/lib/cvFormatters";
+import { formatEducationTitle, ensureAbsoluteUrl } from "@/lib/cvFormatters";
 /**
  * Stealth — all-dark, subtle gray-on-charcoal, zero color except white text.
  * Security, elite consulting, understated luxury.
  */
 import type { FullCVData } from "@/types/cv";
-import { groupSkills, TechChips, CustomSectionsDisplay } from "./_shared";
+import { groupSkills, TechChips, CustomSectionsDisplay, TargetRoleDisplay, TemplateQRCode } from "./_shared";
 
 export default function StealthTemplate({ cvData }: { cvData: FullCVData }) {
   const grouped = groupSkills(cvData.skills);
@@ -20,6 +20,7 @@ export default function StealthTemplate({ cvData }: { cvData: FullCVData }) {
         <h1 className="text-3xl font-bold text-white tracking-tight">
           {cvData.personalInfo?.fullName || "Your Name"}
         </h1>
+        <TargetRoleDisplay role={cvData.cv?.targetRole} />
         <div className="flex flex-wrap gap-x-5 text-xs text-gray-500 mt-2">
           {cvData.personalInfo?.location && (
             <span>{cvData.personalInfo.location}</span>
@@ -31,6 +32,7 @@ export default function StealthTemplate({ cvData }: { cvData: FullCVData }) {
             <span>{cvData.personalInfo.phone}</span>
           )}
         </div>
+        <TemplateQRCode cvData={cvData} size={48} className="mt-2.5 print:mt-1" />
       </div>
 
       <div className="flex">
@@ -169,7 +171,7 @@ export default function StealthTemplate({ cvData }: { cvData: FullCVData }) {
                       </h3>
                       {proj.link && (
                         <a
-                          href={proj.link}
+                          href={ensureAbsoluteUrl(proj.link)}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="text-xs text-gray-600 hover:text-gray-400 shrink-0"

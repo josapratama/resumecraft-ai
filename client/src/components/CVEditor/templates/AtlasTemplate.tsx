@@ -1,10 +1,10 @@
-import { formatEducationTitle } from "@/lib/cvFormatters";
+import { formatEducationTitle, ensureAbsoluteUrl } from "@/lib/cvFormatters";
 /**
  * Atlas — deep forest green sidebar, khaki main, earthy explorer aesthetic.
  * Consultants, NGO workers, geographers.
  */
 import type { FullCVData } from "@/types/cv";
-import { groupSkills, TechChips, CustomSectionsDisplay } from "./_shared";
+import { groupSkills, TechChips, CustomSectionsDisplay, TargetRoleDisplay, TemplateQRCode } from "./_shared";
 
 export default function AtlasTemplate({ cvData }: { cvData: FullCVData }) {
   const grouped = groupSkills(cvData.skills);
@@ -23,6 +23,7 @@ export default function AtlasTemplate({ cvData }: { cvData: FullCVData }) {
           <h1 className="text-xl font-bold leading-tight break-words">
             {cvData.personalInfo?.fullName || "Your Name"}
           </h1>
+        <TargetRoleDisplay role={cvData.cv?.targetRole} />
           <div className="space-y-0.5 text-xs text-[#8fb894] mt-2 min-w-0">
             {cvData.personalInfo?.location && (
               <p className="break-words">{cvData.personalInfo.location}</p>
@@ -34,6 +35,7 @@ export default function AtlasTemplate({ cvData }: { cvData: FullCVData }) {
               <p className="break-words">{cvData.personalInfo.phone}</p>
             )}
           </div>
+        <TemplateQRCode cvData={cvData} size={48} className="mt-2.5 print:mt-1" />
         </div>
 
         {/* Skills */}
@@ -172,7 +174,7 @@ export default function AtlasTemplate({ cvData }: { cvData: FullCVData }) {
                     </h3>
                     {proj.link && (
                       <a
-                        href={proj.link}
+                        href={ensureAbsoluteUrl(proj.link)}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-xs text-[#2d6a3d] hover:underline shrink-0"

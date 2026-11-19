@@ -1,6 +1,6 @@
 import type { FullCVData, Skill } from "@/types/cv";
 import { useI18n } from "@/lib/i18n";
-import { formatProficiency, formatDisplayUrl } from "@/lib/cvFormatters";
+import { formatProficiency, formatDisplayUrl, ensureAbsoluteUrl } from "@/lib/cvFormatters";
 import CVQRCode from "../CVQRCode";
 
 export function getQRTargetUrl(cvData: FullCVData): string | null {
@@ -184,9 +184,10 @@ export function ProjectLinkDisplay({
   style?: React.CSSProperties;
 }) {
   if (!url) return null;
+  const href = ensureAbsoluteUrl(url);
   return (
     <a
-      href={url}
+      href={href}
       target="_blank"
       rel="noopener noreferrer"
       className={className}

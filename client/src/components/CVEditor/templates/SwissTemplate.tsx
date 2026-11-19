@@ -1,10 +1,10 @@
-import { formatEducationTitle } from "@/lib/cvFormatters";
+import { formatEducationTitle, ensureAbsoluteUrl } from "@/lib/cvFormatters";
 /**
  * Swiss — International Typographic Style, grid-based, red + black, Helvetica.
  * Pure Swiss design school.
  */
 import type { FullCVData } from "@/types/cv";
-import { groupSkills, TechChips, LanguagesDisplay, CustomSectionsDisplay } from "./_shared";
+import { groupSkills, TechChips, LanguagesDisplay, CustomSectionsDisplay, TargetRoleDisplay, TemplateQRCode } from "./_shared";
 
 export default function SwissTemplate({ cvData }: { cvData: FullCVData }) {
   const grouped = groupSkills(cvData.skills);
@@ -14,12 +14,14 @@ export default function SwissTemplate({ cvData }: { cvData: FullCVData }) {
       style={{ fontFamily: "Helvetica Neue, Helvetica, Arial, sans-serif" }}
     >
       {/* Grid header */}
-      <div className="grid grid-cols-[auto_1fr] gap-6 mb-8 pb-4 border-b-4 border-black min-w-0">
+      <TemplateQRCode cvData={cvData} size={48} className="my-2" />
+        <div className="grid grid-cols-[auto_1fr] gap-6 mb-8 pb-4 border-b-4 border-black min-w-0">
         <div className="w-2 bg-red-600 self-stretch" />
         <div className="min-w-0">
           <h1 className="text-4xl font-black tracking-tighter leading-none uppercase break-words">
             {cvData.personalInfo?.fullName || "Your Name"}
           </h1>
+        <TargetRoleDisplay role={cvData.cv?.targetRole} />
           <div className="grid grid-cols-3 gap-2 mt-3 min-w-0">
             {cvData.personalInfo?.email && (
               <div className="min-w-0">
@@ -163,7 +165,7 @@ export default function SwissTemplate({ cvData }: { cvData: FullCVData }) {
                   </h3>
                   {proj.link && (
                     <a
-                      href={proj.link}
+                      href={ensureAbsoluteUrl(proj.link)}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-xs text-red-600 shrink-0"

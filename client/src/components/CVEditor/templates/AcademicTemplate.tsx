@@ -1,10 +1,10 @@
-import { formatEducationTitle } from "@/lib/cvFormatters";
+import { formatEducationTitle, ensureAbsoluteUrl } from "@/lib/cvFormatters";
 /**
  * Academic — dense, publication-ready, serif, Chicago style citations.
  * Professors, researchers, PhD candidates.
  */
 import type { FullCVData } from "@/types/cv";
-import { groupSkills } from "./_shared";
+import { groupSkills, TargetRoleDisplay, TemplateQRCode } from "./_shared";
 
 export default function AcademicTemplate({ cvData }: { cvData: FullCVData }) {
   const grouped = groupSkills(cvData.skills);
@@ -18,6 +18,7 @@ export default function AcademicTemplate({ cvData }: { cvData: FullCVData }) {
         <h1 className="text-2xl font-bold text-black">
           {cvData.personalInfo?.fullName || "Your Name"}
         </h1>
+        <TargetRoleDisplay role={cvData.cv?.targetRole} />
         <div className="flex justify-center flex-wrap gap-x-3 text-xs text-gray-600 mt-1">
           {cvData.personalInfo?.email && (
             <span>{cvData.personalInfo.email}</span>
@@ -29,6 +30,7 @@ export default function AcademicTemplate({ cvData }: { cvData: FullCVData }) {
             <span>| {cvData.personalInfo.location}</span>
           )}
         </div>
+        <TemplateQRCode cvData={cvData} size={48} className="mt-2.5 print:mt-1" />
         <div className="mt-3 border-b-2 border-black" />
       </div>
 
@@ -109,7 +111,7 @@ export default function AcademicTemplate({ cvData }: { cvData: FullCVData }) {
                 <span className="text-xs font-bold">{proj.projectName}</span>
                 {proj.link && (
                   <a
-                    href={proj.link}
+                    href={ensureAbsoluteUrl(proj.link)}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-xs text-blue-600 ml-2"

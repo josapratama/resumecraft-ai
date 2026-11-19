@@ -1,10 +1,10 @@
-import { formatEducationTitle } from "@/lib/cvFormatters";
+import { formatEducationTitle, ensureAbsoluteUrl } from "@/lib/cvFormatters";
 /**
  * Compact — maximum info density, small text, single page optimized.
  * When you need everything on one page.
  */
 import type { FullCVData } from "@/types/cv";
-import { groupSkills } from "./_shared";
+import { groupSkills, TargetRoleDisplay, TemplateQRCode } from "./_shared";
 
 export default function CompactTemplate({ cvData }: { cvData: FullCVData }) {
   const grouped = groupSkills(cvData.skills);
@@ -17,11 +17,13 @@ export default function CompactTemplate({ cvData }: { cvData: FullCVData }) {
       }}
     >
       {/* Inline header */}
-      <div className="flex justify-between items-start border-b-2 border-black pb-2 mb-3">
+      <TemplateQRCode cvData={cvData} size={48} className="my-2" />
+        <div className="flex justify-between items-start border-b-2 border-black pb-2 mb-3">
         <div>
           <h1 className="text-lg font-bold text-black leading-tight">
             {cvData.personalInfo?.fullName || "Your Name"}
           </h1>
+        <TargetRoleDisplay role={cvData.cv?.targetRole} />
         </div>
         <div className="text-right text-gray-600">
           {cvData.personalInfo?.email && <p>{cvData.personalInfo.email}</p>}
@@ -113,7 +115,7 @@ export default function CompactTemplate({ cvData }: { cvData: FullCVData }) {
                 )}
                 {proj.link && (
                   <a
-                    href={proj.link}
+                    href={ensureAbsoluteUrl(proj.link)}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-blue-600 ml-1"

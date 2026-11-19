@@ -1,10 +1,10 @@
-import { formatEducationTitle } from "@/lib/cvFormatters";
+import { formatEducationTitle, ensureAbsoluteUrl } from "@/lib/cvFormatters";
 /**
  * Bold — large red name, heavy black sections, high contrast.
  * Sales, marketing, impactful presence.
  */
 import type { FullCVData } from "@/types/cv";
-import { groupSkills, TechChips, LanguagesDisplay, CustomSectionsDisplay } from "./_shared";
+import { groupSkills, TechChips, LanguagesDisplay, CustomSectionsDisplay, TargetRoleDisplay, TemplateQRCode } from "./_shared";
 
 export default function BoldTemplate({ cvData }: { cvData: FullCVData }) {
   const grouped = groupSkills(cvData.skills);
@@ -20,6 +20,7 @@ export default function BoldTemplate({ cvData }: { cvData: FullCVData }) {
         <h1 className="text-5xl font-black text-red-600 leading-none tracking-tight">
           {cvData.personalInfo?.fullName || "Your Name"}
         </h1>
+        <TargetRoleDisplay role={cvData.cv?.targetRole} />
         <div className="flex gap-4 mt-2 text-xs text-gray-600">
           {cvData.personalInfo?.location && (
             <span>{cvData.personalInfo.location}</span>
@@ -31,6 +32,7 @@ export default function BoldTemplate({ cvData }: { cvData: FullCVData }) {
             <span>{cvData.personalInfo.phone}</span>
           )}
         </div>
+        <TemplateQRCode cvData={cvData} size={48} className="mt-2.5 print:mt-1" />
       </div>
       <div className="h-3 bg-black mx-8 mb-6" />
 
@@ -144,7 +146,7 @@ export default function BoldTemplate({ cvData }: { cvData: FullCVData }) {
                     </h3>
                     {proj.link && (
                       <a
-                        href={proj.link}
+                        href={ensureAbsoluteUrl(proj.link)}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-xs text-red-600 font-bold"

@@ -1,10 +1,10 @@
-import { formatEducationTitle } from "@/lib/cvFormatters";
+import { formatEducationTitle, ensureAbsoluteUrl } from "@/lib/cvFormatters";
 /**
  * Creative — violet/pink gradient header, bold typography, asymmetric layout.
  * Designers, marketers, creative roles.
  */
 import type { FullCVData } from "@/types/cv";
-import { groupSkills, PROF_WIDTH, TechChips, CustomSectionsDisplay } from "./_shared";
+import { groupSkills, PROF_WIDTH, TechChips, CustomSectionsDisplay, TargetRoleDisplay, TemplateQRCode } from "./_shared";
 
 export default function CreativeTemplate({ cvData }: { cvData: FullCVData }) {
   const grouped = groupSkills(cvData.skills);
@@ -20,6 +20,7 @@ export default function CreativeTemplate({ cvData }: { cvData: FullCVData }) {
         <h1 className="text-4xl font-black tracking-tighter leading-none break-words">
           {cvData.personalInfo?.fullName || "Your Name"}
         </h1>
+        <TargetRoleDisplay role={cvData.cv?.targetRole} />
         <div className="flex flex-wrap gap-x-4 text-xs text-purple-200 mt-2 min-w-0">
           {cvData.personalInfo?.location && (
             <span className="break-words">{cvData.personalInfo.location}</span>
@@ -31,6 +32,7 @@ export default function CreativeTemplate({ cvData }: { cvData: FullCVData }) {
             <span className="break-words">{cvData.personalInfo.phone}</span>
           )}
         </div>
+        <TemplateQRCode cvData={cvData} size={48} className="mt-2.5 print:mt-1" />
         {cvData.personalInfo?.professionalSummary && (
           <p className="text-sm text-purple-100 mt-4 max-w-xl leading-relaxed break-words">
             {cvData.personalInfo.professionalSummary}
@@ -164,7 +166,7 @@ export default function CreativeTemplate({ cvData }: { cvData: FullCVData }) {
                       </h3>
                       {proj.link && (
                         <a
-                          href={proj.link}
+                          href={ensureAbsoluteUrl(proj.link)}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="text-xs text-violet-500 shrink-0"

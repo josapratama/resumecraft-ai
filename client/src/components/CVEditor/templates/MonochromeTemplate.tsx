@@ -1,10 +1,10 @@
-import { formatEducationTitle } from "@/lib/cvFormatters";
+import { formatEducationTitle, ensureAbsoluteUrl } from "@/lib/cvFormatters";
 /**
  * Monochrome — pure grayscale, subtle shadows, no color whatsoever.
  * Extremely professional, printer-friendly.
  */
 import type { FullCVData } from "@/types/cv";
-import { groupSkills, TechChips, LanguagesDisplay, CustomSectionsDisplay } from "./_shared";
+import { groupSkills, TechChips, LanguagesDisplay, CustomSectionsDisplay, TargetRoleDisplay, TemplateQRCode } from "./_shared";
 
 export default function MonochromeTemplate({ cvData }: { cvData: FullCVData }) {
   const grouped = groupSkills(cvData.skills);
@@ -20,6 +20,7 @@ export default function MonochromeTemplate({ cvData }: { cvData: FullCVData }) {
         <h1 className="text-2xl font-bold tracking-tight">
           {cvData.personalInfo?.fullName || "Your Name"}
         </h1>
+        <TargetRoleDisplay role={cvData.cv?.targetRole} />
         <div className="flex flex-wrap gap-x-4 text-xs text-gray-400 mt-1.5">
           {cvData.personalInfo?.email && (
             <span>{cvData.personalInfo.email}</span>
@@ -31,6 +32,7 @@ export default function MonochromeTemplate({ cvData }: { cvData: FullCVData }) {
             <span>{cvData.personalInfo.location}</span>
           )}
         </div>
+        <TemplateQRCode cvData={cvData} size={48} className="mt-2.5 print:mt-1" />
       </div>
       <div className="h-0.5 bg-gray-300" />
 
@@ -86,7 +88,7 @@ export default function MonochromeTemplate({ cvData }: { cvData: FullCVData }) {
                       </h3>
                       {proj.link && (
                         <a
-                          href={proj.link}
+                          href={ensureAbsoluteUrl(proj.link)}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="text-xs text-gray-500 hover:text-black shrink-0"

@@ -1,10 +1,10 @@
-import { formatEducationTitle } from "@/lib/cvFormatters";
+import { formatEducationTitle, ensureAbsoluteUrl } from "@/lib/cvFormatters";
 /**
  * Elegant — centered name, thin dividers, rose-gold accents, serif + sans mix.
  * Luxury, fashion, finance.
  */
 import type { FullCVData } from "@/types/cv";
-import { groupSkills, TechChips, LanguagesDisplay, CustomSectionsDisplay } from "./_shared";
+import { groupSkills, TechChips, LanguagesDisplay, CustomSectionsDisplay, TargetRoleDisplay, TemplateQRCode } from "./_shared";
 
 export default function ElegantTemplate({ cvData }: { cvData: FullCVData }) {
   const grouped = groupSkills(cvData.skills);
@@ -23,6 +23,7 @@ export default function ElegantTemplate({ cvData }: { cvData: FullCVData }) {
         <h1 className="text-3xl font-normal tracking-[0.15em] uppercase text-gray-900">
           {cvData.personalInfo?.fullName || "Your Name"}
         </h1>
+        <TargetRoleDisplay role={cvData.cv?.targetRole} />
         <div className="flex items-center justify-center gap-3 mt-3">
           <div className="flex-1 h-px bg-[#c9a87c]" />
           <div className="w-2 h-2 bg-[#c9a87c] rotate-45" />
@@ -42,6 +43,7 @@ export default function ElegantTemplate({ cvData }: { cvData: FullCVData }) {
             <span>{cvData.personalInfo.phone}</span>
           )}
         </div>
+        <TemplateQRCode cvData={cvData} size={48} className="mt-2.5 print:mt-1" />
       </div>
 
       {/* Summary */}
@@ -146,7 +148,7 @@ export default function ElegantTemplate({ cvData }: { cvData: FullCVData }) {
                   </h3>
                   {proj.link && (
                     <a
-                      href={proj.link}
+                      href={ensureAbsoluteUrl(proj.link)}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-xs text-[#c9a87c] hover:underline"

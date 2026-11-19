@@ -1,5 +1,5 @@
 import type { FullCVData } from "@/types/cv";
-import { formatEducationTitle, formatCVDate, formatProficiency, formatCategory, formatDisplayUrl } from "@/lib/cvFormatters";
+import { formatEducationTitle, formatCVDate, formatProficiency, formatCategory, formatDisplayUrl, ensureAbsoluteUrl } from "@/lib/cvFormatters";
 import { useI18n } from "@/lib/i18n";
 import { Mail, Phone, MapPin, Globe, ExternalLink } from "lucide-react";
 import CVQRCode from "../CVQRCode";
@@ -364,7 +364,7 @@ export default function ModernTemplate({ cvData }: ModernTemplateProps) {
                     </h3>
                     {proj.link && (
                       <a
-                        href={proj.link}
+                        href={ensureAbsoluteUrl(proj.link)}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-[10px] font-medium hover:underline inline-flex items-center gap-1 break-all"

@@ -1,10 +1,10 @@
-import { formatEducationTitle } from "@/lib/cvFormatters";
+import { formatEducationTitle, ensureAbsoluteUrl } from "@/lib/cvFormatters";
 /**
  * Timeline — vertical timeline with alternating left/right entries.
  * Visually tells a career story.
  */
 import type { FullCVData } from "@/types/cv";
-import { groupSkills, TechChips, LanguagesDisplay, CustomSectionsDisplay } from "./_shared";
+import { groupSkills, TechChips, LanguagesDisplay, CustomSectionsDisplay, TargetRoleDisplay, TemplateQRCode } from "./_shared";
 
 export default function TimelineTemplate({ cvData }: { cvData: FullCVData }) {
   const grouped = groupSkills(cvData.skills);
@@ -59,6 +59,7 @@ export default function TimelineTemplate({ cvData }: { cvData: FullCVData }) {
         <h1 className="text-2xl font-bold text-black break-words">
           {cvData.personalInfo?.fullName || "Your Name"}
         </h1>
+        <TargetRoleDisplay role={cvData.cv?.targetRole} />
         <div className="flex justify-center flex-wrap gap-4 text-xs text-gray-500 mt-1">
           {cvData.personalInfo?.email && (
             <span className="break-all">{cvData.personalInfo.email}</span>
@@ -70,6 +71,7 @@ export default function TimelineTemplate({ cvData }: { cvData: FullCVData }) {
             <span className="break-words">{cvData.personalInfo.location}</span>
           )}
         </div>
+        <TemplateQRCode cvData={cvData} size={48} className="mt-2.5 print:mt-1" />
         {cvData.personalInfo?.professionalSummary && (
           <p className="text-xs text-gray-600 max-w-lg mx-auto mt-3 leading-relaxed break-words">
             {cvData.personalInfo.professionalSummary}
@@ -162,7 +164,7 @@ export default function TimelineTemplate({ cvData }: { cvData: FullCVData }) {
                     </span>
                     {proj.link && (
                       <a
-                        href={proj.link}
+                        href={ensureAbsoluteUrl(proj.link)}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-xs text-red-500 shrink-0"

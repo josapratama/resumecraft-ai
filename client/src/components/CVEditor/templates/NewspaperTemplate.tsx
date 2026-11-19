@@ -1,9 +1,10 @@
+import { ensureAbsoluteUrl } from "@/lib/cvFormatters";
 /**
  * Newspaper — editorial columns, headline-style name, drop cap.
  * Journalists, writers, editors.
  */
 import type { FullCVData } from "@/types/cv";
-import { groupSkills, TechChips, CustomSectionsDisplay } from "./_shared";
+import { groupSkills, TechChips, CustomSectionsDisplay, TargetRoleDisplay, TemplateQRCode } from "./_shared";
 
 export default function NewspaperTemplate({ cvData }: { cvData: FullCVData }) {
   const grouped = groupSkills(cvData.skills);
@@ -13,7 +14,8 @@ export default function NewspaperTemplate({ cvData }: { cvData: FullCVData }) {
       style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}
     >
       {/* Masthead */}
-      <div className="text-center border-b-4 border-black pb-3 mb-4">
+      <TemplateQRCode cvData={cvData} size={48} className="my-2" />
+        <div className="text-center border-b-4 border-black pb-3 mb-4">
         <p
           className="text-xs tracking-[0.3em] uppercase text-gray-500 mb-1"
           style={{ fontFamily: "sans-serif" }}
@@ -23,6 +25,7 @@ export default function NewspaperTemplate({ cvData }: { cvData: FullCVData }) {
         <h1 className="text-4xl font-black uppercase tracking-tight text-black leading-none break-words">
           {cvData.personalInfo?.fullName || "Your Name"}
         </h1>
+        <TargetRoleDisplay role={cvData.cv?.targetRole} />
         <div
           className="border-t-2 border-black mt-2 pt-1 flex flex-wrap justify-center gap-x-4 gap-y-1 text-xs text-gray-600"
           style={{ fontFamily: "sans-serif" }}
@@ -201,7 +204,7 @@ export default function NewspaperTemplate({ cvData }: { cvData: FullCVData }) {
                       </h3>
                       {proj.link && (
                         <a
-                          href={proj.link}
+                          href={ensureAbsoluteUrl(proj.link)}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="text-xs text-blue-700 italic flex-shrink-0"

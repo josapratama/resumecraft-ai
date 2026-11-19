@@ -1,10 +1,10 @@
-import { formatEducationTitle } from "@/lib/cvFormatters";
+import { formatEducationTitle, ensureAbsoluteUrl } from "@/lib/cvFormatters";
 /**
  * Portfolio — projects are the hero, skills as large pills, experience compact.
  * Developers, designers, artists.
  */
 import type { FullCVData } from "@/types/cv";
-import { groupSkills, PROF_WIDTH, LanguagesDisplay, CustomSectionsDisplay } from "./_shared";
+import { groupSkills, PROF_WIDTH, LanguagesDisplay, CustomSectionsDisplay, TargetRoleDisplay, TemplateQRCode } from "./_shared";
 
 export default function PortfolioTemplate({ cvData }: { cvData: FullCVData }) {
   const grouped = groupSkills(cvData.skills);
@@ -22,6 +22,7 @@ export default function PortfolioTemplate({ cvData }: { cvData: FullCVData }) {
             <h1 className="text-3xl font-bold text-white break-words">
               {cvData.personalInfo?.fullName || "Your Name"}
             </h1>
+        <TargetRoleDisplay role={cvData.cv?.targetRole} />
             <div className="flex flex-wrap gap-x-3 text-xs text-gray-500 mt-1">
               {cvData.personalInfo?.location && (
                 <span className="break-words">
@@ -35,6 +36,7 @@ export default function PortfolioTemplate({ cvData }: { cvData: FullCVData }) {
                 <span className="break-words">{cvData.personalInfo.phone}</span>
               )}
             </div>
+        <TemplateQRCode cvData={cvData} size={48} className="mt-2.5 print:mt-1" />
           </div>
           <div className="text-right shrink-0">
             {cvData.skills.slice(0, 3).map(s => (
@@ -71,7 +73,7 @@ export default function PortfolioTemplate({ cvData }: { cvData: FullCVData }) {
                   </h3>
                   {proj.link && (
                     <a
-                      href={proj.link}
+                      href={ensureAbsoluteUrl(proj.link)}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-xs text-gray-500 hover:text-white px-2 py-0.5 border border-gray-700 hover:border-gray-400 transition-colors shrink-0"

@@ -1,10 +1,10 @@
-import { formatEducationTitle } from "@/lib/cvFormatters";
+import { formatEducationTitle, ensureAbsoluteUrl } from "@/lib/cvFormatters";
 /**
  * Infographic — visual stats, circular proficiency indicators, icon-driven.
  * Social media-ready, visual storytelling.
  */
 import type { FullCVData } from "@/types/cv";
-import { groupSkills, PROF_WIDTH, TechChips, LanguagesDisplay, CustomSectionsDisplay } from "./_shared";
+import { groupSkills, PROF_WIDTH, TechChips, LanguagesDisplay, CustomSectionsDisplay, TargetRoleDisplay, TemplateQRCode } from "./_shared";
 
 function CircleProgress({
   pct,
@@ -81,6 +81,7 @@ export default function InfographicTemplate({
             <h1 className="text-2xl font-black">
               {cvData.personalInfo?.fullName || "Your Name"}
             </h1>
+        <TargetRoleDisplay role={cvData.cv?.targetRole} />
             <div className="flex flex-wrap gap-x-3 text-xs text-red-100 mt-0.5">
               {cvData.personalInfo?.location && (
                 <span>📍 {cvData.personalInfo.location}</span>
@@ -92,6 +93,7 @@ export default function InfographicTemplate({
                 <span>📞 {cvData.personalInfo.phone}</span>
               )}
             </div>
+        <TemplateQRCode cvData={cvData} size={48} className="mt-2.5 print:mt-1" />
           </div>
         </div>
       </div>
@@ -198,7 +200,7 @@ export default function InfographicTemplate({
                     </h3>
                     {proj.link && (
                       <a
-                        href={proj.link}
+                        href={ensureAbsoluteUrl(proj.link)}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-xs text-rose-500"

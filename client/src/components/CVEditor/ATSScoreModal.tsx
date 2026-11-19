@@ -61,6 +61,37 @@ export default function ATSScoreModal({
   const [jobDescription, setJobDescription] = useState("");
   const [result, setResult] = useState<ATSResult | null>(null);
   const [isExtractingImage, setIsExtractingImage] = useState(false);
+  const utils = trpc.useUtils();
+
+  const addSkillMutation = trpc.cv.skill.create.useMutation({
+    onSuccess: (_, vars) => {
+      toast.success(`Keahlian "${vars.skillName}" berhasil ditambahkan ke CV!`);
+      utils.cv.loadFull.invalidate({ cvId });
+      if (result) {
+        setResult(prev =>
+          prev
+            ? {
+                ...prev,
+                missingKeywords: prev.missingKeywords.filter(k => k !== vars.skillName),
+                matchingKeywords: [...(prev.matchingKeywords || []), vars.skillName],
+              }
+            : null
+        );
+      }
+    },
+    onError: (err: any) => {
+      toast.error(`Gagal menambahkan keahlian: ${err.message}`);
+    },
+  });
+
+  const handleAddMissingKeyword = (kw: string) => {
+    addSkillMutation.mutate({
+      cvId,
+      skillName: kw,
+      category: "Technical & Core Skills",
+      proficiency: "intermediate",
+    });
+  };
 
   const extractMutation = trpc.cvAI.extractJobVacancyFromImage.useMutation({
     onSuccess: (data: any) => {
@@ -382,18 +413,33 @@ export default function ATSScoreModal({
               </div>
 
               <div>
-                <h5 className="text-[11px] font-bold uppercase tracking-wider text-red-700 flex items-center gap-1.5 mb-2">
-                  <AlertTriangle className="w-3.5 h-3.5" /> Missing Keywords from Vacancy
-                </h5>
+                <div className="flex items-center justify-between mb-2">
+                  <h5 className="text-[11px] font-bold uppercase tracking-wider text-red-700 flex items-center gap-1.5">
+                    <AlertTriangle className="w-3.5 h-3.5" /> Missing Keywords from Vacancy
+                  </h5>
+                  <span className="text-[10px] text-neutral-400">
+                    💡 Klik kata kunci untuk langsung memasukkannya ke CV
+                  </span>
+                </div>
                 <div className="flex flex-wrap gap-1.5">
                   {result.missingKeywords?.map(kw => (
-                    <span
+                    <button
                       key={kw}
-                      className="text-xs px-2.5 py-0.5 rounded-lg bg-red-50 text-red-800 border border-red-200 font-medium inline-flex items-center gap-1"
+                      type="button"
+                      disabled={addSkillMutation.isPending}
+                      onClick={() => handleAddMissingKeyword(kw)}
+                      className="text-xs px-2.5 py-1 rounded-lg bg-red-50 text-red-800 hover:bg-red-100 hover:border-red-300 border border-red-200 font-medium inline-flex items-center gap-1 transition-all shadow-2xs hover:scale-105 active:scale-95 cursor-pointer"
+                      title="Klik untuk langsung sisipkan ke daftar keahlian CV"
                     >
-                      <Plus className="w-3 h-3 text-red-600" /> {kw}
-                    </span>
+                      <Plus className="w-3 h-3 text-red-600" />
+                      <span>{kw}</span>
+                    </button>
                   ))}
+                  {(!result.missingKeywords || result.missingKeywords.length === 0) && (
+                    <span className="text-xs text-emerald-600 font-medium">
+                      Luar biasa! Tidak ada kata kunci penting yang terlewat.
+                    </span>
+                  )}
                 </div>
               </div>
             </div>

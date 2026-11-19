@@ -1,10 +1,10 @@
-import { formatEducationTitle } from "@/lib/cvFormatters";
+import { formatEducationTitle, ensureAbsoluteUrl } from "@/lib/cvFormatters";
 /**
  * Two-Page — explicit page breaks, footnote page numbers.
  * Long CVs, experienced professionals.
  */
 import type { FullCVData } from "@/types/cv";
-import { groupSkills, TechChips, LanguagesDisplay, CustomSectionsDisplay } from "./_shared";
+import { groupSkills, TechChips, LanguagesDisplay, CustomSectionsDisplay, TargetRoleDisplay, TemplateQRCode } from "./_shared";
 
 export default function TwoPageTemplate({ cvData }: { cvData: FullCVData }) {
   const grouped = groupSkills(cvData.skills);
@@ -22,6 +22,7 @@ export default function TwoPageTemplate({ cvData }: { cvData: FullCVData }) {
           <h1 className="text-3xl font-bold text-black break-words">
             {cvData.personalInfo?.fullName || "Your Name"}
           </h1>
+        <TargetRoleDisplay role={cvData.cv?.targetRole} />
           <div className="flex flex-wrap gap-x-4 text-xs text-gray-500 mt-1">
             {cvData.personalInfo?.email && (
               <span className="break-all">{cvData.personalInfo.email}</span>
@@ -35,6 +36,7 @@ export default function TwoPageTemplate({ cvData }: { cvData: FullCVData }) {
               </span>
             )}
           </div>
+        <TemplateQRCode cvData={cvData} size={48} className="mt-2.5 print:mt-1" />
         </div>
 
         {/* Summary */}
@@ -151,7 +153,7 @@ export default function TwoPageTemplate({ cvData }: { cvData: FullCVData }) {
                     </h3>
                     {proj.link && (
                       <a
-                        href={proj.link}
+                        href={ensureAbsoluteUrl(proj.link)}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-xs text-blue-600 hover:underline shrink-0"

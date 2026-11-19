@@ -1,10 +1,10 @@
-import { formatEducationTitle } from "@/lib/cvFormatters";
+import { formatEducationTitle, ensureAbsoluteUrl } from "@/lib/cvFormatters";
 /**
  * Tech — dark terminal-style, green-on-black, monospace font.
  * Developer / hacker aesthetic.
  */
 import type { FullCVData } from "@/types/cv";
-import { groupSkills, PROF_WIDTH, TechChips, TemplateQRCode } from "./_shared";
+import { groupSkills, PROF_WIDTH, TechChips, TemplateQRCode, TargetRoleDisplay } from "./_shared";
 
 export default function TechTemplate({ cvData }: { cvData: FullCVData }) {
   const grouped = groupSkills(cvData.skills);
@@ -19,6 +19,7 @@ export default function TechTemplate({ cvData }: { cvData: FullCVData }) {
         <h1 className="text-2xl font-bold text-green-300">
           {cvData.personalInfo?.fullName || "Your Name"}
         </h1>
+        <TargetRoleDisplay role={cvData.cv?.targetRole} />
         <div className="flex flex-wrap gap-x-4 text-xs text-green-600 mt-1">
           {cvData.personalInfo?.email && (
             <span>{cvData.personalInfo.email}</span>
@@ -109,7 +110,7 @@ export default function TechTemplate({ cvData }: { cvData: FullCVData }) {
                   </span>
                   {proj.link && (
                     <a
-                      href={proj.link}
+                      href={ensureAbsoluteUrl(proj.link)}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-xs text-green-600 hover:text-green-400"

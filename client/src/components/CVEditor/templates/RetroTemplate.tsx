@@ -1,9 +1,9 @@
-import { formatEducationTitle } from "@/lib/cvFormatters";
+import { formatEducationTitle, ensureAbsoluteUrl } from "@/lib/cvFormatters";
 /**
  * Retro — typewriter font, tan/cream background, vintage stamp aesthetic.
  */
 import type { FullCVData } from "@/types/cv";
-import { groupSkills, LanguagesDisplay, CustomSectionsDisplay } from "./_shared";
+import { groupSkills, LanguagesDisplay, CustomSectionsDisplay, TargetRoleDisplay, TemplateQRCode } from "./_shared";
 
 export default function RetroTemplate({ cvData }: { cvData: FullCVData }) {
   const grouped = groupSkills(cvData.skills);
@@ -20,6 +20,7 @@ export default function RetroTemplate({ cvData }: { cvData: FullCVData }) {
         <h1 className="text-3xl font-bold text-gray-900 tracking-wide uppercase">
           {cvData.personalInfo?.fullName || "Your Name"}
         </h1>
+        <TargetRoleDisplay role={cvData.cv?.targetRole} />
         <div className="border-t-2 border-b-2 border-gray-400 my-2 py-1 flex justify-center gap-4 text-xs text-gray-600">
           {cvData.personalInfo?.location && (
             <span>{cvData.personalInfo.location}</span>
@@ -31,6 +32,7 @@ export default function RetroTemplate({ cvData }: { cvData: FullCVData }) {
             <span>{cvData.personalInfo.phone}</span>
           )}
         </div>
+        <TemplateQRCode cvData={cvData} size={48} className="mt-2.5 print:mt-1" />
       </div>
 
       <div className="space-y-5">
@@ -111,7 +113,7 @@ export default function RetroTemplate({ cvData }: { cvData: FullCVData }) {
                     </span>
                     {proj.link && (
                       <a
-                        href={proj.link}
+                        href={ensureAbsoluteUrl(proj.link)}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-gray-500 hover:text-black"

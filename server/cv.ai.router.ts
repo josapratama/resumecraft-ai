@@ -1290,4 +1290,121 @@ KEMBALIKAN HANYA JSON VALID dengan format:
         input.parsedData
       );
     }),
+
+  // ─── AI Mock Interview Answer Evaluation ──────────────────────────────────
+  evaluateMockInterviewAnswer: protectedProcedure
+    .input(
+      z.object({
+        question: z.string().min(5),
+        userAnswer: z.string().min(5),
+        targetRole: z.string().optional(),
+      })
+    )
+    .mutation(async ({ input }) => {
+      const prompt = `Anda adalah pewawancara kerja senior dan executive hiring manager global.
+Evaluasi jawaban kandidat berikut terhadap pertanyaan wawancara kerja yang diberikan.
+
+Target Posisi: ${input.targetRole || "Profesional"}
+Pertanyaan Wawancara:
+"${input.question}"
+
+Jawaban Kandidat:
+"${input.userAnswer}"
+
+Berikan penilaian objektif dalam JSON VALID:
+{
+  "score": 85,
+  "verdict": "<Predikat singkat, contoh: 'Kuat & Terstruktur' | 'Cukup Baik, Kurang Metrik Terukur' | 'Perlu Pendalaman STAR'>",
+  "strengths": [
+    "<Poin kelebihan jawaban>",
+    "<Poin kelebihan jawaban>"
+  ],
+  "improvements": [
+    "<Poin yang kurang atau perlu ditambahkan, misal: metrik angka, dampak nyata>",
+    "<Poin perbaikan>"
+  ],
+  "enhancedAnswer": "<Versi jawaban ideal yang lebih memukau, percaya diri, dan memakai formula STAR yang konkret>"
+}`;
+
+      const response = await invokeLLM({
+        model: "gpt-4o-mini",
+        messages: [{ role: "user", content: prompt }],
+        responseFormat: { type: "json_object" },
+        max_tokens: 1500,
+      });
+
+      const raw = response.choices[0]?.message?.content || "{}";
+      const cleaned = typeof raw === "string" ? raw.replace(/```json\n?|```/g, "").trim() : JSON.stringify(raw);
+      try {
+        return JSON.parse(cleaned);
+      } catch {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Gagal mengevaluasi jawaban interview",
+        });
+      }
+    }),
+
+  // ─── Salary Benchmark Estimator ───────────────────────────────────────────
+  getSalaryBenchmark: protectedProcedure
+    .input(
+      z.object({
+        jobTitle: z.string().min(2),
+        experienceYears: z.number().default(1),
+        location: z.string().default("Indonesia"),
+      })
+    )
+    .mutation(async ({ input }) => {
+      const prompt = `Anda adalah konsultan kompensasi dan benefit ketenagakerjaan spesialis pasar Indonesia dan remote global.
+Analisis estimasi rentang gaji pasar (benchmark) yang realistis berdasarkan data industri tahun berjalan untuk:
+Posisi: ${input.jobTitle}
+Pengalaman: ${input.experienceYears} tahun
+Lokasi / Domisili: ${input.location}
+
+Kembalikan HANYA JSON VALID:
+{
+  "role": "${input.jobTitle}",
+  "seniority": "<Fresh Graduate / Entry-Level | Junior (1-2 thn) | Mid-Level (3-5 thn) | Senior (5+ thn) | Lead / Manager>",
+  "indonesia": {
+    "min": "<contoh: Rp 6.000.000>",
+    "median": "<contoh: Rp 9.500.000>",
+    "max": "<contoh: Rp 16.000.000>",
+    "formatted": "<contoh: Rp 6.000.000 - Rp 16.000.000 / bulan>"
+  },
+  "remoteGlobalUSD": {
+    "min": "<contoh: $1,200>",
+    "median": "<contoh: $2,200>",
+    "max": "<contoh: $3,800>",
+    "formatted": "<contoh: $1,200 - $3,800 / month>"
+  },
+  "marketInsights": "<Analisis 2-3 kalimat mengenai tren permintaan pasar, kualifikasi kunci yang menaikkan nilai tawar pelamar>",
+  "highPayingSkills": [
+    "<skill 1 yang menaikkan gaji>",
+    "<skill 2>",
+    "<skill 3>"
+  ],
+  "negotiationTips": [
+    "<tips negosiasi gaji 1>",
+    "<tips negosiasi gaji 2>"
+  ]
+}`;
+
+      const response = await invokeLLM({
+        model: "gpt-4o-mini",
+        messages: [{ role: "user", content: prompt }],
+        responseFormat: { type: "json_object" },
+        max_tokens: 1200,
+      });
+
+      const raw = response.choices[0]?.message?.content || "{}";
+      const cleaned = typeof raw === "string" ? raw.replace(/```json\n?|```/g, "").trim() : JSON.stringify(raw);
+      try {
+        return JSON.parse(cleaned);
+      } catch {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Gagal menghitung estimasi gaji",
+        });
+      }
+    }),
 });

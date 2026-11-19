@@ -30,6 +30,18 @@ export function formatDisplayUrl(url?: string | null, maxLen?: number): string {
 }
 
 /**
+ * Ensures any URL starts with http:// or https:// so clicking it in a browser or PDF
+ * doesn't get treated as an internal relative path (e.g. /cv/domain.com -> 404).
+ */
+export function ensureAbsoluteUrl(url?: string | null): string {
+  if (!url) return "";
+  const trimmed = url.trim();
+  if (/^https?:\/\//i.test(trimmed)) return trimmed;
+  if (/^mailto:/i.test(trimmed) || /^tel:/i.test(trimmed)) return trimmed;
+  return `https://${trimmed}`;
+}
+
+/**
  * Format YYYY-MM dates cleanly with active locale
  * Example:
  * formatCVDate("2026-07", "id") => "Jul 2026"

@@ -8,7 +8,9 @@ import {
 } from "./types";
 import { COVER_LETTER_TEMPLATE_COMPONENTS } from "./templates";
 import { exportCoverLetterToPDF, exportBundleToPDF } from "./exportCoverLetterPDF";
+import { exportCoverLetterToDOCX } from "./exportCoverLetterDOCX";
 import { SignaturePadModal } from "./SignaturePadModal";
+import CoverLetterGrammarModal from "./CoverLetterGrammarModal";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -41,6 +43,8 @@ import {
   PenTool,
   Trash2,
   Image as ImageIcon,
+  SpellCheck,
+  FileCode2,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -414,6 +418,20 @@ ${letterData.fullName}`;
     }
   };
 
+  const handleExportDOCX = async () => {
+    try {
+      await exportCoverLetterToDOCX(
+        letterData,
+        `Surat_Lamaran_${letterData.fullName.replace(/\s+/g, "_")}_${letterData.companyName.replace(/\s+/g, "_")}.docx`
+      );
+      toast.success("Surat lamaran kerja (.docx) berhasil diunduh!");
+    } catch (err: any) {
+      toast.error(err.message || "Gagal mengunduh dokumen Word");
+    }
+  };
+
+  const [showGrammarModal, setShowGrammarModal] = useState(false);
+
   const handleSyncFromCV = () => {
     if (!cvData) {
       toast.error("Data CV belum termuat");
@@ -553,11 +571,33 @@ ${letterData.fullName}`;
           <Button
             variant="outline"
             size="sm"
+            onClick={() => setShowGrammarModal(true)}
+            className="text-xs gap-1.5 h-8 border-purple-200 text-purple-700 bg-purple-50/70 hover:bg-purple-100 font-medium"
+            title="Periksa kaidah EYD V, kesopanan salam, dan perbaiki ejaan tidak baku otomatis"
+          >
+            <SpellCheck className="w-3.5 h-3.5 text-purple-600" />
+            <span className="hidden md:inline">Periksa EYD</span>
+          </Button>
+
+          <Button
+            variant="outline"
+            size="sm"
             onClick={handleCopyText}
             className="text-xs gap-1.5 h-8 border-slate-200"
           >
             {copied ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
             <span className="hidden md:inline">{copied ? "Tersalin!" : "Salin Teks"}</span>
+          </Button>
+
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleExportDOCX}
+            className="text-xs gap-1.5 h-8 border-blue-200 text-blue-700 bg-blue-50/70 hover:bg-blue-100 font-medium"
+            title="Unduh dokumen Microsoft Word (.docx) agar bisa diedit di Word / WPS"
+          >
+            <FileCode2 className="w-3.5 h-3.5 text-blue-600" />
+            <span className="hidden sm:inline">Unduh Word (.docx)</span>
           </Button>
 
           <Button
@@ -1360,6 +1400,23 @@ ${letterData.fullName}`;
             signatureType: type,
           }));
           toast.success("Tanda tangan digital berhasil diterapkan!");
+        }}
+      />
+
+      {/* AI Cover Letter EYD & Politeness Checker Modal */}
+      <CoverLetterGrammarModal
+        isOpen={showGrammarModal}
+        onClose={() => setShowGrammarModal(false)}
+        fullLetterText={
+          letterData.fullLetterText ||
+          `${letterData.salutation}\n\n${letterData.opening}\n\n${letterData.body}\n\n${letterData.closing}`
+        }
+        onApplyPolished={polished => {
+          setLetterData(prev => ({
+            ...prev,
+            body: polished,
+            fullLetterText: polished,
+          }));
         }}
       />
     </div>

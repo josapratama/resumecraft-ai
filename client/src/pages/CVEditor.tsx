@@ -41,6 +41,7 @@ import {
   FileCheck2,
   DollarSign,
   FileCode2,
+  Mic,
 } from "lucide-react";
 import { toast } from "sonner";
 import {
@@ -69,6 +70,7 @@ import EmailDraftModal from "@/components/CVEditor/EmailDraftModal";
 import JobTrackerModal from "@/components/JobTracker/JobTrackerModal";
 import DocumentChecklistModal from "@/components/CVEditor/DocumentChecklistModal";
 import SalaryBenchmarkModal from "@/components/CVEditor/SalaryBenchmarkModal";
+import CareerPitchModal from "@/components/CVEditor/CareerPitchModal";
 import CVPreview from "@/components/CVEditor/CVPreview";
 import { AIChatBox } from "@/components/AIChatBox";
 import { useAuth } from "@/_core/hooks/useAuth";
@@ -189,6 +191,7 @@ export default function CVEditor() {
   const [showJobTrackerModal, setShowJobTrackerModal] = useState(false);
   const [showChecklistModal, setShowChecklistModal] = useState(false);
   const [showSalaryModal, setShowSalaryModal] = useState(false);
+  const [showPitchModal, setShowPitchModal] = useState(false);
 
   const handleBackupCV = () => {
     if (!cvData) return;
@@ -532,6 +535,19 @@ export default function CVEditor() {
                     <div>
                       <p className="text-xs font-semibold text-neutral-900">Benchmark Gaji Pasar</p>
                       <p className="text-[10px] text-neutral-500">Estimasi gaji Indonesia (IDR) & Remote (USD)</p>
+                    </div>
+                  </DropdownMenuItem>
+
+                  <DropdownMenuItem
+                    onClick={() => setShowPitchModal(true)}
+                    className="gap-2.5 p-2 rounded-lg cursor-pointer hover:bg-indigo-50"
+                  >
+                    <div className="w-7 h-7 rounded-md bg-indigo-100 text-indigo-700 flex items-center justify-center flex-shrink-0">
+                      <Mic className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <p className="text-xs font-semibold text-neutral-900">Elevator Pitch 30 Detik & LinkedIn</p>
+                      <p className="text-[10px] text-neutral-500">Naskah lisan wawancara & bio profil LinkedIn</p>
                     </div>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
@@ -1097,6 +1113,13 @@ export default function CVEditor() {
         onClose={() => setShowSalaryModal(false)}
         defaultRole={cvData.cv.targetRole || ""}
         defaultLocation={cvData.personalInfo?.location || "Indonesia"}
+      />
+
+      <CareerPitchModal
+        isOpen={showPitchModal}
+        onClose={() => setShowPitchModal(false)}
+        cvId={cvIdNum}
+        candidateName={cvData.personalInfo?.fullName || "Kandidat"}
       />
     </div>
   );

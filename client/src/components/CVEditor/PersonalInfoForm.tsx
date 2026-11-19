@@ -345,6 +345,29 @@ export default function PersonalInfoForm({
           />
         </div>
 
+        {/* Portfolio / LinkedIn / Personal Website */}
+        <div>
+          <Label className="text-xs font-semibold text-neutral-600 uppercase tracking-wider flex items-center justify-between">
+            <span className="flex items-center gap-1.5">
+              <Globe className="w-3.5 h-3.5 text-neutral-400" />
+              Tautan Portofolio / LinkedIn / Web Pribadi
+            </span>
+            <span className="text-[11px] text-neutral-400 font-normal lowercase tracking-normal">
+              opsional
+            </span>
+          </Label>
+          <Input
+            value={portfolioUrl}
+            onChange={e => {
+              const val = e.target.value;
+              setPortfolioUrl(val);
+              onPortfolioUrlChange?.(val);
+            }}
+            placeholder="Contoh: https://linkedin.com/in/nama atau https://irma-iryani.josapratama.com"
+            className="mt-1.5 border-neutral-200 focus:border-neutral-900 rounded-xl"
+          />
+        </div>
+
         {/* Professional Summary */}
         <div>
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2">
@@ -383,8 +406,8 @@ export default function PersonalInfoForm({
           />
         </div>
 
-        {/* QR Code Portofolio & Web Link Setting */}
-        <div className="p-3.5 bg-neutral-50/80 rounded-xl border border-neutral-200 space-y-3">
+        {/* QR Code Portofolio Setting */}
+        <div className="p-3.5 bg-neutral-50/80 rounded-xl border border-neutral-200">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <div className="w-7 h-7 rounded-lg bg-indigo-50 border border-indigo-200 flex items-center justify-center text-indigo-600">
@@ -395,7 +418,7 @@ export default function PersonalInfoForm({
                   Tampilkan QR Code Portofolio di CV
                 </Label>
                 <p className="text-[11px] text-neutral-500">
-                  Scan langsung membuka situs portofolio atau link profil Anda
+                  Scan kamera HP langsung membuka tautan portofolio / LinkedIn yang diisi di atas
                 </p>
               </div>
             </div>
@@ -407,24 +430,6 @@ export default function PersonalInfoForm({
               className="w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500 cursor-pointer accent-indigo-600"
             />
           </div>
-
-          {showQrCode && (
-            <div className="pt-2 border-t border-neutral-200">
-              <Label className="text-[11px] font-semibold text-neutral-600 uppercase tracking-wider flex items-center gap-1.5 mb-1.5">
-                <Globe className="w-3.5 h-3.5 text-neutral-400" />
-                Tautan Portofolio / Web Pribadi
-              </Label>
-              <Input
-                value={portfolioUrl}
-                onChange={e => setPortfolioUrl(e.target.value)}
-                placeholder="https://irma-iryani.josapratama.com atau profil LinkedIn"
-                className="text-xs h-9 border-neutral-200 focus:border-neutral-900 rounded-lg bg-white"
-              />
-              <p className="text-[10px] text-neutral-500 mt-1">
-                Jika dikosongkan, sistem otomatis mengarahkan ke link portofolio bawaan atau publik CV Anda.
-              </p>
-            </div>
-          )}
         </div>
 
         {/* Save Button */}

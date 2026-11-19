@@ -1407,4 +1407,99 @@ Kembalikan HANYA JSON VALID:
         });
       }
     }),
+
+  // ─── AI Cover Letter EYD & Politeness Checker ─────────────────────────────
+  checkCoverLetterGrammar: protectedProcedure
+    .input(z.object({ content: z.string().min(20) }))
+    .mutation(async ({ input }) => {
+      const prompt = `Anda adalah ahli bahasa Indonesia resmi dan editor surat dinas / korespondensi formal.
+Audit isi surat lamaran kerja berikut berdasarkan kaidah EYD V (Ejaan Bahasa Indonesia yang Disempurnakan), PUEBI, serta etika kesopanan surat lamaran kerja profesional.
+
+Cek hal-hal penting:
+1. Penggunaan salam ("Dengan hormat," bukan "Halo" atau sejenisnya).
+2. Hindari kesalahan umum seperti "Kepada Yth." (cukup "Yth.").
+3. Kapitalisasi kata sapaan "Bapak/Ibu" (harus diawali huruf kapital).
+4. Penulisan singkatan gelar, tanda baca, serta kalimat penutup formal.
+5. Perbaikan typo / ejaan tidak baku.
+
+TEKS SURAT LAMARAN:
+${input.content}
+
+Kembalikan HANYA JSON VALID:
+{
+  "score": 92,
+  "toneVerdict": "<contoh: 'Sangat Formal & Santun' | 'Cukup Baik, Ada Beberapa Koreksi EYD' | 'Perlu Perbaikan Tata Bahasa Formal'>",
+  "errors": [
+    {
+      "originalText": "<kata atau frasa yang salah>",
+      "suggestedCorrection": "<perbaikan yang benar>",
+      "explanation": "<alasan menurut kaidah EYD V / etika surat>",
+      "type": "<ejaan | etika | tanda_baca | tata_bahasa>"
+    }
+  ],
+  "polishedContent": "<Versi lengkap teks surat yang sudah bersih, baku, dan disempurnakan seluruhnya>"
+}`;
+
+      const response = await invokeLLM({
+        model: "gpt-4o-mini",
+        messages: [{ role: "user", content: prompt }],
+        responseFormat: { type: "json_object" },
+        max_tokens: 2000,
+      });
+
+      const raw = response.choices[0]?.message?.content || "{}";
+      const cleaned = typeof raw === "string" ? raw.replace(/```json\n?|```/g, "").trim() : JSON.stringify(raw);
+      try {
+        return JSON.parse(cleaned);
+      } catch {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Gagal memeriksa tata bahasa surat lamaran",
+        });
+      }
+    }),
+
+  // ─── AI Career Pitch & LinkedIn Generator ─────────────────────────────────
+  generateCareerPitch: protectedProcedure
+    .input(z.object({ cvId: z.number() }))
+    .mutation(async ({ input }) => {
+      const cvContext = await buildCVContext(input.cvId);
+      const prompt = `Anda adalah executive career coach dan personal branding strategist global.
+Berdasarkan profil CV berikut, hasilkan 4 format elevator pitch & perkenalan diri profesional tingkat tinggi:
+
+DATA PROFIL CV:
+${cvContext}
+
+Format yang harus dihasilkan:
+1. elevatorPitch30s: Naskah perkenalan diri lisan 30-45 detik yang memukau untuk membuka wawancara kerja saat ditanya "Ceritakan tentang diri Anda!".
+2. linkedinAbout: Naskah bio / ringkasan profil LinkedIn yang memikat recruiter, memakai bullet points yang rapi dan kata kunci industri.
+3. whatsappQuickIntro: Teks chat perkenalan sopan dan to-the-point saat menghubungi HRD / recruiter via WhatsApp atau Telegram.
+4. networkingColdMessage: Pesan singkat (maksimal 300 karakter) untuk mengirim koneksi / InMail kepada Hiring Manager di LinkedIn.
+
+Kembalikan HANYA JSON VALID:
+{
+  "elevatorPitch30s": "<naskah lisan 30-45 detik>",
+  "linkedinAbout": "<naskah lengkap LinkedIn About>",
+  "whatsappQuickIntro": "<pesan WA>",
+  "networkingColdMessage": "<pesan cold outreach LinkedIn>"
+}`;
+
+      const response = await invokeLLM({
+        model: "gpt-4o-mini",
+        messages: [{ role: "user", content: prompt }],
+        responseFormat: { type: "json_object" },
+        max_tokens: 1800,
+      });
+
+      const raw = response.choices[0]?.message?.content || "{}";
+      const cleaned = typeof raw === "string" ? raw.replace(/```json\n?|```/g, "").trim() : JSON.stringify(raw);
+      try {
+        return JSON.parse(cleaned);
+      } catch {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Gagal membuat career pitch",
+        });
+      }
+    }),
 });

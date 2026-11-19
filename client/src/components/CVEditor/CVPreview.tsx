@@ -69,9 +69,26 @@ const TEMPLATE_MAP: Record<
 export default function CVPreview({ template, cvData }: CVPreviewProps) {
   const TemplateComponent = TEMPLATE_MAP[template] ?? ModernTemplate;
   const containerRef = useRef<HTMLDivElement>(null);
+  const templateRef = useRef<HTMLDivElement>(null);
   const [zoom, setZoom] = useState<number>(100);
   const [isAutoFit, setIsAutoFit] = useState<boolean>(true);
   const [isOnePageMode, setIsOnePageMode] = useState<boolean>(false);
+  const [docHeight, setDocHeight] = useState<number>(1123);
+
+  // Measure actual document height to detect 1-page vs overflow
+  useEffect(() => {
+    const el = templateRef.current;
+    if (!el) return;
+
+    const measure = () => {
+      setDocHeight(el.clientHeight || 1123);
+    };
+
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [cvData, template, isOnePageMode]);
 
   // Auto-fit scale on mount and container resize so it never clips on mobile or narrow split-views
   useEffect(() => {
@@ -129,6 +146,27 @@ export default function CVPreview({ template, cvData }: CVPreviewProps) {
           <Badge variant="outline" className="text-[10px] py-0 px-1.5 border-neutral-700 text-neutral-300">
             A4 Standard
           </Badge>
+
+          {/* Dynamic Page Budget Indicator */}
+          {docHeight <= 1135 ? (
+            <Badge className="text-[10px] py-0 px-2 bg-emerald-950/80 text-emerald-300 border-emerald-800/80 font-medium hidden sm:inline-flex items-center gap-1">
+              ✓ Pas 1 Hal A4
+            </Badge>
+          ) : docHeight <= 1380 ? (
+            <button
+              onClick={() => setIsOnePageMode(true)}
+              className="text-[10px] py-0.5 px-2 bg-amber-950 text-amber-300 border border-amber-800 rounded font-medium inline-flex items-center gap-1 hover:bg-amber-900 transition-colors cursor-pointer"
+              title="Konten sedikit tumpah ke halaman 2. Klik untuk padatkan otomatis ke 1 halaman!"
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-ping" />
+              <span>Tumpah +{Math.max(1, Math.round((docHeight - 1123) / 24))} baris (Klik Paskan)</span>
+            </button>
+          ) : (
+            <Badge className="text-[10px] py-0 px-2 bg-neutral-800 text-neutral-300 border-neutral-700 font-medium hidden sm:inline-flex">
+              {Math.ceil(docHeight / 1123)} Halaman A4
+            </Badge>
+          )}
+
           <Button
             size="sm"
             variant="ghost"
@@ -209,6 +247,7 @@ export default function CVPreview({ template, cvData }: CVPreviewProps) {
         >
           {/* A4 Document Root */}
           <div
+            ref={templateRef}
             className={`cv-template-root bg-white shadow-2xl mx-auto rounded-xs overflow-hidden ${
               isOnePageMode ? "cv-one-page-compact" : ""
             }`}

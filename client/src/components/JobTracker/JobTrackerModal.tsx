@@ -331,6 +331,33 @@ export default function JobTrackerModal({
                             </p>
                           )}
 
+                          {/* Follow-up Reminder Alert if applied >= 5 days ago */}
+                          {app.status === "applied" && (() => {
+                            if (!app.appliedDate) return null;
+                            const d = new Date(app.appliedDate);
+                            if (isNaN(d.getTime())) return null;
+                            const days = Math.floor((Date.now() - d.getTime()) / (1000 * 60 * 60 * 24));
+                            if (days >= 5) {
+                              const followUpMsg = `Selamat pagi/siang Bapak/Ibu Tim Rekrutmen ${app.companyName}.\n\nPerkenalkan saya pelamar untuk posisi ${app.jobTitle} yang telah mengirimkan berkas lamaran pada tanggal ${app.appliedDate}.\n\nMelalui pesan ini, saya bermaksud menanyakan apakah ada perkembangan informasi terkait proses seleksi untuk posisi tersebut. Saya sangat tertarik untuk dapat bergabung dan berkontribusi di ${app.companyName}.\n\nTerima kasih banyak atas waktu dan perhatian Bapak/Ibu. 🙏`;
+                              return (
+                                <div className="p-1.5 rounded-md bg-amber-50 border border-amber-200 flex items-center justify-between text-[10px] text-amber-900">
+                                  <span>⚡ Waktunya follow-up ({days} hari)</span>
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      navigator.clipboard.writeText(followUpMsg);
+                                      toast.success("Draf pesan follow-up disalin!");
+                                    }}
+                                    className="font-bold underline text-amber-800 hover:text-amber-950"
+                                  >
+                                    Salin Teks
+                                  </button>
+                                </div>
+                              );
+                            }
+                            return null;
+                          })()}
+
                           {/* Quick Status Dropdown & Actions */}
                           <div className="flex items-center justify-between pt-1 border-t border-neutral-100">
                             <select

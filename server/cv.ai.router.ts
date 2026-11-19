@@ -112,6 +112,105 @@ async function buildCVContext(cvId: number): Promise<string> {
   return lines.join("\n");
 }
 
+// ─── AI Resume Structured Parser Helper ────────────────────────────────────
+async function parseStructuredResumeFromText(rawText: string) {
+  const prompt = `You are a World-Class AI Resume / CV Parsing Engine.
+Extract all structured data from the raw text provided below into the exact JSON format requested.
+Infer categories and organize skills and experiences cleanly.
+
+RAW CV TEXT:
+${rawText}
+
+Return a VALID JSON object ONLY:
+{
+  "suggestedTitle": "<Job Title or Candidate Name - CV>",
+  "personalInfo": {
+    "fullName": "<name>",
+    "email": "<email>",
+    "phone": "<phone>",
+    "location": "<city, country>",
+    "professionalSummary": "<concise executive summary>"
+  },
+  "workExperiences": [
+    {
+      "jobTitle": "<title>",
+      "company": "<company>",
+      "location": "<location>",
+      "startDate": "<date or year>",
+      "endDate": "<date or Present>",
+      "description": "<bullet points>"
+    }
+  ],
+  "educations": [
+    {
+      "degree": "<degree>",
+      "field": "<major>",
+      "school": "<institution>",
+      "location": "<location>",
+      "graduationDate": "<year>",
+      "description": "<details if any>"
+    }
+  ],
+  "skills": [
+    {
+      "category": "<e.g. Technical, Frameworks, Soft Skills, Tools>",
+      "skillName": "<skill name>",
+      "proficiency": "<beginner | intermediate | advanced | expert>"
+    }
+  ],
+  "projects": [
+    {
+      "projectName": "<name>",
+      "description": "<description>",
+      "technologies": "<tech stack>",
+      "link": "<url or empty>"
+    }
+  ],
+  "certifications": [
+    {
+      "certificationName": "<cert name>",
+      "issuer": "<organization>",
+      "issueDate": "<date>",
+      "expiryDate": "<date or null>",
+      "link": "<url or null>"
+    }
+  ],
+  "languages": [
+    {
+      "language": "<language>",
+      "proficiency": "<Native | Fluent | Professional Working | Intermediate>"
+    }
+  ],
+  "customSections": [
+    {
+      "category": "<Awards | Volunteer | Organizations | Publications>",
+      "title": "<title>",
+      "subtitle": "<subtitle>",
+      "date": "<date>",
+      "description": "<description>"
+    }
+  ]
+}`;
+
+  const response = await invokeLLM({
+    model: "gpt-4o-mini",
+    messages: [{ role: "user", content: prompt }],
+    responseFormat: { type: "json_object" },
+    max_tokens: 3000,
+  });
+
+  const raw = response.choices[0]?.message?.content || "{}";
+  const cleaned = typeof raw === "string" ? raw.replace(/```json\n?|```/g, "").trim() : JSON.stringify(raw);
+  try {
+    return JSON.parse(cleaned);
+  } catch {
+    throw new TRPCError({
+      code: "INTERNAL_SERVER_ERROR",
+      message: "Failed to parse raw resume text into JSON",
+    });
+  }
+}
+
 export const cvAIRouter = router({
   generateProfessionalSummary: protectedProcedure
     .input(
@@ -1083,80 +1182,77 @@ Return a VALID JSON object ONLY matching this schema:
   parseResumeText: protectedProcedure
     .input(z.object({ rawText: z.string().trim().min(20) }))
     .mutation(async ({ input }) => {
-      const prompt = `You are a World-Class AI Resume / CV Parsing Engine.
-Extract all structured data from the raw text provided below into the exact JSON format requested.
-Infer categories and organize skills and experiences cleanly.
+      return parseStructuredResumeFromText(input.rawText);
+    }),
 
-RAW CV TEXT:
-${input.rawText}
+  parseResumeDocument: protectedProcedure
+    .input(
+      z.object({
+        fileBase64: z.string().min(20),
+        fileName: z.string().default("resume.pdf"),
+      })
+    )
+    .mutation(async ({ input }) => {
+      let extractedText = "";
+      const base64Data = input.fileBase64.replace(/^data:[^;]+;base64,/, "");
+      const buffer = Buffer.from(base64Data, "base64");
 
-Return a VALID JSON object ONLY:
+      if (input.fileName.toLowerCase().endsWith(".pdf")) {
+        try {
+          // eslint-disable-next-line @typescript-eslint/no-require-imports
+          const pdfParse = require("pdf-parse");
+          const pdfData = await pdfParse(buffer);
+          extractedText = pdfData.text || "";
+        } catch (err: any) {
+          console.error("PDF parse failed:", err);
+        }
+      }
+
+      if (!extractedText.trim()) {
+        extractedText = buffer.toString("utf-8").replace(/[\x00-\x08\x0B\x0C\x0E-\x1F]/g, " ");
+      }
+
+      if (!extractedText.trim() || extractedText.trim().length < 20) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Tidak dapat membaca teks dari dokumen. Pastikan file PDF/Word berisi teks yang dapat disalin.",
+        });
+      }
+
+      return parseStructuredResumeFromText(extractedText);
+    }),
+
+  generateSTARBullet: protectedProcedure
+    .input(
+      z.object({
+        jobTitle: z.string().optional(),
+        company: z.string().optional(),
+        rawBullet: z.string().min(3),
+      })
+    )
+    .mutation(async ({ input }) => {
+      const prompt = `Anda adalah spesialis penulisan CV dan rekrutmen standar global (Google, McKinsey, BUMN, Big 4).
+Ubah deskripsi tugas / pekerjaan berikut menjadi 3 pilihan poin pencapaian profesional menggunakan formula STAR (Situation, Task, Action, Result) dengan metrik angka / persentase yang realistis, kata kerja aktif yang kuat (misal: "Merancang", "Mengoptimalkan", "Memimpin", "Mengembangkan"), dan format yang siap lolos ATS.
+
+Posisi: ${input.jobTitle || "Profesional"}
+Perusahaan / Instansi: ${input.company || "Perusahaan"}
+Teks Asli Pelamar:
+"${input.rawBullet}"
+
+KEMBALIKAN HANYA JSON VALID dengan format:
 {
-  "suggestedTitle": "<Job Title or Candidate Name - CV>",
-  "personalInfo": {
-    "fullName": "<name>",
-    "email": "<email>",
-    "phone": "<phone>",
-    "location": "<city, country>",
-    "professionalSummary": "<concise executive summary>"
-  },
-  "workExperiences": [
+  "options": [
     {
-      "jobTitle": "<title>",
-      "company": "<company>",
-      "location": "<location>",
-      "startDate": "<date or year>",
-      "endDate": "<date or Present>",
-      "description": "<bullet points>"
-    }
-  ],
-  "educations": [
+      "title": "Varian 1: Berorientasi Hasil & Metrik Efisiensi",
+      "text": "<Kalimat pencapaian lengkap dengan aksi dan hasil terukur>"
+    },
     {
-      "degree": "<degree>",
-      "field": "<major>",
-      "school": "<institution>",
-      "location": "<location>",
-      "graduationDate": "<year>",
-      "description": "<details if any>"
-    }
-  ],
-  "skills": [
+      "title": "Varian 2: Berorientasi Kepemimpinan & Inovasi",
+      "text": "<Kalimat pencapaian lengkap>"
+    },
     {
-      "category": "<e.g. Technical, Frameworks, Soft Skills, Tools>",
-      "skillName": "<skill name>",
-      "proficiency": "<beginner | intermediate | advanced | expert>"
-    }
-  ],
-  "projects": [
-    {
-      "projectName": "<name>",
-      "description": "<description>",
-      "technologies": "<tech stack>",
-      "link": "<url or empty>"
-    }
-  ],
-  "certifications": [
-    {
-      "certificationName": "<cert name>",
-      "issuer": "<organization>",
-      "issueDate": "<date>",
-      "expiryDate": "<date or null>",
-      "link": "<url or null>"
-    }
-  ],
-  "languages": [
-    {
-      "language": "<language>",
-      "proficiency": "<Native | Fluent | Professional Working | Intermediate>"
-    }
-  ],
-  "customSections": [
-    {
-      "category": "<Awards | Volunteer | Organizations | Publications>",
-      "title": "<title>",
-      "subtitle": "<subtitle>",
-      "date": "<date>",
-      "description": "<description>"
+      "title": "Varian 3: Format Padat ATS-Friendly",
+      "text": "<Kalimat pencapaian lengkap>"
     }
   ]
 }`;
@@ -1165,7 +1261,7 @@ Return a VALID JSON object ONLY:
         model: "gpt-4o-mini",
         messages: [{ role: "user", content: prompt }],
         responseFormat: { type: "json_object" },
-        max_tokens: 3000,
+        max_tokens: 1000,
       });
 
       const raw = response.choices[0]?.message?.content || "{}";
@@ -1173,10 +1269,7 @@ Return a VALID JSON object ONLY:
       try {
         return JSON.parse(cleaned);
       } catch {
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: "Failed to parse raw resume text",
-        });
+        return { options: [] };
       }
     }),
 

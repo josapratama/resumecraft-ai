@@ -37,6 +37,7 @@ import {
   Bot,
   SpellCheck,
   Mail,
+  FileCheck2,
 } from "lucide-react";
 import { toast } from "sonner";
 import {
@@ -63,6 +64,7 @@ import StyleCustomizerModal from "@/components/CVEditor/StyleCustomizerModal";
 import GrammarCheckModal from "@/components/CVEditor/GrammarCheckModal";
 import EmailDraftModal from "@/components/CVEditor/EmailDraftModal";
 import JobTrackerModal from "@/components/JobTracker/JobTrackerModal";
+import DocumentChecklistModal from "@/components/CVEditor/DocumentChecklistModal";
 import CVPreview from "@/components/CVEditor/CVPreview";
 import { AIChatBox } from "@/components/AIChatBox";
 import { useAuth } from "@/_core/hooks/useAuth";
@@ -181,6 +183,17 @@ export default function CVEditor() {
   const [showGrammarModal, setShowGrammarModal] = useState(false);
   const [showEmailDraftModal, setShowEmailDraftModal] = useState(false);
   const [showJobTrackerModal, setShowJobTrackerModal] = useState(false);
+  const [showChecklistModal, setShowChecklistModal] = useState(false);
+
+  const handleBackupCV = () => {
+    if (!cvData) return;
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(cvData, null, 2));
+    const dlAnchor = document.createElement("a");
+    dlAnchor.setAttribute("href", dataStr);
+    dlAnchor.setAttribute("download", `Backup_${(cvData.cv.title || "CV").replace(/\s+/g, "_")}_${new Date().toISOString().split("T")[0]}.json`);
+    dlAnchor.click();
+    toast.success("Cadangan CV (.json) berhasil diunduh!");
+  };
 
   // Only user/assistant messages — system prompt is injected server-side
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
@@ -488,6 +501,19 @@ export default function CVEditor() {
                     <div>
                       <p className="text-xs font-semibold text-neutral-900">Pelacak Lamaran Kerja</p>
                       <p className="text-[10px] text-neutral-500">Papan Kanban status & catatan wawancara</p>
+                    </div>
+                  </DropdownMenuItem>
+
+                  <DropdownMenuItem
+                    onClick={() => setShowChecklistModal(true)}
+                    className="gap-2.5 p-2 rounded-lg cursor-pointer hover:bg-emerald-50"
+                  >
+                    <div className="w-7 h-7 rounded-md bg-emerald-100 text-emerald-700 flex items-center justify-center flex-shrink-0">
+                      <FileCheck2 className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <p className="text-xs font-semibold text-neutral-900">Checklist Berkas Lamaran</p>
+                      <p className="text-[10px] text-neutral-500">Kesiapan ijazah, SKCK, foto & backup CV</p>
                     </div>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
@@ -980,6 +1006,13 @@ export default function CVEditor() {
         isOpen={showJobTrackerModal}
         onClose={() => setShowJobTrackerModal(false)}
         defaultCvId={cvIdNum}
+      />
+
+      <DocumentChecklistModal
+        isOpen={showChecklistModal}
+        onClose={() => setShowChecklistModal(false)}
+        cvId={cvIdNum}
+        onBackupCV={handleBackupCV}
       />
     </div>
   );

@@ -25,7 +25,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import AIAssistant from "./AIAssistant";
-import { Trash2, Plus, Wand2, Pencil, MapPin, Calendar, Briefcase } from "lucide-react";
+import { Trash2, Plus, Wand2, Pencil, MapPin, Calendar, Briefcase, Sparkles, Check } from "lucide-react";
 import { Spinner } from "@/components/ui/spinner";
 import type { WorkExperience } from "@/types/cv";
 import { toast } from "sonner";
@@ -101,6 +101,45 @@ export default function WorkExperienceForm({
       toast.error("Failed to add work experience");
     },
   });
+
+  const [starOptions, setStarOptions] = useState<Array<{ title: string; text: string }>>([]);
+  const [showStarModal, setShowStarModal] = useState(false);
+
+  const starMutation = trpc.cvAI.generateSTARBullet.useMutation({
+    onSuccess: (data: any) => {
+      setStarOptions(data.options || []);
+      if ((data.options || []).length > 0) {
+        setShowStarModal(true);
+      } else {
+        toast.info("Tidak ada varian yang dihasilkan. Coba tambahkan rincian tugas Anda.");
+      }
+    },
+    onError: () => {
+      toast.error("Gagal menghasilkan formula STAR");
+    },
+  });
+
+  const handleGenerateSTAR = () => {
+    if (!formData.description.trim()) {
+      toast.error("Tuliskan deskripsi atau tugas pekerjaan terlebih dahulu");
+      return;
+    }
+    starMutation.mutate({
+      jobTitle: formData.jobTitle || undefined,
+      company: formData.company || undefined,
+      rawBullet: formData.description.trim(),
+    });
+  };
+
+  const handleApplySTAR = (bulletText: string) => {
+    setFormData(prev => {
+      const existing = prev.description.trim();
+      const updated = existing ? `${existing}\n• ${bulletText}` : `• ${bulletText}`;
+      return { ...prev, description: updated };
+    });
+    setShowStarModal(false);
+    toast.success("Poin STAR berhasil ditambahkan!");
+  };
 
   const updateMutation = trpc.cv.workExperience.update.useMutation({
     onSuccess: (result: any, variables) => {
@@ -359,6 +398,22 @@ export default function WorkExperienceForm({
                         )}
                         <span>Improve</span>
                       </Button>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={handleGenerateSTAR}
+                        disabled={starMutation.isPending || !formData.description.trim()}
+                        className="h-7 gap-1.5 text-xs border-purple-200 text-purple-700 bg-purple-50/70 hover:bg-purple-100 rounded-lg px-2"
+                        title="Ubah teks menjadi poin pencapaian berorientasi hasil (STAR method & metrics)"
+                      >
+                        {starMutation.isPending ? (
+                          <Spinner className="w-3 h-3 text-purple-600" />
+                        ) : (
+                          <Sparkles className="w-3 h-3 text-purple-600" />
+                        )}
+                        <span>Formula STAR</span>
+                      </Button>
                       <AIAssistant
                         cvId={cvId}
                         type="description"
@@ -376,6 +431,44 @@ export default function WorkExperienceForm({
                     placeholder="• Spearheaded the migration to microservices, reducing p99 latency by 42%&#10;• Mentored 5 junior engineers and established automated CI/CD pipelines"
                     className="border-neutral-200 focus:border-neutral-900 rounded-xl min-h-[110px] text-xs sm:text-sm leading-relaxed"
                   />
+
+                  {/* STAR Options Selector */}
+                  {showStarModal && starOptions.length > 0 && (
+                    <div className="p-3.5 bg-purple-50/60 border border-purple-200 rounded-xl space-y-2.5 animate-in fade-in duration-200">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[11px] font-bold text-purple-900 uppercase tracking-wider flex items-center gap-1.5">
+                          <Sparkles className="w-3.5 h-3.5 text-purple-600" />
+                          Pilih Poin Formula STAR:
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => setShowStarModal(false)}
+                          className="text-[10px] text-purple-600 hover:text-purple-900"
+                        >
+                          Tutup
+                        </button>
+                      </div>
+                      <div className="space-y-1.5">
+                        {starOptions.map((opt, i) => (
+                          <div
+                            key={i}
+                            onClick={() => handleApplySTAR(opt.text)}
+                            className="p-2.5 bg-white rounded-lg border border-purple-100 hover:border-purple-300 hover:shadow-xs transition-all cursor-pointer text-xs group"
+                          >
+                            <span className="text-[10px] font-bold text-purple-700 block mb-0.5">
+                              {opt.title}
+                            </span>
+                            <p className="text-neutral-800 leading-relaxed">
+                              {opt.text}
+                            </p>
+                            <span className="text-[10px] text-purple-600 font-semibold mt-1 inline-flex items-center gap-1 opacity-80 group-hover:opacity-100">
+                              <Check className="w-3 h-3" /> Klik untuk terapkan
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 {/* Action row */}

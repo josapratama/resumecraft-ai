@@ -42,7 +42,9 @@ export default function ImportResumeModal({
 }: ImportResumeModalProps) {
   const [, navigate] = useLocation();
   const utils = trpc.useUtils();
-  const [activeTab, setActiveTab] = useState<"url" | "text">("url");
+  const [activeTab, setActiveTab] = useState<"file" | "url" | "text">("file");
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [fileBase64, setFileBase64] = useState<string>("");
   const [targetUrl, setTargetUrl] = useState(
     initialUrl || "https://irma-iryani.josapratama.com/"
   );
@@ -61,6 +63,17 @@ export default function ImportResumeModal({
       }
     }
   }, [isOpen]);
+
+  const parseDocMutation = trpc.cvAI.parseResumeDocument.useMutation({
+    onSuccess: data => {
+      setParsedResult(data);
+      setCvTitle(data.suggestedTitle || "CV dari Dokumen");
+      toast.success("Dokumen PDF berhasil di-parse oleh AI!");
+    },
+    onError: err => {
+      toast.error(`Gagal memproses dokumen: ${err.message}`);
+    },
+  });
 
   const parseTextMutation = trpc.cvAI.parseResumeText.useMutation({
     onSuccess: data => {
@@ -100,7 +113,30 @@ export default function ImportResumeModal({
     },
   });
 
-  const isParsing = parseUrlMutation.isPending || parseTextMutation.isPending;
+  const isParsing =
+    parseUrlMutation.isPending ||
+    parseTextMutation.isPending ||
+    parseDocMutation.isPending;
+
+  const handleFileSelect = (file: File) => {
+    setSelectedFile(file);
+    const reader = new FileReader();
+    reader.onload = () => {
+      setFileBase64(reader.result as string);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleParseDoc = () => {
+    if (!fileBase64 || !selectedFile) {
+      toast.error("Silakan pilih berkas PDF resume terlebih dahulu.");
+      return;
+    }
+    parseDocMutation.mutate({
+      fileBase64,
+      fileName: selectedFile.name,
+    });
+  };
 
   const handleParseUrl = () => {
     const trimmed = targetUrl.trim();
@@ -147,19 +183,88 @@ export default function ImportResumeModal({
           <div className="space-y-4 pt-1">
             <Tabs
               value={activeTab}
-              onValueChange={v => setActiveTab(v as "url" | "text")}
+              onValueChange={v => setActiveTab(v as "file" | "url" | "text")}
               className="w-full"
             >
-              <TabsList className="grid grid-cols-2 w-full mb-3">
-                <TabsTrigger value="url" className="flex items-center gap-2">
-                  <Globe className="w-4 h-4" />
-                  Import dari Link Portfolio / Web
+              <TabsList className="grid grid-cols-3 w-full mb-3">
+                <TabsTrigger value="file" className="flex items-center gap-1.5 text-xs">
+                  <Upload className="w-3.5 h-3.5" />
+                  Unggah PDF / Dokumen
                 </TabsTrigger>
-                <TabsTrigger value="text" className="flex items-center gap-2">
-                  <FileText className="w-4 h-4" />
-                  Tempel Teks Resume
+                <TabsTrigger value="url" className="flex items-center gap-1.5 text-xs">
+                  <Globe className="w-3.5 h-3.5" />
+                  Link Portfolio Web
+                </TabsTrigger>
+                <TabsTrigger value="text" className="flex items-center gap-1.5 text-xs">
+                  <FileText className="w-3.5 h-3.5" />
+                  Tempel Teks
                 </TabsTrigger>
               </TabsList>
+
+              {/* TAB 0: UNGGAH DOKUMEN PDF */}
+              <TabsContent value="file" className="space-y-4">
+                <div className="p-3.5 bg-blue-50/70 border border-blue-100 rounded-xl text-xs text-blue-900 space-y-1">
+                  <p className="font-semibold flex items-center gap-1.5 text-blue-950">
+                    <Sparkles className="w-3.5 h-3.5 text-blue-600" />
+                    Punya CV Lama dalam Format PDF?
+                  </p>
+                  <p className="text-gray-600">
+                    Unggah dokumen resume PDF Anda. AI otomatis mengekstrak informasi biodata, pengalaman kerja, pendidikan, dan keahlian tanpa perlu salin-tempel manual.
+                  </p>
+                </div>
+
+                <div className="border-2 border-dashed border-neutral-300 hover:border-indigo-500 rounded-2xl p-6 text-center bg-neutral-50/60 hover:bg-indigo-50/30 transition-all cursor-pointer relative">
+                  <input
+                    type="file"
+                    accept=".pdf,.doc,.docx,.txt"
+                    onChange={e => {
+                      const file = e.target.files?.[0];
+                      if (file) handleFileSelect(file);
+                    }}
+                    className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
+                  />
+                  <div className="w-12 h-12 rounded-xl bg-indigo-100 text-indigo-600 flex items-center justify-center mx-auto mb-2.5">
+                    <Upload className="w-6 h-6" />
+                  </div>
+                  {selectedFile ? (
+                    <div>
+                      <p className="text-xs font-bold text-neutral-900">{selectedFile.name}</p>
+                      <p className="text-[11px] text-neutral-500 mt-0.5">
+                        {(selectedFile.size / 1024).toFixed(1)} KB · Klik untuk mengganti berkas
+                      </p>
+                    </div>
+                  ) : (
+                    <div>
+                      <p className="text-xs font-semibold text-neutral-800">
+                        Klik atau seret file PDF resume ke area ini
+                      </p>
+                      <p className="text-[11px] text-neutral-400 mt-1">
+                        Mendukung PDF, DOCX, atau teks (maks 10 MB)
+                      </p>
+                    </div>
+                  )}
+                </div>
+
+                <div className="flex justify-end">
+                  <Button
+                    onClick={handleParseDoc}
+                    disabled={isParsing || !selectedFile}
+                    className="gap-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-semibold h-9 px-5 shadow-xs"
+                  >
+                    {parseDocMutation.isPending ? (
+                      <>
+                        <Spinner className="w-4 h-4 text-white" />
+                        <span>Mengekstrak Dokumen dengan AI...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Sparkles className="w-4 h-4" />
+                        <span>Ekstrak Data Resume</span>
+                      </>
+                    )}
+                  </Button>
+                </div>
+              </TabsContent>
 
               {/* TAB 1: IMPORT DARI LINK */}
               <TabsContent value="url" className="space-y-4">

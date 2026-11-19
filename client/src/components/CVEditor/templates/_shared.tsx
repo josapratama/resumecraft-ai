@@ -127,7 +127,7 @@ export function LanguagesDisplay({
 
 export function ProjectLinkDisplay({
   url,
-  className = "text-xs hover:underline shrink-0 font-medium inline-flex items-center gap-1",
+  className = "text-xs hover:underline shrink-0 font-medium inline-flex items-center gap-1 break-all",
   style,
 }: {
   url?: string | null;
@@ -144,7 +144,7 @@ export function ProjectLinkDisplay({
       style={style}
       title={url}
     >
-      <span>{formatDisplayUrl(url)}</span>
+      <span className="break-all">{formatDisplayUrl(url)}</span>
       <span aria-hidden="true">↗</span>
     </a>
   );

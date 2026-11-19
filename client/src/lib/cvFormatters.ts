@@ -15,15 +15,15 @@ export function formatEducationTitle(degree?: string | null, field?: string | nu
 /**
  * Format URL for clean, professional display on both digital PDF and printed paper.
  * Strips https://, http://, www. and trailing slash.
- * Truncates gracefully if extremely long.
+ * Does NOT truncate by default so printed CVs show the full, usable URL.
  * Examples:
  * formatDisplayUrl("https://josapratama.com") => "josapratama.com"
  * formatDisplayUrl("https://github.com/josapratama/portfolio") => "github.com/josapratama/portfolio"
  */
-export function formatDisplayUrl(url?: string | null, maxLen = 35): string {
+export function formatDisplayUrl(url?: string | null, maxLen?: number): string {
   if (!url) return "";
   let clean = url.trim().replace(/^https?:\/\/(www\.)?/, "").replace(/\/$/, "");
-  if (clean.length > maxLen) {
+  if (typeof maxLen === "number" && maxLen > 0 && clean.length > maxLen) {
     clean = clean.slice(0, maxLen - 1) + "…";
   }
   return clean;

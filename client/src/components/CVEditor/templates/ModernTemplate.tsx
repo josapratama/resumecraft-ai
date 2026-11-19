@@ -345,12 +345,12 @@ export default function ModernTemplate({ cvData }: ModernTemplateProps) {
                         href={proj.link}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-[11px] font-semibold hover:underline flex items-center gap-1 whitespace-nowrap"
+                        className="text-[10px] font-medium hover:underline inline-flex items-center gap-1 break-all"
                         style={{ color: accent }}
                         title={proj.link}
                       >
-                        <span>{formatDisplayUrl(proj.link)}</span>
-                        <ExternalLink className="w-2.5 h-2.5 shrink-0" />
+                        <span className="break-all">{formatDisplayUrl(proj.link)}</span>
+                        <ExternalLink className="w-2.5 h-2.5 shrink-0 inline" />
                       </a>
                     )}
                   </div>

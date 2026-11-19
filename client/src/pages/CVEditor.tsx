@@ -707,8 +707,12 @@ export default function CVEditor() {
                 <PersonalInfoForm
                   cvId={cvIdNum}
                   initialData={cvData.personalInfo}
+                  initialTargetRole={cvData.cv.targetRole}
                   onDataChange={personalInfo =>
                     handleDataChange({ personalInfo })
+                  }
+                  onTargetRoleChange={role =>
+                    handleDataChange({ cv: { ...cvData.cv, targetRole: role } })
                   }
                 />
               )}

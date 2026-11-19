@@ -6,7 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Spinner } from "@/components/ui/spinner";
-import { Wand2, Circle, User, Mail, Phone, MapPin, Check, Save, Camera, Trash2, Upload } from "lucide-react";
+import { Wand2, Circle, User, Mail, Phone, MapPin, Check, Save, Camera, Trash2, Upload, Briefcase } from "lucide-react";
 import AIAssistant from "./AIAssistant";
 import { toast } from "sonner";
 import { useI18n } from "@/lib/i18n";
@@ -15,15 +15,21 @@ import type { PersonalInfo } from "@/types/cv";
 interface PersonalInfoFormProps {
   cvId: number;
   initialData: PersonalInfo | null;
+  initialTargetRole?: string | null;
   onDataChange?: (personalInfo: PersonalInfo) => void;
+  onTargetRoleChange?: (targetRole: string) => void;
 }
 
 export default function PersonalInfoForm({
   cvId,
   initialData,
+  initialTargetRole,
   onDataChange,
+  onTargetRoleChange,
 }: PersonalInfoFormProps) {
   const { t } = useI18n();
+  const [targetRole, setTargetRole] = useState(initialTargetRole || "");
+  const [savedTargetRole, setSavedTargetRole] = useState(initialTargetRole || "");
   const [savedData, setSavedData] = useState({
     fullName: initialData?.fullName || "",
     email: initialData?.email || "",
@@ -39,22 +45,30 @@ export default function PersonalInfoForm({
   // True when any field differs from the last saved value
   const isDirty = useMemo(
     () =>
+      targetRole !== savedTargetRole ||
       (Object.keys(formData) as (keyof typeof formData)[]).some(
         k => formData[k] !== savedData[k]
       ),
-    [formData, savedData]
+    [formData, savedData, targetRole, savedTargetRole]
   );
 
   const updateMutation = trpc.cv.personalInfo.update.useMutation({
     onSuccess: result => {
       setSavedData({ ...formData });
-      toast.success("Personal information saved");
+      toast.success(t("personal.saved", "Personal information saved"));
       if (onDataChange && result) {
         onDataChange(result as PersonalInfo);
       }
     },
     onError: () => {
       toast.error("Failed to save personal information");
+    },
+  });
+
+  const updateDesignMutation = trpc.cv.updateDesign.useMutation({
+    onSuccess: () => {
+      setSavedTargetRole(targetRole);
+      onTargetRoleChange?.(targetRole);
     },
   });
 
@@ -126,6 +140,9 @@ export default function PersonalInfoForm({
 
   const handleSave = () => {
     updateMutation.mutate({ cvId, ...formData });
+    if (targetRole !== savedTargetRole) {
+      updateDesignMutation.mutate({ cvId, targetRole });
+    }
   };
 
   const handleImproveText = () => {
@@ -229,6 +246,32 @@ export default function PersonalInfoForm({
             placeholder="e.g. Johnathan Doe"
             className="mt-1.5 border-neutral-200 focus:border-neutral-900 rounded-xl"
           />
+        </div>
+
+        {/* Target Role / Subtitle Profesi */}
+        <div>
+          <Label className="text-xs font-semibold text-neutral-600 uppercase tracking-wider flex items-center justify-between">
+            <span className="flex items-center gap-1.5">
+              <Briefcase className="w-3.5 h-3.5 text-neutral-400" />
+              {t("personal.target_role", "Posisi / Subtitle Profesi")}
+            </span>
+            <span className="text-[11px] text-neutral-400 font-normal lowercase tracking-normal">
+              {t("personal.optional", "opsional")}
+            </span>
+          </Label>
+          <Input
+            value={targetRole}
+            onChange={e => {
+              const val = e.target.value;
+              setTargetRole(val);
+              onTargetRoleChange?.(val);
+            }}
+            placeholder="Contoh: Guru Kimia / Tenaga Pendidik / Data Analyst"
+            className="mt-1.5 border-neutral-200 focus:border-neutral-900 rounded-xl"
+          />
+          <p className="text-[11px] text-neutral-400 mt-1">
+            Teks ini muncul tepat di bawah nama pada CV. Kosongkan jika ingin disembunyikan.
+          </p>
         </div>
 
         {/* Email & Phone Responsive Grid */}

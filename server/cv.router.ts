@@ -759,7 +759,7 @@ export const cvRouter = router({
       return updateCV(input.cvId, {
         accentColor: input.accentColor,
         fontFamily: input.fontFamily,
-        targetRole: input.targetRole,
+        targetRole: input.targetRole !== undefined ? (input.targetRole.trim() || null) : undefined,
       });
     }),
 

@@ -613,6 +613,296 @@ Return a VALID JSON object ONLY matching this structure:
       }
     }),
 
+  // ─── AI Resume Parser from URL / Portfolio ────────────────────────────────
+  parseFromUrl: protectedProcedure
+    .input(z.object({ url: z.string().trim().min(3) }))
+    .mutation(async ({ input }) => {
+      let targetUrl = input.url;
+      if (!/^https?:\/\//i.test(targetUrl)) {
+        targetUrl = `https://${targetUrl}`;
+      }
+
+      let parsedUrl: URL;
+      try {
+        parsedUrl = new URL(targetUrl);
+      } catch {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Format URL tidak valid. Mohon sertakan domain seperti https://irma-iryani.josapratama.com",
+        });
+      }
+
+      const host = parsedUrl.hostname.toLowerCase();
+
+      // Case 1: Direct integration for Irma Iryani's portfolio / backend
+      if (
+        host.includes("irma-iryani") ||
+        host.includes("irma-backend") ||
+        targetUrl.includes("irma-iryani")
+      ) {
+        try {
+          const backendBase = "https://irma-backend.josapratama.com/api";
+          const [profileRes, expRes, eduRes, skillsRes, certsRes] = await Promise.all([
+            fetch(`${backendBase}/profile`, { signal: AbortSignal.timeout(10000) }).then(r => r.json()).catch(() => null),
+            fetch(`${backendBase}/experiences`, { signal: AbortSignal.timeout(10000) }).then(r => r.json()).catch(() => null),
+            fetch(`${backendBase}/educations`, { signal: AbortSignal.timeout(10000) }).then(r => r.json()).catch(() => null),
+            fetch(`${backendBase}/skills`, { signal: AbortSignal.timeout(10000) }).then(r => r.json()).catch(() => null),
+            fetch(`${backendBase}/certificates`, { signal: AbortSignal.timeout(10000) }).then(r => r.json()).catch(() => null),
+          ]);
+
+          const profile = profileRes?.data || {};
+          const experiences = expRes?.data || [];
+          const educations = eduRes?.data || [];
+          const skillGroups = skillsRes?.data || [];
+          const certificates = certsRes?.data || [];
+
+          // Format flattened skills
+          const formattedSkills: Array<{ category: string; skillName: string; proficiency: string }> = [];
+          for (const group of skillGroups) {
+            const catName = group.label?.id || group.category || "General";
+            if (Array.isArray(group.items)) {
+              for (const item of group.items) {
+                const lvl = typeof item.level === "number" ? item.level : 80;
+                const prof = lvl >= 85 ? "expert" : lvl >= 75 ? "advanced" : lvl >= 60 ? "intermediate" : "beginner";
+                formattedSkills.push({
+                  category: catName,
+                  skillName: item.name || "",
+                  proficiency: prof,
+                });
+              }
+            }
+          }
+
+          // Format experiences
+          const formattedExperiences = experiences.map((exp: any) => {
+            let desc = "";
+            if (exp.description?.id) {
+              desc = exp.description.id;
+            }
+            if (Array.isArray(exp.activities) && exp.activities.length > 0) {
+              const actLines = exp.activities.map((a: any) => {
+                const title = a.name?.id || a.name || "";
+                const role = a.role?.id || a.role || "";
+                const points = Array.isArray(a.points)
+                  ? a.points.map((p: any) => `  • ${p.id || p}`).join("\n")
+                  : "";
+                return `• ${title}${role ? ` (${role})` : ""}${points ? `\n${points}` : ""}`;
+              });
+              desc = desc ? `${desc}\n\nKegiatan & Kontribusi:\n${actLines.join("\n")}` : actLines.join("\n");
+            }
+
+            return {
+              jobTitle: exp.role?.id || exp.title?.id || "Pendidik / Pengurus",
+              company: exp.company?.id || exp.organization?.id || exp.title?.id || "Institusi",
+              location: profile.location || "Sumatera Selatan, Indonesia",
+              startDate: exp.period?.id || exp.period || "2024",
+              endDate: exp.period?.id || exp.period || "Present",
+              description: desc || "Pengalaman profesional dan organisasi akademik.",
+            };
+          });
+
+          // Format educations
+          const formattedEducations = educations.map((edu: any) => ({
+            degree: edu.degree?.id || "S1 Pendidikan Kimia",
+            field: "Pendidikan Kimia (MIPA)",
+            school: edu.university?.id || "Universitas Sriwijaya",
+            location: "Palembang / Indralaya, Sumatera Selatan",
+            graduationDate: edu.period?.id || "2026",
+            description: `${edu.description?.id || "Fakultas Keguruan dan Ilmu Pendidikan"} - IPK: ${edu.gpa || profile.gpa || "3.90"} (Cum Laude)`,
+          }));
+
+          // Format certifications
+          const formattedCerts = certificates.map((cert: any) => ({
+            certificationName: cert.title?.id || cert.title || "Sertifikat Pelatihan",
+            issuer: cert.issuer || "Kementerian / Lembaga",
+            issueDate: cert.date || "2026",
+            expiryDate: null,
+            link: cert.images?.[0] ? `https://irma-iryani.josapratama.com${cert.images[0]}` : null,
+          }));
+
+          // Custom sections (traits / highlights)
+          const customSections = [
+            {
+              category: "Academic Highlights & Honors",
+              title: "Lulusan S1 Pendidikan Kimia - IPK 3,90",
+              subtitle: "Universitas Sriwijaya (Angkatan 2022)",
+              date: "2022 - 2026",
+              description: "Karakteristik Profesional: Analitis, Teliti, Terstruktur, Adaptif, Kolaboratif, dan Sistematis. Memiliki ketertarikan tinggi pada analisis data, administrasi profesional, dan manajemen laboratorium/pendidikan.",
+            },
+          ];
+
+          return {
+            suggestedTitle: `CV ${profile.name || "Irma Iryani"} - ${profile.title?.id || "Pendidikan Kimia"}`,
+            personalInfo: {
+              fullName: profile.name || "Irma Iryani",
+              email: profile.email || "irmairyani698@gmail.com",
+              phone: profile.phone || "0887437204107",
+              location: profile.location || "Prabumulih, Sumatera Selatan",
+              professionalSummary:
+                profile.description?.id ||
+                profile.aboutBio?.id ||
+                "Lulusan Universitas Sriwijaya dengan IPK 3,90. Terbiasa bekerja terstruktur, teliti mengolah data, dan berkomitmen mengembangkan kompetensi secara profesional.",
+            },
+            workExperiences: formattedExperiences,
+            educations: formattedEducations,
+            skills: formattedSkills,
+            projects: [],
+            certifications: formattedCerts,
+            languages: [
+              { language: "Bahasa Indonesia", proficiency: "Native / Penutur Asli" },
+              { language: "English", proficiency: "Intermediate" },
+            ],
+            customSections,
+          };
+        } catch (err: any) {
+          console.error("Direct Irma fetch failed, falling back to web parser:", err);
+          // Fall through to general scraper
+        }
+      }
+
+      // Case 2: General URL scraper & AI parser
+      try {
+        const resp = await fetch(targetUrl, {
+          headers: {
+            "User-Agent":
+              "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+            Accept: "text/html,application/xhtml+xml,application/json,*/*",
+          },
+          signal: AbortSignal.timeout(15000),
+        });
+
+        if (!resp.ok) {
+          throw new Error(`Failed to fetch URL: HTTP ${resp.status}`);
+        }
+
+        const contentType = resp.headers.get("content-type") || "";
+        let extractedText = "";
+
+        if (contentType.includes("application/json")) {
+          const json = await resp.json();
+          extractedText = JSON.stringify(json, null, 2);
+        } else {
+          const html = await resp.text();
+          const titleMatch = html.match(/<title[^>]*>([^<]+)<\/title>/i);
+          const pageTitle = titleMatch ? titleMatch[1].trim() : "";
+
+          const metaDescMatch = html.match(/<meta[^>]*name=["']description["'][^>]*content=["']([^"']+)["']/i);
+          const metaDesc = metaDescMatch ? metaDescMatch[1].trim() : "";
+
+          const jsonLdRegex = /<script[^>]*type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi;
+          let jsonLdTexts = "";
+          let match: RegExpExecArray | null;
+          while ((match = jsonLdRegex.exec(html)) !== null) {
+            jsonLdTexts += "\n" + match[1].trim();
+          }
+
+          const bodyClean = html
+            .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, "")
+            .replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, "")
+            .replace(/<svg\b[^<]*(?:(?!<\/svg>)<[^<]*)*<\/svg>/gi, "")
+            .replace(/<[^>]+>/g, " ")
+            .replace(/\s+/g, " ")
+            .trim();
+
+          extractedText = `Page Title: ${pageTitle}\nDescription: ${metaDesc}\n${jsonLdTexts ? `Structured Data:\n${jsonLdTexts}\n` : ""}Content:\n${bodyClean.slice(0, 12000)}`;
+        }
+
+        const prompt = `You are a World-Class AI Resume / CV Parsing Engine.
+Extract all structured CV/Resume data from the website/portfolio content below into the exact JSON format requested.
+Infer categories and organize skills, educations, work experiences, projects, and certifications cleanly.
+
+WEBSITE CONTENT (URL: ${targetUrl}):
+${extractedText.slice(0, 10000)}
+
+Return a VALID JSON object ONLY matching this schema:
+{
+  "suggestedTitle": "<Candidate Name - CV / Title>",
+  "personalInfo": {
+    "fullName": "<name>",
+    "email": "<email>",
+    "phone": "<phone>",
+    "location": "<city, country>",
+    "professionalSummary": "<concise professional summary>"
+  },
+  "workExperiences": [
+    {
+      "jobTitle": "<title>",
+      "company": "<company>",
+      "location": "<location>",
+      "startDate": "<date/year>",
+      "endDate": "<date/Present>",
+      "description": "<bullet points>"
+    }
+  ],
+  "educations": [
+    {
+      "degree": "<degree>",
+      "field": "<major>",
+      "school": "<institution>",
+      "location": "<location>",
+      "graduationDate": "<year>",
+      "description": "<details if any>"
+    }
+  ],
+  "skills": [
+    {
+      "category": "<e.g. Hard Skills, Soft Skills, Tools>",
+      "skillName": "<skill name>",
+      "proficiency": "<beginner | intermediate | advanced | expert>"
+    }
+  ],
+  "projects": [
+    {
+      "projectName": "<name>",
+      "description": "<description>",
+      "technologies": "<tech stack>",
+      "link": "<url or empty>"
+    }
+  ],
+  "certifications": [
+    {
+      "certificationName": "<cert name>",
+      "issuer": "<organization>",
+      "issueDate": "<date>",
+      "expiryDate": "<date or null>",
+      "link": "<url or null>"
+    }
+  ],
+  "languages": [
+    {
+      "language": "<language>",
+      "proficiency": "<Native | Fluent | Intermediate>"
+    }
+  ],
+  "customSections": [
+    {
+      "category": "<Awards | Honors | Activities>",
+      "title": "<title>",
+      "subtitle": "<subtitle>",
+      "date": "<date>",
+      "description": "<description>"
+    }
+  ]
+}`;
+
+        const response = await invokeLLM({
+          model: "gpt-4o-mini",
+          messages: [{ role: "user", content: prompt }],
+          responseFormat: { type: "json_object" },
+          max_tokens: 3000,
+        });
+
+        const raw = response.choices[0]?.message?.content || "{}";
+        const cleaned = typeof raw === "string" ? raw.replace(/```json\n?|```/g, "").trim() : JSON.stringify(raw);
+        return JSON.parse(cleaned);
+      } catch (scrapeErr: any) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: `Gagal mengambil data dari URL: ${scrapeErr.message || "Pastikan URL dapat diakses secara publik."}`,
+        });
+      }
+    }),
+
   // ─── AI Resume Parser (Import from raw text / PDF) ─────────────────────────
   parseResumeText: protectedProcedure
     .input(z.object({ rawText: z.string().trim().min(20) }))

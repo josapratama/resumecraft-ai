@@ -183,6 +183,15 @@ export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTemplateFilter, setSelectedTemplateFilter] = useState("all");
 
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      if (params.has("import")) {
+        setIsImportDialogOpen(true);
+      }
+    }
+  }, []);
+
   const utils = trpc.useUtils();
 
   const { data: cvs, isLoading } = trpc.cv.list.useQuery(undefined, {

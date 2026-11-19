@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -10,190 +10,410 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Spinner } from "@/components/ui/spinner";
-import { Upload, Sparkles, CheckCircle2, ArrowRight } from "lucide-react";
+import {
+  Upload,
+  Sparkles,
+  CheckCircle2,
+  ArrowRight,
+  Globe,
+  FileText,
+  ExternalLink,
+  Award,
+  GraduationCap,
+  Briefcase,
+  Layers,
+} from "lucide-react";
 import { toast } from "sonner";
 import { useLocation } from "wouter";
 
 interface ImportResumeModalProps {
   isOpen: boolean;
   onClose: () => void;
+  initialUrl?: string;
 }
 
 export default function ImportResumeModal({
   isOpen,
   onClose,
+  initialUrl,
 }: ImportResumeModalProps) {
   const [, navigate] = useLocation();
   const utils = trpc.useUtils();
+  const [activeTab, setActiveTab] = useState<"url" | "text">("url");
+  const [targetUrl, setTargetUrl] = useState(
+    initialUrl || "https://irma-iryani.josapratama.com/"
+  );
   const [rawText, setRawText] = useState("");
   const [cvTitle, setCvTitle] = useState("");
   const [parsedResult, setParsedResult] = useState<any | null>(null);
 
-  const parseMutation = trpc.cvAI.parseResumeText.useMutation({
+  // Auto-detect ?import= in URL query params on modal open
+  useEffect(() => {
+    if (isOpen && typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const importParam = params.get("import");
+      if (importParam) {
+        setTargetUrl(importParam);
+        setActiveTab("url");
+      }
+    }
+  }, [isOpen]);
+
+  const parseTextMutation = trpc.cvAI.parseResumeText.useMutation({
     onSuccess: data => {
       setParsedResult(data);
-      setCvTitle(data.suggestedTitle || "Imported Professional CV");
-      toast.success("Resume parsed successfully!");
+      setCvTitle(data.suggestedTitle || "CV Profesional");
+      toast.success("Resume berhasil di-parse oleh AI!");
     },
     onError: err => {
-      toast.error(`Parsing failed: ${err.message}`);
+      toast.error(`Gagal memproses resume: ${err.message}`);
+    },
+  });
+
+  const parseUrlMutation = trpc.cvAI.parseFromUrl.useMutation({
+    onSuccess: data => {
+      setParsedResult(data);
+      setCvTitle(data.suggestedTitle || "CV dari Portfolio Web");
+      toast.success("Data dari portfolio / link berhasil diambil!");
+    },
+    onError: err => {
+      toast.error(`Gagal memuat URL: ${err.message}`);
     },
   });
 
   const createMutation = trpc.cvAI.createFromParsed.useMutation({
     onSuccess: newCV => {
       utils.cv.list.invalidate();
-      toast.success("CV created from parsed resume!");
+      toast.success("CV baru berhasil dibuat!");
       onClose();
+      // Clean query params if any
+      if (typeof window !== "undefined" && window.location.search.includes("import=")) {
+        window.history.replaceState({}, document.title, window.location.pathname);
+      }
       navigate(`/cv/${newCV.id}`);
     },
     onError: err => {
-      toast.error(`Failed to create CV: ${err.message}`);
+      toast.error(`Gagal membuat CV: ${err.message}`);
     },
   });
 
-  const handleParse = () => {
-    if (!rawText.trim() || rawText.trim().length < 30) {
-      toast.error("Please paste enough text from your resume (minimum 30 characters).");
+  const isParsing = parseUrlMutation.isPending || parseTextMutation.isPending;
+
+  const handleParseUrl = () => {
+    const trimmed = targetUrl.trim();
+    if (!trimmed) {
+      toast.error("Silakan masukkan URL portfolio atau profil web.");
       return;
     }
-    parseMutation.mutate({ rawText: rawText.trim() });
+    parseUrlMutation.mutate({ url: trimmed });
+  };
+
+  const handleParseText = () => {
+    if (!rawText.trim() || rawText.trim().length < 30) {
+      toast.error("Silakan tempel teks resume yang cukup (minimal 30 karakter).");
+      return;
+    }
+    parseTextMutation.mutate({ rawText: rawText.trim() });
   };
 
   const handleSave = () => {
     if (!parsedResult) return;
     createMutation.mutate({
-      title: cvTitle.trim() || "Imported CV",
+      title: cvTitle.trim() || "CV Baru",
       template: "modern",
       parsedData: parsedResult,
     });
   };
 
+  const handleModalClose = () => {
+    setParsedResult(null);
+    onClose();
+  };
+
   return (
-    <Dialog open={isOpen} onOpenChange={open => !open && onClose()}>
-      <DialogContent className="sm:max-w-[700px] max-h-[85vh] overflow-y-auto">
+    <Dialog open={isOpen} onOpenChange={open => !open && handleModalClose()}>
+      <DialogContent className="sm:max-w-[720px] max-h-[88vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2 text-xl font-bold">
-            <Upload className="w-5 h-5 text-indigo-600" />
-            AI Resume / CV Importer & Parser
+          <DialogTitle className="flex items-center gap-2 text-xl font-bold text-gray-900">
+            <Sparkles className="w-5 h-5 text-indigo-600" />
+            AI Resume / CV Importer Otomatis
           </DialogTitle>
         </DialogHeader>
 
         {!parsedResult ? (
-          <div className="space-y-4 pt-2">
-            <p className="text-sm text-gray-600">
-              Skip typing manually! Paste your existing resume text, CV draft, or LinkedIn About & Experience sections below.
-              Our AI parser will automatically extract your contact details, work history, education, skills, and projects into structured form fields.
-            </p>
+          <div className="space-y-4 pt-1">
+            <Tabs
+              value={activeTab}
+              onValueChange={v => setActiveTab(v as "url" | "text")}
+              className="w-full"
+            >
+              <TabsList className="grid grid-cols-2 w-full mb-3">
+                <TabsTrigger value="url" className="flex items-center gap-2">
+                  <Globe className="w-4 h-4" />
+                  Import dari Link Portfolio / Web
+                </TabsTrigger>
+                <TabsTrigger value="text" className="flex items-center gap-2">
+                  <FileText className="w-4 h-4" />
+                  Tempel Teks Resume
+                </TabsTrigger>
+              </TabsList>
 
-            <div className="space-y-2">
-              <Label htmlFor="rawResume">Paste Resume / CV Content *</Label>
-              <Textarea
-                id="rawResume"
-                placeholder="Copy and paste text from your PDF, Word document, or LinkedIn profile..."
-                rows={12}
-                value={rawText}
-                onChange={e => setRawText(e.target.value)}
-                className="font-mono text-xs"
-              />
-            </div>
+              {/* TAB 1: IMPORT DARI LINK */}
+              <TabsContent value="url" className="space-y-4">
+                <div className="p-3.5 bg-indigo-50/70 border border-indigo-100 rounded-xl text-xs text-indigo-900 space-y-1">
+                  <p className="font-semibold flex items-center gap-1.5 text-indigo-950">
+                    <Sparkles className="w-3.5 h-3.5 text-indigo-600" />
+                    Cukup Masukkan Link, CV Langsung Jadi
+                  </p>
+                  <p className="text-gray-600">
+                    Masukkan URL portfolio atau profil web (seperti{" "}
+                    <code className="text-indigo-700 bg-white px-1 py-0.5 rounded border border-indigo-200">
+                      https://irma-iryani.josapratama.com/
+                    </code>
+                    ). Sistem akan otomatis membaca profil, pendidikan, pengalaman kerja, keahlian, dan sertifikasi.
+                  </p>
+                </div>
 
-            <div className="flex justify-end gap-2 pt-2">
-              <Button variant="outline" onClick={onClose}>
-                Cancel
-              </Button>
-              <Button
-                onClick={handleParse}
-                disabled={parseMutation.isPending}
-                className="gap-2 bg-indigo-600 hover:bg-indigo-700 text-white"
-              >
-                {parseMutation.isPending ? (
-                  <>
-                    <Spinner className="w-4 h-4" /> Parsing with AI...
-                  </>
-                ) : (
-                  <>
-                    <Sparkles className="w-4 h-4" /> Parse & Extract CV
-                  </>
-                )}
-              </Button>
-            </div>
+                <div className="space-y-2">
+                  <Label htmlFor="portfolioUrl" className="font-semibold text-gray-800">
+                    URL Portfolio / Website Profil
+                  </Label>
+                  <div className="flex gap-2">
+                    <div className="relative flex-1">
+                      <Globe className="w-4 h-4 absolute left-3 top-3 text-gray-400" />
+                      <Input
+                        id="portfolioUrl"
+                        type="url"
+                        placeholder="https://irma-iryani.josapratama.com/"
+                        value={targetUrl}
+                        onChange={e => setTargetUrl(e.target.value)}
+                        className="pl-9 font-mono text-sm"
+                        disabled={isParsing}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Preset quick chip */}
+                  <div className="flex items-center gap-1.5 flex-wrap pt-1">
+                    <span className="text-xs text-gray-500 font-medium">Contoh cepat:</span>
+                    <button
+                      type="button"
+                      onClick={() => setTargetUrl("https://irma-iryani.josapratama.com/")}
+                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 transition-colors"
+                    >
+                      ⚡ Portfolio Irma Iryani
+                    </button>
+                  </div>
+                </div>
+
+                <div className="flex justify-end gap-2 pt-2 border-t">
+                  <Button variant="outline" onClick={handleModalClose} disabled={isParsing}>
+                    Batal
+                  </Button>
+                  <Button
+                    onClick={handleParseUrl}
+                    disabled={isParsing}
+                    className="gap-2 bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm"
+                  >
+                    {parseUrlMutation.isPending ? (
+                      <>
+                        <Spinner className="w-4 h-4" /> Mengambil & Membaca Data...
+                      </>
+                    ) : (
+                      <>
+                        <Sparkles className="w-4 h-4" /> Ambil Data & Buat CV
+                      </>
+                    )}
+                  </Button>
+                </div>
+              </TabsContent>
+
+              {/* TAB 2: TEMPEL TEKS MANUAL */}
+              <TabsContent value="text" className="space-y-4">
+                <p className="text-xs text-gray-600">
+                  Tempelkan draf teks CV, ringkasan LinkedIn, atau salinan isi PDF resume Anda. AI akan
+                  mengorganisasi ke dalam form bidang terstruktur.
+                </p>
+
+                <div className="space-y-2">
+                  <Label htmlFor="rawResume" className="font-semibold text-gray-800">
+                    Teks Resume / CV
+                  </Label>
+                  <Textarea
+                    id="rawResume"
+                    placeholder="Salin dan tempel isi teks resume, pengalaman kerja, pendidikan, dsb..."
+                    rows={10}
+                    value={rawText}
+                    onChange={e => setRawText(e.target.value)}
+                    className="font-mono text-xs"
+                    disabled={isParsing}
+                  />
+                  <div className="text-[11px] text-gray-400 text-right">
+                    {rawText.length} karakter (minimal 30)
+                  </div>
+                </div>
+
+                <div className="flex justify-end gap-2 pt-2 border-t">
+                  <Button variant="outline" onClick={handleModalClose} disabled={isParsing}>
+                    Batal
+                  </Button>
+                  <Button
+                    onClick={handleParseText}
+                    disabled={isParsing}
+                    className="gap-2 bg-indigo-600 hover:bg-indigo-700 text-white"
+                  >
+                    {parseTextMutation.isPending ? (
+                      <>
+                        <Spinner className="w-4 h-4" /> Memproses dengan AI...
+                      </>
+                    ) : (
+                      <>
+                        <Upload className="w-4 h-4" /> Parse & Ekstrak CV
+                      </>
+                    )}
+                  </Button>
+                </div>
+              </TabsContent>
+            </Tabs>
           </div>
         ) : (
-          <div className="space-y-4 pt-2">
-            <div className="space-y-2">
-              <Label htmlFor="cvTitle">Name this CV</Label>
+          /* RESULT PREVIEW & CONFIRMATION */
+          <div className="space-y-4 pt-1">
+            <div className="space-y-1.5">
+              <Label htmlFor="cvTitle" className="font-semibold text-gray-900">
+                Judul CV Baru
+              </Label>
               <Input
                 id="cvTitle"
                 value={cvTitle}
                 onChange={e => setCvTitle(e.target.value)}
-                placeholder="e.g. Senior Backend Engineer CV"
+                placeholder="Contoh: CV Irma Iryani - S1 Pendidikan Kimia"
               />
             </div>
 
-            <div className="p-4 border rounded-xl bg-gray-50/70 space-y-3 text-xs">
-              <div className="flex items-center gap-2 text-emerald-700 font-bold">
-                <CheckCircle2 className="w-4 h-4" /> Successfully Extracted:
+            <div className="p-4 border rounded-xl bg-slate-50/80 space-y-3.5 text-xs">
+              <div className="flex items-center gap-2 text-emerald-700 font-bold text-sm">
+                <CheckCircle2 className="w-4 h-4" /> Data Berhasil Diekstrak & Siap Digunakan
               </div>
 
               {parsedResult.personalInfo && (
-                <div className="pl-6 border-l-2 border-emerald-500 space-y-1">
-                  <p className="font-semibold text-gray-900">
+                <div className="p-3 bg-white border rounded-lg space-y-1 shadow-sm">
+                  <p className="font-bold text-gray-900 text-sm">
                     {parsedResult.personalInfo.fullName}
-                    {parsedResult.personalInfo.email && ` · ${parsedResult.personalInfo.email}`}
-                    {parsedResult.personalInfo.location && ` · ${parsedResult.personalInfo.location}`}
                   </p>
+                  <div className="flex flex-wrap gap-x-3 gap-y-1 text-gray-600 text-xs">
+                    {parsedResult.personalInfo.email && (
+                      <span>✉️ {parsedResult.personalInfo.email}</span>
+                    )}
+                    {parsedResult.personalInfo.phone && (
+                      <span>📞 {parsedResult.personalInfo.phone}</span>
+                    )}
+                    {parsedResult.personalInfo.location && (
+                      <span>📍 {parsedResult.personalInfo.location}</span>
+                    )}
+                  </div>
                   {parsedResult.personalInfo.professionalSummary && (
-                    <p className="text-gray-600 italic line-clamp-2">
+                    <p className="text-gray-700 italic pt-1 border-t mt-2 text-xs leading-relaxed line-clamp-3">
                       &ldquo;{parsedResult.personalInfo.professionalSummary}&rdquo;
                     </p>
                   )}
                 </div>
               )}
 
-              <div className="grid grid-cols-2 gap-3 pt-2 border-t">
-                <div>
-                  <span className="font-semibold text-gray-700">
-                    Work Experiences: {parsedResult.workExperiences?.length ?? 0}
-                  </span>
-                  <ul className="list-disc pl-4 mt-1 space-y-0.5 text-gray-600">
-                    {parsedResult.workExperiences?.slice(0, 3).map((e: any, i: number) => (
-                      <li key={i} className="truncate">
-                        {e.jobTitle} at {e.company}
-                      </li>
-                    ))}
-                  </ul>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                {/* Experiences */}
+                <div className="p-3 bg-white border rounded-lg">
+                  <div className="flex items-center gap-1.5 font-semibold text-gray-800 mb-2">
+                    <Briefcase className="w-3.5 h-3.5 text-indigo-600" />
+                    Pengalaman ({parsedResult.workExperiences?.length ?? 0})
+                  </div>
+                  {parsedResult.workExperiences?.length > 0 ? (
+                    <ul className="space-y-1.5 text-gray-600">
+                      {parsedResult.workExperiences.slice(0, 3).map((e: any, i: number) => (
+                        <li key={i} className="truncate">
+                          <span className="font-medium text-gray-900">{e.jobTitle}</span>
+                          <span className="text-gray-500"> • {e.company}</span>
+                        </li>
+                      ))}
+                      {parsedResult.workExperiences.length > 3 && (
+                        <li className="text-gray-400 italic">
+                          +{parsedResult.workExperiences.length - 3} lainnya
+                        </li>
+                      )}
+                    </ul>
+                  ) : (
+                    <span className="text-gray-400 italic">Tidak ada</span>
+                  )}
                 </div>
 
-                <div>
-                  <span className="font-semibold text-gray-700">
-                    Education & Degrees: {parsedResult.educations?.length ?? 0}
-                  </span>
-                  <ul className="list-disc pl-4 mt-1 space-y-0.5 text-gray-600">
-                    {parsedResult.educations?.slice(0, 2).map((edu: any, i: number) => (
-                      <li key={i} className="truncate">
-                        {edu.degree} - {edu.school}
-                      </li>
-                    ))}
-                  </ul>
+                {/* Educations */}
+                <div className="p-3 bg-white border rounded-lg">
+                  <div className="flex items-center gap-1.5 font-semibold text-gray-800 mb-2">
+                    <GraduationCap className="w-3.5 h-3.5 text-indigo-600" />
+                    Pendidikan ({parsedResult.educations?.length ?? 0})
+                  </div>
+                  {parsedResult.educations?.length > 0 ? (
+                    <ul className="space-y-1.5 text-gray-600">
+                      {parsedResult.educations.slice(0, 2).map((edu: any, i: number) => (
+                        <li key={i} className="truncate">
+                          <span className="font-medium text-gray-900">{edu.degree}</span>
+                          <span className="text-gray-500"> • {edu.school}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <span className="text-gray-400 italic">Tidak ada</span>
+                  )}
                 </div>
               </div>
 
+              {/* Skills */}
               {parsedResult.skills && parsedResult.skills.length > 0 && (
-                <div className="pt-2 border-t">
-                  <span className="font-semibold text-gray-700 block mb-1">
-                    Skills ({parsedResult.skills.length}):
-                  </span>
+                <div className="p-3 bg-white border rounded-lg">
+                  <div className="flex items-center gap-1.5 font-semibold text-gray-800 mb-1.5">
+                    <Layers className="w-3.5 h-3.5 text-indigo-600" />
+                    Keahlian ({parsedResult.skills.length})
+                  </div>
                   <div className="flex flex-wrap gap-1">
-                    {parsedResult.skills.slice(0, 15).map((s: any, i: number) => (
-                      <span key={i} className="px-2 py-0.5 bg-white border rounded text-[11px]">
+                    {parsedResult.skills.slice(0, 16).map((s: any, i: number) => (
+                      <span
+                        key={i}
+                        className="px-2 py-0.5 bg-slate-100 text-slate-700 border rounded text-[11px]"
+                      >
                         {s.skillName}
                       </span>
                     ))}
-                    {parsedResult.skills.length > 15 && (
+                    {parsedResult.skills.length > 16 && (
+                      <span className="text-[11px] text-gray-400 self-center pl-1">
+                        +{parsedResult.skills.length - 16} lainnya
+                      </span>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* Certifications */}
+              {parsedResult.certifications && parsedResult.certifications.length > 0 && (
+                <div className="p-3 bg-white border rounded-lg">
+                  <div className="flex items-center gap-1.5 font-semibold text-gray-800 mb-1.5">
+                    <Award className="w-3.5 h-3.5 text-amber-600" />
+                    Sertifikasi ({parsedResult.certifications.length})
+                  </div>
+                  <div className="flex flex-wrap gap-1.5">
+                    {parsedResult.certifications.slice(0, 4).map((c: any, i: number) => (
+                      <span
+                        key={i}
+                        className="px-2 py-0.5 bg-amber-50 text-amber-900 border border-amber-200 rounded text-[11px] truncate max-w-[280px]"
+                        title={c.certificationName}
+                      >
+                        {c.certificationName}
+                      </span>
+                    ))}
+                    {parsedResult.certifications.length > 4 && (
                       <span className="text-[11px] text-gray-500 self-center">
-                        +{parsedResult.skills.length - 15} more
+                        +{parsedResult.certifications.length - 4} sertifikat lainnya
                       </span>
                     )}
                   </div>
@@ -206,21 +426,22 @@ export default function ImportResumeModal({
                 variant="ghost"
                 size="sm"
                 onClick={() => setParsedResult(null)}
+                disabled={createMutation.isPending}
               >
-                ← Paste Different Text
+                ← Ubah Sumber / Input Ulang
               </Button>
               <Button
                 onClick={handleSave}
                 disabled={createMutation.isPending}
-                className="gap-2 bg-indigo-600 hover:bg-indigo-700 text-white"
+                className="gap-2 bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm"
               >
                 {createMutation.isPending ? (
                   <>
-                    <Spinner className="w-4 h-4" /> Creating CV...
+                    <Spinner className="w-4 h-4" /> Menyimpan & Menyiapkan CV...
                   </>
                 ) : (
                   <>
-                    Create & Edit CV <ArrowRight className="w-4 h-4" />
+                    Buat & Edit CV di Editor <ArrowRight className="w-4 h-4" />
                   </>
                 )}
               </Button>
@@ -231,4 +452,3 @@ export default function ImportResumeModal({
     </Dialog>
   );
 }
-

@@ -42,6 +42,7 @@ import {
   DollarSign,
   FileCode2,
   Mic,
+  MoreHorizontal,
 } from "lucide-react";
 import { toast } from "sonner";
 import {
@@ -415,6 +416,32 @@ export default function CVEditor() {
               </div>
             </div>
 
+            {/* Center: Suite Document Switcher (CV | Cover Letter | Email Draft) */}
+            <div className="hidden xl:flex items-center bg-neutral-100/90 p-1 rounded-xl border border-neutral-200/80 text-xs shadow-2xs">
+              <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-bold bg-white text-neutral-900 shadow-xs cursor-default">
+                <FileText className="w-3.5 h-3.5 text-blue-600" />
+                <span>Curriculum Vitae</span>
+              </span>
+              <button
+                type="button"
+                onClick={() => setShowCoverLetterModal(true)}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-medium text-neutral-600 hover:text-neutral-900 hover:bg-white/60 transition-all cursor-pointer"
+                title="Buka Studio Surat Lamaran Kerja (25 Format)"
+              >
+                <FileCode2 className="w-3.5 h-3.5 text-slate-500" />
+                <span>Surat Lamaran</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setShowEmailDraftModal(true)}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-medium text-neutral-600 hover:text-neutral-900 hover:bg-white/60 transition-all cursor-pointer"
+                title="Buka Generator Draf Email & WhatsApp Pengantar Lamaran"
+              >
+                <Mail className="w-3.5 h-3.5 text-emerald-600" />
+                <span>Draf Email HRD</span>
+              </button>
+            </div>
+
             {/* Right: Actions & Tools */}
             <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
               {/* AI Career Tools Dropdown */}
@@ -455,8 +482,21 @@ export default function CVEditor() {
                       <FileText className="w-4 h-4" />
                     </div>
                     <div>
-                      <p className="text-xs font-semibold text-neutral-900">Cover Letter Generator</p>
-                      <p className="text-[10px] text-neutral-500">Tailored letter from this resume</p>
+                      <p className="text-xs font-semibold text-neutral-900">Studio Surat Lamaran</p>
+                      <p className="text-[10px] text-neutral-500">25 format surat lamaran siap kirim</p>
+                    </div>
+                  </DropdownMenuItem>
+
+                  <DropdownMenuItem
+                    onClick={() => setShowEmailDraftModal(true)}
+                    className="gap-2.5 p-2 rounded-lg cursor-pointer hover:bg-emerald-50"
+                  >
+                    <div className="w-7 h-7 rounded-md bg-emerald-100 text-emerald-700 flex items-center justify-center flex-shrink-0">
+                      <Mail className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <p className="text-xs font-semibold text-neutral-900">Draf Email & WA HRD</p>
+                      <p className="text-[10px] text-neutral-500">Teks pengantar lamaran profesional</p>
                     </div>
                   </DropdownMenuItem>
 
@@ -553,77 +593,14 @@ export default function CVEditor() {
                 </DropdownMenuContent>
               </DropdownMenu>
 
-              {/* Cover Letter Quick Button */}
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setShowCoverLetterModal(true)}
-                className="gap-1.5 border-blue-200 text-blue-700 bg-blue-50/70 hover:bg-blue-100 h-8 sm:h-9 px-2 sm:px-3 rounded-lg"
-                title="Buat Surat Lamaran Kerja (25 Format)"
-              >
-                <FileText className="w-3.5 h-3.5 text-blue-600" />
-                <span className="hidden xl:inline text-xs font-semibold">{t("topbar.cover_letter", "Surat Lamaran")}</span>
-              </Button>
-
-              {/* Email & WA Draft Button */}
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setShowEmailDraftModal(true)}
-                className="gap-1.5 border-emerald-200 text-emerald-700 bg-emerald-50/70 hover:bg-emerald-100 h-8 sm:h-9 px-2 sm:px-3 rounded-lg"
-                title="Buat Teks Email & WhatsApp Pengantar Lamaran Kerja"
-              >
-                <Mail className="w-3.5 h-3.5 text-emerald-600" />
-                <span className="hidden xl:inline text-xs font-semibold">Draf Email HRD</span>
-              </Button>
-
-              {/* Theme & Typography Customizer */}
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setShowStyleModal(true)}
-                className="gap-1.5 border-neutral-200 text-neutral-700 hover:bg-neutral-100 h-8 sm:h-9 px-2 sm:px-3 rounded-lg"
-                title="Customize Accent Color & Typography"
-              >
-                <Palette className="w-3.5 h-3.5 text-neutral-600" />
-                <span className="hidden lg:inline text-xs">{t("topbar.theme", "Theme")}</span>
-              </Button>
-
-              {/* Share Public Modal */}
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setShowShareModal(true)}
-                className="gap-1.5 border-neutral-200 text-neutral-700 hover:bg-neutral-100 h-8 sm:h-9 px-2 sm:px-3 rounded-lg"
-                title="Share Public Link for Recruiters"
-              >
-                <Share2 className="w-3.5 h-3.5 text-blue-600" />
-                <span className="hidden lg:inline text-xs">{t("topbar.share", "Share")}</span>
-              </Button>
-
-              {/* Desktop AI Assistant Toggle */}
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => {
-                  setShowAIChat(v => !v);
-                  if (mobileTab === "chat") setMobileTab("editor");
-                }}
-                className={`hidden lg:inline-flex gap-1.5 h-9 px-3 rounded-lg border-neutral-200 ${
-                  showAIChat ? "bg-neutral-900 text-white hover:bg-neutral-800" : "text-neutral-700 hover:bg-neutral-100"
-                }`}
-              >
-                {showAIChat ? <X className="w-3.5 h-3.5" /> : <Bot className="w-3.5 h-3.5" />}
-                <span className="text-xs font-medium">{t("topbar.ai_chat", "AI Chat")}</span>
-              </Button>
-
               {/* Template Picker Dropdown */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
                     variant="outline"
                     size="sm"
-                    className="gap-1.5 border-neutral-200 text-neutral-700 hover:bg-neutral-100 h-8 sm:h-9 px-2 sm:px-3 rounded-lg max-w-[130px] sm:max-w-none"
+                    className="gap-1.5 border-neutral-200 text-neutral-700 hover:bg-neutral-100 h-8 sm:h-9 px-2 sm:px-3 rounded-lg max-w-[125px] sm:max-w-none"
+                    title="Pilih Desain Template CV"
                   >
                     <Layout className="w-3.5 h-3.5 text-neutral-600 flex-shrink-0" />
                     <span className="truncate text-xs font-medium">
@@ -634,7 +611,7 @@ export default function CVEditor() {
                 </DropdownMenuTrigger>
                 <DropdownMenuContent
                   align="end"
-                  className="w-52 max-h-80 overflow-y-auto rounded-xl p-1 shadow-lg border-neutral-200"
+                  className="w-56 max-h-80 overflow-y-auto rounded-xl p-1 shadow-lg border-neutral-200"
                 >
                   {["Classic", "Professional", "Stylish", "Creative", "Unique"].map(cat => {
                     const catTemplates = ALL_TEMPLATES.filter(t => t.category === cat);
@@ -653,9 +630,8 @@ export default function CVEditor() {
                                 template: t.id,
                               });
                             }}
-                            className={`cursor-pointer rounded-md text-xs py-1.5 px-2.5 flex items-center justify-between ${
-                              template === t.id ? "font-semibold bg-neutral-100 text-neutral-900" : "text-neutral-600"
-                            }`}
+                            className={`cursor-pointer rounded-md text-xs py-1.5 px-2.5 flex items-center justify-between ${template === t.id ? "font-semibold bg-neutral-100 text-neutral-900" : "text-neutral-600"
+                              }`}
                           >
                             <span>{t.label}</span>
                             {template === t.id && (
@@ -666,6 +642,90 @@ export default function CVEditor() {
                       </div>
                     );
                   })}
+                </DropdownMenuContent>
+              </DropdownMenu>
+
+              {/* Theme & Accent Color Customizer */}
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowStyleModal(true)}
+                className="gap-1.5 border-neutral-200 text-neutral-700 hover:bg-neutral-100 h-8 sm:h-9 px-2 sm:px-2.5 rounded-lg hidden md:inline-flex"
+                title="Sesuaikan Warna Aksen & Font Dokumen"
+              >
+                <Palette className="w-3.5 h-3.5 text-neutral-600" />
+                <span className="hidden lg:inline text-xs">{t("topbar.theme", "Tema")}</span>
+              </Button>
+
+              {/* Share Public Modal */}
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowShareModal(true)}
+                className="gap-1.5 border-neutral-200 text-neutral-700 hover:bg-neutral-100 h-8 sm:h-9 px-2 sm:px-2.5 rounded-lg hidden md:inline-flex"
+                title="Bagikan Tautan Online CV untuk HRD"
+              >
+                <Share2 className="w-3.5 h-3.5 text-blue-600" />
+                <span className="hidden lg:inline text-xs">{t("topbar.share", "Bagikan")}</span>
+              </Button>
+
+              {/* Desktop AI Assistant Toggle */}
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  setShowAIChat(v => !v);
+                  if (mobileTab === "chat") setMobileTab("editor");
+                }}
+                className={`hidden lg:inline-flex gap-1.5 h-8 sm:h-9 px-2.5 sm:px-3 rounded-lg border-neutral-200 ${showAIChat ? "bg-neutral-900 text-white hover:bg-neutral-800" : "text-neutral-700 hover:bg-neutral-100"
+                  }`}
+                title="Buka Asisten Chatbot AI"
+              >
+                {showAIChat ? <X className="w-3.5 h-3.5" /> : <Bot className="w-3.5 h-3.5 text-indigo-600" />}
+                <span className="text-xs font-medium">{t("topbar.ai_chat", "AI Chat")}</span>
+              </Button>
+
+              {/* Compact Menu (...) for smaller screens */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="h-8 sm:h-9 w-8 sm:w-9 p-0 text-neutral-600 border-neutral-200 hover:bg-neutral-100 rounded-lg md:hidden"
+                    title="Menu Lainnya"
+                  >
+                    <MoreHorizontal className="w-4 h-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-52 rounded-xl shadow-xl border-neutral-200 p-1.5">
+                  <DropdownMenuItem
+                    onClick={() => setShowCoverLetterModal(true)}
+                    className="gap-2.5 py-2 px-2.5 rounded-lg cursor-pointer text-xs"
+                  >
+                    <FileCode2 className="w-3.5 h-3.5 text-blue-600" />
+                    <span>Surat Lamaran Kerja</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={() => setShowEmailDraftModal(true)}
+                    className="gap-2.5 py-2 px-2.5 rounded-lg cursor-pointer text-xs"
+                  >
+                    <Mail className="w-3.5 h-3.5 text-emerald-600" />
+                    <span>Draf Email & WA HRD</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={() => setShowStyleModal(true)}
+                    className="gap-2.5 py-2 px-2.5 rounded-lg cursor-pointer text-xs"
+                  >
+                    <Palette className="w-3.5 h-3.5 text-neutral-600" />
+                    <span>Warna Tema & Font</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={() => setShowShareModal(true)}
+                    className="gap-2.5 py-2 px-2.5 rounded-lg cursor-pointer text-xs"
+                  >
+                    <Share2 className="w-3.5 h-3.5 text-blue-600" />
+                    <span>Bagikan Tautan CV</span>
+                  </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
 
@@ -765,11 +825,10 @@ export default function CVEditor() {
           <div className="lg:hidden mt-2.5 pt-2 border-t border-neutral-100 flex items-center justify-center gap-1">
             <button
               onClick={() => setMobileTab("editor")}
-              className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 text-xs font-semibold rounded-lg transition-colors ${
-                mobileTab === "editor"
-                  ? "bg-neutral-900 text-white shadow-xs"
-                  : "text-neutral-600 hover:bg-neutral-100"
-              }`}
+              className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 text-xs font-semibold rounded-lg transition-colors ${mobileTab === "editor"
+                ? "bg-neutral-900 text-white shadow-xs"
+                : "text-neutral-600 hover:bg-neutral-100"
+                }`}
             >
               <Pencil className="w-3.5 h-3.5" />
               <span>Form Editor</span>
@@ -777,11 +836,10 @@ export default function CVEditor() {
 
             <button
               onClick={() => setMobileTab("preview")}
-              className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 text-xs font-semibold rounded-lg transition-colors ${
-                mobileTab === "preview"
-                  ? "bg-neutral-900 text-white shadow-xs"
-                  : "text-neutral-600 hover:bg-neutral-100"
-              }`}
+              className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 text-xs font-semibold rounded-lg transition-colors ${mobileTab === "preview"
+                ? "bg-neutral-900 text-white shadow-xs"
+                : "text-neutral-600 hover:bg-neutral-100"
+                }`}
             >
               <Eye className="w-3.5 h-3.5" />
               <span>Live Preview</span>
@@ -789,11 +847,10 @@ export default function CVEditor() {
 
             <button
               onClick={() => setMobileTab("chat")}
-              className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 text-xs font-semibold rounded-lg transition-colors ${
-                mobileTab === "chat"
-                  ? "bg-indigo-600 text-white shadow-xs"
-                  : "text-indigo-700 bg-indigo-50 hover:bg-indigo-100"
-              }`}
+              className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 text-xs font-semibold rounded-lg transition-colors ${mobileTab === "chat"
+                ? "bg-indigo-600 text-white shadow-xs"
+                : "text-indigo-700 bg-indigo-50 hover:bg-indigo-100"
+                }`}
             >
               <Bot className="w-3.5 h-3.5" />
               <span>AI Chat</span>
@@ -810,27 +867,24 @@ export default function CVEditor() {
           - Mobile / Tablet (< lg): Driven by mobileTab switcher (only one visible at a time)
         */}
         <div
-          className={`grid gap-6 ${
-            showAIChat
-              ? "grid-cols-1 lg:grid-cols-12"
-              : "grid-cols-1 lg:grid-cols-12"
-          }`}
+          className={`grid gap-6 ${showAIChat
+            ? "grid-cols-1 lg:grid-cols-12"
+            : "grid-cols-1 lg:grid-cols-12"
+            }`}
         >
           {/* ========================================================================= */}
           {/* LEFT: FORM EDITOR                                                         */}
           {/* ========================================================================= */}
           <div
-            className={`transition-all ${
-              mobileTab !== "editor" ? "hidden lg:block" : "block"
-            } ${
-              showAIChat
+            className={`transition-all ${mobileTab !== "editor" ? "hidden lg:block" : "block"
+              } ${showAIChat
                 ? "lg:col-span-5"
                 : "lg:col-span-7 xl:col-span-7"
-            }`}
+              }`}
           >
             {/* Section Horizontal Pill Selector with Counts */}
-            <div className="mb-5 overflow-x-auto pb-1.5 no-scrollbar">
-              <div className="flex items-center gap-1.5 min-w-max p-1 bg-neutral-200/60 rounded-xl">
+            <div className="mb-5 overflow-x-auto pb-1.5 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+              <div className="flex items-center gap-1.5 min-w-max p-1 bg-neutral-100/90 border border-neutral-200/70 rounded-xl shadow-2xs">
                 {SECTIONS.map(section => {
                   const Icon = section.icon;
                   const count = sectionCounts[section.id] || 0;
@@ -841,21 +895,19 @@ export default function CVEditor() {
                     <button
                       key={section.id}
                       onClick={() => setActiveSection(section.id)}
-                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
-                        isActive
-                          ? "bg-white text-neutral-900 shadow-xs font-semibold"
-                          : "text-neutral-600 hover:text-neutral-900 hover:bg-white/50"
-                      }`}
+                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${isActive
+                        ? "bg-white text-neutral-900 shadow-xs font-semibold"
+                        : "text-neutral-600 hover:text-neutral-900 hover:bg-white/50"
+                        }`}
                     >
                       <Icon className={`w-3.5 h-3.5 ${isActive ? "text-red-600" : "text-neutral-500"}`} />
                       <span>{sectionLabel}</span>
                       {count > 0 && (
                         <span
-                          className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${
-                            isActive
-                              ? "bg-neutral-100 text-neutral-900"
-                              : "bg-neutral-300/70 text-neutral-700"
-                          }`}
+                          className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${isActive
+                            ? "bg-neutral-100 text-neutral-900"
+                            : "bg-neutral-300/70 text-neutral-700"
+                            }`}
                         >
                           {count}
                         </span>
@@ -959,9 +1011,8 @@ export default function CVEditor() {
           {/* ========================================================================= */}
           {((showAIChat && mobileTab !== "preview") || mobileTab === "chat") && (
             <div
-              className={`transition-all ${
-                mobileTab === "chat" ? "block lg:hidden" : "hidden lg:block lg:col-span-3"
-              }`}
+              className={`transition-all ${mobileTab === "chat" ? "block lg:hidden" : "hidden lg:block lg:col-span-3"
+                }`}
             >
               <Card className="p-3.5 border border-neutral-200 bg-white rounded-2xl shadow-xs">
                 <div className="flex items-center justify-between pb-3 mb-3 border-b border-neutral-100">
@@ -1005,13 +1056,11 @@ export default function CVEditor() {
           {/* RIGHT: LIVE PREVIEW                                                       */}
           {/* ========================================================================= */}
           <div
-            className={`transition-all ${
-              mobileTab !== "preview" ? "hidden lg:block" : "block"
-            } ${
-              showAIChat
+            className={`transition-all ${mobileTab !== "preview" ? "hidden lg:block" : "block"
+              } ${showAIChat
                 ? "lg:col-span-4"
                 : "lg:col-span-5 xl:col-span-5"
-            }`}
+              }`}
           >
             <div className="sticky top-20">
               <div id="cv-preview-content">
@@ -1071,13 +1120,13 @@ export default function CVEditor() {
           setPreviewData(prev =>
             prev
               ? {
-                  ...prev,
-                  cv: {
-                    ...prev.cv,
-                    ...(style.accentColor ? { accentColor: style.accentColor } : {}),
-                    ...(style.fontFamily ? { fontFamily: style.fontFamily } : {}),
-                  },
-                }
+                ...prev,
+                cv: {
+                  ...prev.cv,
+                  ...(style.accentColor ? { accentColor: style.accentColor } : {}),
+                  ...(style.fontFamily ? { fontFamily: style.fontFamily } : {}),
+                },
+              }
               : prev
           );
         }}

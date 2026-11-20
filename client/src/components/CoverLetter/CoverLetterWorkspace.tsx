@@ -24,6 +24,13 @@ import {
 } from "@/components/ui/select";
 import { Spinner } from "@/components/ui/spinner";
 import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
   FileText,
   Copy,
   Check,
@@ -45,6 +52,9 @@ import {
   Image as ImageIcon,
   SpellCheck,
   FileCode2,
+  MoreHorizontal,
+  Download,
+  ChevronDown,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -488,142 +498,193 @@ ${letterData.fullName}`;
         }
       `}</style>
 
-      {/* Top Navigation Bar */}
-      <header className="h-14 bg-white border-b border-slate-200 px-4 sm:px-6 flex items-center justify-between shrink-0 shadow-xs z-10">
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-blue-600 text-white flex items-center justify-center shadow-xs">
+      {/* Top Navigation Bar - Clean, Minimalist, Responsive */}
+      <header className="h-14 bg-white border-b border-slate-200 px-3 sm:px-6 flex items-center justify-between shrink-0 shadow-xs z-10 gap-2">
+        {/* Left: Document Title & Cloud Save Status */}
+        <div className="flex items-center gap-2.5 min-w-0">
+          <div className="w-8 h-8 rounded-lg bg-blue-600 text-white flex items-center justify-center shadow-xs shrink-0">
             <FileText className="w-4 h-4" />
           </div>
-          <div>
-            <h1 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-              <span>Surat Lamaran Kerja & Cover Letter</span>
-              <span className="text-[10px] font-semibold bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">
-                25 Format Standar
-              </span>
+          <div className="min-w-0">
+            <div className="flex items-center gap-2 min-w-0">
+              <h1 className="text-xs sm:text-sm font-bold text-slate-900 truncate">
+                Surat Lamaran Kerja
+              </h1>
               {cloudSaved ? (
-                <span className="text-[10px] font-medium bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full flex items-center gap-1">
-                  <Check className="w-3 h-3" /> Tersimpan di Database
+                <span className="text-[10px] font-medium text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full hidden sm:inline-flex items-center gap-1 shrink-0">
+                  <Check className="w-3 h-3 text-emerald-600" /> Tersimpan
                 </span>
               ) : isSavingCloud ? (
-                <span className="text-[10px] text-slate-500 animate-pulse">
-                  Menyimpan ke Cloud...
+                <span className="text-[10px] text-slate-400 animate-pulse hidden sm:inline shrink-0">
+                  Menyimpan...
                 </span>
               ) : null}
-            </h1>
-            <p className="text-[11px] text-slate-500 hidden sm:block">
-              {COVER_LETTER_TEMPLATES.find(t => t.id === selectedTemplate)?.name}
+            </div>
+            <p className="text-[11px] text-slate-500 truncate hidden md:block">
+              {COVER_LETTER_TEMPLATES.find(t => t.id === selectedTemplate)?.name || "Standar Indonesia"}
             </p>
           </div>
         </div>
 
-        {/* Action Controls */}
-        <div className="flex items-center gap-2">
-          {/* Language Switch */}
-          <div className="flex items-center bg-slate-100 p-0.5 rounded-lg border border-slate-200 text-xs">
-            <button
-              onClick={() => setLanguage("id")}
-              className={`px-2 py-1 rounded-md font-semibold transition-all ${language === "id"
-                  ? "bg-white text-slate-900 shadow-xs"
-                  : "text-slate-500 hover:text-slate-900"
-                }`}
-            >
-              ID (Baku)
-            </button>
-            <button
-              onClick={() => setLanguage("en")}
-              className={`px-2 py-1 rounded-md font-semibold transition-all ${language === "en"
-                  ? "bg-white text-slate-900 shadow-xs"
-                  : "text-slate-500 hover:text-slate-900"
-                }`}
-            >
-              EN (Global)
-            </button>
-          </div>
-
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleSyncFromCV}
-            className="text-xs gap-1.5 h-8 border-slate-200 hover:bg-slate-50 text-slate-700 font-medium"
-            title="Sinkronkan nama, kontak, foto, dan posisi terbaru dari CV ke surat ini"
+        {/* Center: Language Switcher */}
+        <div className="flex items-center bg-slate-100 p-0.5 rounded-lg border border-slate-200 text-xs shrink-0">
+          <button
+            onClick={() => setLanguage("id")}
+            className={`px-2 sm:px-2.5 py-1 rounded-md font-semibold transition-all ${
+              language === "id"
+                ? "bg-white text-slate-900 shadow-xs"
+                : "text-slate-500 hover:text-slate-900"
+            }`}
           >
-            <RefreshCw className="w-3.5 h-3.5 text-blue-600" />
-            <span className="hidden lg:inline">Sinkronkan dari CV</span>
-          </Button>
-
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => {
-              const fresh = getInitialCoverLetterData(cvData, defaultRole);
-              setSelectedTemplate("standard-indonesian");
-              setLetterData(fresh);
-              setAttachmentsText((fresh.attachments || []).join("\n"));
-              toast.success("Format surat lamaran di-reset ke template standar baku.");
-            }}
-            className="text-xs gap-1.5 h-8 border-slate-200 hover:bg-slate-50 text-slate-700 font-medium"
-            title="Reset seluruh kolom ke template standar baku"
+            ID <span className="hidden sm:inline">(Baku)</span>
+          </button>
+          <button
+            onClick={() => setLanguage("en")}
+            className={`px-2 sm:px-2.5 py-1 rounded-md font-semibold transition-all ${
+              language === "en"
+                ? "bg-white text-slate-900 shadow-xs"
+                : "text-slate-500 hover:text-slate-900"
+            }`}
           >
-            <RotateCcw className="w-3.5 h-3.5 text-slate-500" />
-            <span className="hidden sm:inline">Reset Standar</span>
-          </Button>
+            EN <span className="hidden sm:inline">(Global)</span>
+          </button>
+        </div>
 
+        {/* Right: Consolidated Tools & Actions */}
+        <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+          {/* AI EYD & Kesopanan */}
           <Button
             variant="outline"
             size="sm"
             onClick={() => setShowGrammarModal(true)}
-            className="text-xs gap-1.5 h-8 border-purple-200 text-purple-700 bg-purple-50/70 hover:bg-purple-100 font-medium"
+            className="text-xs gap-1.5 h-8 sm:h-9 border-purple-200 text-purple-700 bg-purple-50/70 hover:bg-purple-100 font-semibold rounded-lg px-2 sm:px-3"
             title="Periksa kaidah EYD V, kesopanan salam, dan perbaiki ejaan tidak baku otomatis"
           >
-            <SpellCheck className="w-3.5 h-3.5 text-purple-600" />
-            <span className="hidden md:inline">Periksa EYD</span>
+            <Sparkles className="w-3.5 h-3.5 text-purple-600 shrink-0" />
+            <span className="hidden sm:inline">Periksa EYD</span>
           </Button>
 
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleCopyText}
-            className="text-xs gap-1.5 h-8 border-slate-200"
-          >
-            {copied ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
-            <span className="hidden md:inline">{copied ? "Tersalin!" : "Salin Teks"}</span>
-          </Button>
+          {/* Opsi & Aksi Tambahan Dropdown (...) */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-8 sm:h-9 w-8 sm:w-9 p-0 text-slate-600 border-slate-200 hover:bg-slate-100 rounded-lg"
+                title="Menu & Opsi Tambahan"
+              >
+                <MoreHorizontal className="w-4 h-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-60 rounded-xl shadow-xl border-slate-200 p-1.5">
+              <DropdownMenuItem
+                onClick={handleSyncFromCV}
+                className="gap-2.5 py-2 px-2.5 rounded-lg cursor-pointer text-xs"
+              >
+                <div className="w-6 h-6 rounded-md bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
+                  <RefreshCw className="w-3.5 h-3.5" />
+                </div>
+                <div>
+                  <p className="font-semibold text-slate-900">Sinkronkan dari CV</p>
+                  <p className="text-[10px] text-slate-500">Ambil profil & kontak terbaru</p>
+                </div>
+              </DropdownMenuItem>
 
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleExportDOCX}
-            className="text-xs gap-1.5 h-8 border-blue-200 text-blue-700 bg-blue-50/70 hover:bg-blue-100 font-medium"
-            title="Unduh dokumen Microsoft Word (.docx) agar bisa diedit di Word / WPS"
-          >
-            <FileCode2 className="w-3.5 h-3.5 text-blue-600" />
-            <span className="hidden sm:inline">Unduh Word (.docx)</span>
-          </Button>
+              <DropdownMenuItem
+                onClick={handleCopyText}
+                className="gap-2.5 py-2 px-2.5 rounded-lg cursor-pointer text-xs"
+              >
+                <div className="w-6 h-6 rounded-md bg-slate-100 text-slate-600 flex items-center justify-center shrink-0">
+                  {copied ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
+                </div>
+                <div>
+                  <p className="font-semibold text-slate-900">{copied ? "Tersalin!" : "Salin Teks Surat"}</p>
+                  <p className="text-[10px] text-slate-500">Salin naskah ke clipboard</p>
+                </div>
+              </DropdownMenuItem>
 
-          <Button
-            size="sm"
-            onClick={handleExportBundle}
-            className="text-xs gap-1.5 h-8 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold shadow-xs"
-            title="Gabungkan Surat Lamaran (Halaman 1) dan CV (Halaman 2) menjadi 1 file PDF siap kirim"
-          >
-            <FileText className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">Paket Komplit (Surat + CV 1 PDF)</span>
-            <span className="sm:hidden">Paket 1 PDF</span>
-          </Button>
+              <DropdownMenuSeparator />
 
-          <Button
-            size="sm"
-            onClick={handleExportPDF}
-            className="text-xs gap-1.5 h-8 bg-blue-600 hover:bg-blue-700 text-white font-semibold shadow-xs"
-          >
-            <Printer className="w-3.5 h-3.5" />
-            <span>Unduh Surat Saja</span>
-          </Button>
+              <DropdownMenuItem
+                onClick={() => {
+                  const fresh = getInitialCoverLetterData(cvData, defaultRole);
+                  setSelectedTemplate("standard-indonesian");
+                  setLetterData(fresh);
+                  setAttachmentsText((fresh.attachments || []).join("\n"));
+                  toast.success("Format surat lamaran di-reset ke template standar baku.");
+                }}
+                className="gap-2.5 py-2 px-2.5 rounded-lg cursor-pointer text-xs text-rose-600 hover:text-rose-700 hover:bg-rose-50"
+              >
+                <div className="w-6 h-6 rounded-md bg-rose-50 text-rose-600 flex items-center justify-center shrink-0">
+                  <RotateCcw className="w-3.5 h-3.5" />
+                </div>
+                <div>
+                  <p className="font-semibold">Reset ke Format Standar</p>
+                  <p className="text-[10px] text-rose-400">Kembalikan ke naskah baku awal</p>
+                </div>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
 
+          {/* UNIFIED DOWNLOAD DROPDOWN (PDF, Paket Komplit, Word .docx) */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                size="sm"
+                className="gap-1.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold h-8 sm:h-9 px-2.5 sm:px-3.5 rounded-lg shadow-sm"
+              >
+                <Download className="w-3.5 h-3.5" />
+                <span className="text-xs">Unduh</span>
+                <ChevronDown className="w-3 h-3 opacity-60" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-64 p-1.5 rounded-xl shadow-xl border-slate-200">
+              <DropdownMenuItem
+                onClick={handleExportPDF}
+                className="gap-2.5 p-2 rounded-lg cursor-pointer hover:bg-blue-50"
+              >
+                <div className="w-7 h-7 rounded-md bg-blue-100 text-blue-700 flex items-center justify-center shrink-0">
+                  <Printer className="w-4 h-4" />
+                </div>
+                <div>
+                  <p className="text-xs font-bold text-slate-900">Format PDF (Surat Saja)</p>
+                  <p className="text-[10px] text-slate-500">A4 standar siap cetak atau lampirkan</p>
+                </div>
+              </DropdownMenuItem>
+
+              <DropdownMenuItem
+                onClick={handleExportBundle}
+                className="gap-2.5 p-2 rounded-lg cursor-pointer hover:bg-emerald-50"
+              >
+                <div className="w-7 h-7 rounded-md bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
+                  <FileText className="w-4 h-4" />
+                </div>
+                <div>
+                  <p className="text-xs font-bold text-slate-900">Paket Komplit (Surat + CV 1 PDF)</p>
+                  <p className="text-[10px] text-slate-500">Hal 1 Surat + Hal 2 CV dalam 1 file</p>
+                </div>
+              </DropdownMenuItem>
+
+              <DropdownMenuItem
+                onClick={handleExportDOCX}
+                className="gap-2.5 p-2 rounded-lg cursor-pointer hover:bg-indigo-50"
+              >
+                <div className="w-7 h-7 rounded-md bg-indigo-100 text-indigo-700 flex items-center justify-center shrink-0">
+                  <FileCode2 className="w-4 h-4" />
+                </div>
+                <div>
+                  <p className="text-xs font-bold text-slate-900">Format Microsoft Word (.docx)</p>
+                  <p className="text-[10px] text-slate-500">Bisa diedit di MS Word / WPS Office</p>
+                </div>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          {/* Close Modal Button */}
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-lg hover:bg-slate-100 flex items-center justify-center text-slate-500 hover:text-slate-900 ml-1 transition-colors"
-            title="Tutup"
+            className="w-8 h-8 rounded-lg hover:bg-slate-100 flex items-center justify-center text-slate-500 hover:text-slate-900 ml-0.5 sm:ml-1 transition-colors"
+            title="Tutup Workspace"
           >
             <X className="w-5 h-5" />
           </button>

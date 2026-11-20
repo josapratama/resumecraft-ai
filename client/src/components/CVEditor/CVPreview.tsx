@@ -148,9 +148,8 @@ export default function CVPreview({
     const updateFit = () => {
       if (!containerRef.current) return;
       const containerWidth = containerRef.current.clientWidth;
-      if (containerWidth <= 0) return;
       const padding = containerWidth < 500 ? 16 : 32;
-      const availableWidth = Math.max(220, containerWidth - padding);
+      const availableWidth = Math.max(260, containerWidth - padding);
       if (availableWidth < targetWidthPx) {
         const calculated = Math.max(30, Math.floor((availableWidth / targetWidthPx) * 100));
         setZoom(calculated);
@@ -160,17 +159,8 @@ export default function CVPreview({
     };
 
     updateFit();
-    const observer = new ResizeObserver(() => {
-      updateFit();
-    });
-    if (containerRef.current) {
-      observer.observe(containerRef.current);
-    }
     window.addEventListener("resize", updateFit);
-    return () => {
-      observer.disconnect();
-      window.removeEventListener("resize", updateFit);
-    };
+    return () => window.removeEventListener("resize", updateFit);
   }, [isAutoFit, targetWidthPx]);
 
   const handleZoomIn = () => {
@@ -215,11 +205,10 @@ export default function CVPreview({
             <button
               type="button"
               onClick={() => onPaperSizeChange?.("a4")}
-              className={`px-2 py-0.5 text-[10px] rounded-full font-medium transition-all ${
-                paperSize === "a4"
-                  ? "bg-slate-700 text-white shadow-2xs font-semibold"
-                  : "text-slate-400 hover:text-slate-200"
-              }`}
+              className={`px-2 py-0.5 text-[10px] rounded-full font-medium transition-all ${paperSize === "a4"
+                ? "bg-slate-700 text-white shadow-2xs font-semibold"
+                : "text-slate-400 hover:text-slate-200"
+                }`}
               title="Ukuran Kertas Standar Internasional A4 (210 x 297 mm)"
             >
               A4
@@ -227,11 +216,10 @@ export default function CVPreview({
             <button
               type="button"
               onClick={() => onPaperSizeChange?.("letter")}
-              className={`px-2 py-0.5 text-[10px] rounded-full font-medium transition-all ${
-                paperSize === "letter"
-                  ? "bg-slate-700 text-white shadow-2xs font-semibold"
-                  : "text-slate-400 hover:text-slate-200"
-              }`}
+              className={`px-2 py-0.5 text-[10px] rounded-full font-medium transition-all ${paperSize === "letter"
+                ? "bg-slate-700 text-white shadow-2xs font-semibold"
+                : "text-slate-400 hover:text-slate-200"
+                }`}
               title="Ukuran Kertas Standar AS Letter (8.5 x 11 inch)"
             >
               Letter
@@ -270,11 +258,10 @@ export default function CVPreview({
             size="sm"
             variant="ghost"
             onClick={() => setIsOnePageMode(!isOnePageMode)}
-            className={`h-6 px-2 text-[10px] gap-1 rounded-full font-semibold transition-all shrink-0 ${
-              isOnePageMode
-                ? "bg-emerald-600 text-white hover:bg-emerald-700 shadow-xs"
-                : "text-slate-300 hover:text-white hover:bg-slate-800 border border-slate-700"
-            }`}
+            className={`h-6 px-2 text-[10px] gap-1 rounded-full font-semibold transition-all shrink-0 ${isOnePageMode
+              ? "bg-emerald-600 text-white hover:bg-emerald-700 shadow-xs"
+              : "text-slate-300 hover:text-white hover:bg-slate-800 border border-slate-700"
+              }`}
             title={t("preview_bar.compact_tooltip", `Padatkan konten CV agar pas di 1 lembar ${paperSize.toUpperCase()}`)}
           >
             <FileCheck className="w-3 h-3 text-emerald-400" />
@@ -354,9 +341,8 @@ export default function CVPreview({
                       key={sz}
                       type="button"
                       onClick={() => setFontSizePercent(sz)}
-                      className={`py-1 text-[10px] rounded font-semibold transition-all ${
-                        fontSizePercent === sz ? "bg-cyan-600 text-white" : "bg-slate-800 text-slate-300 hover:bg-slate-700"
-                      }`}
+                      className={`py-1 text-[10px] rounded font-semibold transition-all ${fontSizePercent === sz ? "bg-cyan-600 text-white" : "bg-slate-800 text-slate-300 hover:bg-slate-700"
+                        }`}
                     >
                       {sz}%
                     </button>
@@ -377,9 +363,8 @@ export default function CVPreview({
                       key={sp.id}
                       type="button"
                       onClick={() => setLineSpacing(sp.id as any)}
-                      className={`py-1 text-[10px] rounded font-semibold transition-all ${
-                        lineSpacing === sp.id ? "bg-cyan-600 text-white" : "bg-slate-800 text-slate-300 hover:bg-slate-700"
-                      }`}
+                      className={`py-1 text-[10px] rounded font-semibold transition-all ${lineSpacing === sp.id ? "bg-cyan-600 text-white" : "bg-slate-800 text-slate-300 hover:bg-slate-700"
+                        }`}
                     >
                       {sp.label}
                     </button>
@@ -394,11 +379,10 @@ export default function CVPreview({
               size="sm"
               variant="ghost"
               onClick={() => setShowPageBreakGuide(!showPageBreakGuide)}
-              className={`h-6 px-2 text-[10px] gap-1 rounded-full font-semibold transition-all shrink-0 ${
-                showPageBreakGuide
-                  ? "bg-slate-800 text-blue-300 border border-blue-500/50 shadow-2xs"
-                  : "text-slate-400 hover:text-slate-200 border border-slate-700"
-              }`}
+              className={`h-6 px-2 text-[10px] gap-1 rounded-full font-semibold transition-all shrink-0 ${showPageBreakGuide
+                ? "bg-slate-800 text-blue-300 border border-blue-500/50 shadow-2xs"
+                : "text-slate-400 hover:text-slate-200 border border-slate-700"
+                }`}
               title="Garis pembatas lembar halaman cetak"
             >
               <Scissors className="w-3 h-3 text-blue-400" />
@@ -446,11 +430,10 @@ export default function CVPreview({
             size="sm"
             variant="ghost"
             onClick={handleFitScreen}
-            className={`h-6 px-2 text-[10px] gap-1 rounded-md transition-all ${
-              isAutoFit
-                ? "bg-blue-600 text-white font-bold"
-                : "text-slate-300 hover:text-white hover:bg-slate-800"
-            }`}
+            className={`h-6 px-2 text-[10px] gap-1 rounded-md transition-all ${isAutoFit
+              ? "bg-blue-600 text-white font-bold"
+              : "text-slate-300 hover:text-white hover:bg-slate-800"
+              }`}
             title={t("preview_bar.fit_tooltip", "Fit to Screen (Paskan ke Layar)")}
           >
             <Maximize2 className="w-3 h-3" />
@@ -462,30 +445,28 @@ export default function CVPreview({
       {/* Document Preview Container with Content-Aware Scaling */}
       <div
         ref={containerRef}
-        className="bg-neutral-200/60 cv-scroll-wrapper overflow-auto p-1.5 sm:p-4 min-h-[440px] max-h-none lg:max-h-[calc(100vh-140px)]"
+        className="bg-neutral-200/60 cv-scroll-wrapper overflow-auto flex items-start justify-center p-1 sm:p-4 min-h-[440px] max-h-none lg:max-h-[calc(100vh-140px)]"
       >
         {/* Layout boundary matches visual scaled size so NO horizontal overflow happens on mobile */}
         <div
-          className="relative transition-all duration-150 block shrink-0 mx-auto"
+          className="relative transition-all duration-150 block shrink-0"
           style={{
             width: `${Math.ceil(targetWidthPx * (zoom / 100))}px`,
             height: `${Math.ceil(docHeight * (zoom / 100))}px`,
           }}
         >
           <div
-            className="transition-transform duration-150"
+            className="transition-transform duration-150 origin-top-left"
             style={{
               transform: `scale(${zoom / 100})`,
-              transformOrigin: "top left",
               width: `${targetWidthPx}px`,
             }}
           >
             {/* Document Root with Paper Size */}
             <div
               ref={templateRef}
-              className={`cv-template-root relative bg-white shadow-2xl rounded-xs overflow-hidden ${
-                isOnePageMode ? "cv-one-page-compact" : ""
-              }`}
+              className={`cv-template-root relative bg-white shadow-2xl mx-auto rounded-xs overflow-hidden ${isOnePageMode ? "cv-one-page-compact" : ""
+                }`}
               style={{
                 width: `${targetWidthPx}px`,
                 minHeight: `${targetHeightPx}px`,
@@ -496,37 +477,37 @@ export default function CVPreview({
                 ['--accent-color' as any]: accentColor,
               }}
             >
-            {/* Visual Page-Break Guide (Visible in Studio Preview, Hidden on Print) */}
-            {showPageBreakGuide && docHeight > targetHeightPx + 15 && (
-              <div
-                className="absolute left-0 right-0 pointer-events-none z-30 print:hidden"
-                style={{ top: `${targetHeightPx}px` }}
-              >
-                <div className="w-full border-b-2 border-dashed border-red-500/70 relative">
-                  <span className="absolute right-3 -top-2.5 px-2 py-0.5 rounded-full text-[9px] font-bold bg-red-600 text-white shadow-2xs uppercase tracking-wider flex items-center gap-1">
-                    <span>✂️ Batas Halaman 1 ({paperSize.toUpperCase()})</span>
-                  </span>
+              {/* Visual Page-Break Guide (Visible in Studio Preview, Hidden on Print) */}
+              {showPageBreakGuide && docHeight > targetHeightPx + 15 && (
+                <div
+                  className="absolute left-0 right-0 pointer-events-none z-30 print:hidden"
+                  style={{ top: `${targetHeightPx}px` }}
+                >
+                  <div className="w-full border-b-2 border-dashed border-red-500/70 relative">
+                    <span className="absolute right-3 -top-2.5 px-2 py-0.5 rounded-full text-[9px] font-bold bg-red-600 text-white shadow-2xs uppercase tracking-wider flex items-center gap-1">
+                      <span>{t("preview_bar.page_break_1", "✂️ Batas Halaman 1 ({paper})").replace("{paper}", paperSize.toUpperCase())}</span>
+                    </span>
+                  </div>
                 </div>
-              </div>
-            )}
-            {showPageBreakGuide && docHeight > targetHeightPx * 2 + 15 && (
-              <div
-                className="absolute left-0 right-0 pointer-events-none z-30 print:hidden"
-                style={{ top: `${targetHeightPx * 2}px` }}
-              >
-                <div className="w-full border-b-2 border-dashed border-red-500/70 relative">
-                  <span className="absolute right-3 -top-2.5 px-2 py-0.5 rounded-full text-[9px] font-bold bg-red-600 text-white shadow-2xs uppercase tracking-wider flex items-center gap-1">
-                    <span>✂️ Batas Halaman 2 ({paperSize.toUpperCase()})</span>
-                  </span>
+              )}
+              {showPageBreakGuide && docHeight > targetHeightPx * 2 + 15 && (
+                <div
+                  className="absolute left-0 right-0 pointer-events-none z-30 print:hidden"
+                  style={{ top: `${targetHeightPx * 2}px` }}
+                >
+                  <div className="w-full border-b-2 border-dashed border-red-500/70 relative">
+                    <span className="absolute right-3 -top-2.5 px-2 py-0.5 rounded-full text-[9px] font-bold bg-red-600 text-white shadow-2xs uppercase tracking-wider flex items-center gap-1">
+                      <span>{t("preview_bar.page_break_2", "✂️ Batas Halaman 2 ({paper})").replace("{paper}", paperSize.toUpperCase())}</span>
+                    </span>
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
 
-            <TemplateComponent cvData={cvData} />
+              <TemplateComponent cvData={cvData} />
+            </div>
           </div>
         </div>
       </div>
-    </div>
-  </Card>
+    </Card>
   );
 }

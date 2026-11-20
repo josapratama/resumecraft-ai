@@ -122,6 +122,94 @@ export default function ImportResumeModal({
 
   const handleFileSelect = (file: File) => {
     setSelectedFile(file);
+
+    // If file is .json, check if standard JSON Resume or ResumeCraft backup
+    if (file.name.endsWith(".json")) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        try {
+          const parsed = JSON.parse(reader.result as string);
+          if (parsed.basics || parsed.work || parsed.skills) {
+            // Convert standard JSON Resume schema
+            const converted = {
+              personalInfo: {
+                fullName: parsed.basics?.name || "",
+                email: parsed.basics?.email || "",
+                phone: parsed.basics?.phone || "",
+                location: parsed.basics?.location?.address || parsed.basics?.location?.city || "",
+                professionalSummary: parsed.basics?.summary || "",
+                photoUrl: parsed.basics?.image || "",
+              },
+              targetRole: parsed.basics?.label || "",
+              portfolioUrl: parsed.basics?.url || "",
+              workExperiences: (parsed.work || []).map((w: any) => ({
+                jobTitle: w.position || "",
+                company: w.name || "",
+                startDate: w.startDate || "",
+                endDate: w.endDate === "Present" ? "" : (w.endDate || ""),
+                isCurrent: w.endDate === "Present",
+                description: w.summary || (w.highlights || []).join("\n"),
+              })),
+              educations: (parsed.education || []).map((e: any) => ({
+                school: e.institution || "",
+                degree: e.studyType || "",
+                field: e.area || "",
+                graduationDate: e.endDate || "",
+                gpa: e.score || "",
+              })),
+              skills: (parsed.skills || []).flatMap((s: any) => {
+                if (s.keywords && s.keywords.length > 0) {
+                  return s.keywords.map((kw: string) => ({
+                    skillName: kw,
+                    category: s.name || "Technical & Core Skills",
+                    proficiency: "intermediate",
+                  }));
+                }
+                return [{ skillName: s.name, category: "Technical & Core Skills", proficiency: "intermediate" }];
+              }),
+              projects: (parsed.projects || []).map((pr: any) => ({
+                projectName: pr.name || "",
+                description: pr.description || "",
+                link: pr.url || "",
+                technologies: (pr.keywords || []).join(", "),
+              })),
+              certifications: (parsed.certificates || []).map((c: any) => ({
+                name: c.name || "",
+                issuer: c.issuer || "",
+                issueDate: c.date || "",
+                credentialUrl: c.url || "",
+              })),
+              languages: (parsed.languages || []).map((l: any) => ({
+                language: l.language || "",
+                proficiency: l.fluency || "intermediate",
+              })),
+              customSections: (parsed.awards || []).map((aw: any) => ({
+                title: aw.title || "",
+                subtitle: aw.awarder || "",
+                date: aw.date || "",
+                description: aw.summary || "",
+                category: "Awards & Honors",
+              })),
+            };
+            setParsedResult(converted);
+            setCvTitle(converted.personalInfo.fullName ? `CV ${converted.personalInfo.fullName}` : "CV dari JSON Resume");
+            toast.success("Standar JSON Resume berhasil dibaca dan siap disimpan!");
+            return;
+          } else if (parsed.cv && parsed.personalInfo) {
+            // ResumeCraft backup format
+            setParsedResult(parsed);
+            setCvTitle(parsed.cv?.title || "CV dari Backup");
+            toast.success("File cadangan resume berhasil dibaca!");
+            return;
+          }
+        } catch (e) {
+          // not json, continue
+        }
+      };
+      reader.readAsText(file);
+      return;
+    }
+
     const reader = new FileReader();
     reader.onload = () => {
       setFileBase64(reader.result as string);
@@ -218,7 +306,7 @@ export default function ImportResumeModal({
                 <div className="border-2 border-dashed border-neutral-300 hover:border-indigo-500 rounded-2xl p-6 text-center bg-neutral-50/60 hover:bg-indigo-50/30 transition-all cursor-pointer relative">
                   <input
                     type="file"
-                    accept=".pdf,.doc,.docx,.txt"
+                    accept=".pdf,.doc,.docx,.txt,.json"
                     onChange={e => {
                       const file = e.target.files?.[0];
                       if (file) handleFileSelect(file);
@@ -238,10 +326,10 @@ export default function ImportResumeModal({
                   ) : (
                     <div>
                       <p className="text-xs font-semibold text-neutral-800">
-                        {t("import_modal.dropzone_text", "Klik atau seret file PDF resume ke area ini")}
+                        {t("import_modal.dropzone_text", "Klik atau seret file PDF / JSON Resume ke area ini")}
                       </p>
                       <p className="text-[11px] text-neutral-400 mt-1">
-                        {t("import_modal.dropzone_formats", "Mendukung PDF, DOCX, atau teks (maks 10 MB)")}
+                        {t("import_modal.dropzone_formats", "Mendukung PDF, DOCX, TXT, atau JSON Resume (maks 10 MB)")}
                       </p>
                     </div>
                   )}

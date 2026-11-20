@@ -414,191 +414,191 @@ export default function Home() {
                 </div>
               </div>
 
-          {/* Right Live Interactive Mockup Card */}
-          <div className="flex-1 w-full max-w-lg">
-            <div className="relative">
-              {/* Glow backdrop */}
-              <div className="absolute -inset-1.5 bg-gradient-to-r from-red-600 to-amber-500 rounded-3xl blur-xl opacity-30 animate-pulse" />
+              {/* Right Live Interactive Mockup Card */}
+              <div className="flex-1 w-full max-w-lg">
+                <div className="relative">
+                  {/* Glow backdrop */}
+                  <div className="absolute -inset-1.5 bg-gradient-to-r from-red-600 to-amber-500 rounded-3xl blur-xl opacity-30 animate-pulse" />
 
-              {/* Card Container */}
-              <div className="relative bg-neutral-900 border border-neutral-800 rounded-3xl p-6 sm:p-7 shadow-2xl space-y-5">
-                {/* Header Mockup */}
-                <div className="flex items-center justify-between pb-4 border-b border-neutral-800">
-                  <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-red-600 to-rose-700 flex items-center justify-center text-white font-black text-base shadow-md">
-                      JS
-                    </div>
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <h3 className="font-bold text-white text-base">Josa Pratama</h3>
-                        <Badge className="bg-emerald-950 text-emerald-400 border border-emerald-800 text-[10px] py-0 px-1.5">
-                          Terverifikasi
-                        </Badge>
+                  {/* Card Container */}
+                  <div className="relative bg-neutral-900 border border-neutral-800 rounded-3xl p-6 sm:p-7 shadow-2xl space-y-5">
+                    {/* Header Mockup */}
+                    <div className="flex items-center justify-between pb-4 border-b border-neutral-800">
+                      <div className="flex items-center gap-3">
+                        <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-red-600 to-rose-700 flex items-center justify-center text-white font-black text-base shadow-md">
+                          JS
+                        </div>
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <h3 className="font-bold text-white text-base">Josa Pratama</h3>
+                            <Badge className="bg-emerald-950 text-emerald-400 border border-emerald-800 text-[10px] py-0 px-1.5">
+                              Terverifikasi
+                            </Badge>
+                          </div>
+                          <p className="text-xs text-neutral-400">Senior Fullstack Software Engineer</p>
+                        </div>
                       </div>
-                      <p className="text-xs text-neutral-400">Senior Fullstack Software Engineer</p>
+
+                      <div className="text-right">
+                        <span className="inline-block px-2.5 py-1 bg-emerald-500/10 border border-emerald-500/30 rounded-lg text-emerald-400 font-black text-xs">
+                          98% ATS Skor
+                        </span>
+                        <span className="block text-[10px] text-neutral-500 mt-0.5">Sangat Siap Kerja</span>
+                      </div>
                     </div>
-                  </div>
 
-                  <div className="text-right">
-                    <span className="inline-block px-2.5 py-1 bg-emerald-500/10 border border-emerald-500/30 rounded-lg text-emerald-400 font-black text-xs">
-                      98% ATS Skor
-                    </span>
-                    <span className="block text-[10px] text-neutral-500 mt-0.5">Sangat Siap Kerja</span>
-                  </div>
-                </div>
+                    {/* Work Experience Item with STAR indicator */}
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between text-xs font-bold text-neutral-400 uppercase tracking-wider">
+                        <span>Pengalaman Kerja (Formula STAR)</span>
+                        <span className="text-[10px] text-amber-400 font-semibold">AI Optimized</span>
+                      </div>
 
-                {/* Work Experience Item with STAR indicator */}
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between text-xs font-bold text-neutral-400 uppercase tracking-wider">
-                    <span>Pengalaman Kerja (Formula STAR)</span>
-                    <span className="text-[10px] text-amber-400 font-semibold">AI Optimized</span>
-                  </div>
-
-                  <div className="p-3.5 bg-neutral-950/70 border border-neutral-800/80 rounded-xl space-y-1.5">
-                    <div className="flex justify-between items-center text-xs">
-                      <span className="font-bold text-white">Lead Distributed Systems Engineer</span>
-                      <span className="text-neutral-500 text-[11px]">2022 - Sekarang</span>
+                      <div className="p-3.5 bg-neutral-950/70 border border-neutral-800/80 rounded-xl space-y-1.5">
+                        <div className="flex justify-between items-center text-xs">
+                          <span className="font-bold text-white">Lead Distributed Systems Engineer</span>
+                          <span className="text-neutral-500 text-[11px]">2022 - Sekarang</span>
+                        </div>
+                        <p className="text-xs text-neutral-400 leading-relaxed">
+                          • Merancang arsitektur microservices terdistribusi dengan Go & PostgreSQL yang memproses 120M+ event/hari dengan latensi p99 &lt; 45ms.
+                        </p>
+                        <p className="text-xs text-neutral-400 leading-relaxed">
+                          • Mengoptimalkan pipeline CI/CD Kubernetes yang memangkas waktu build sebesar 64% dan meningkatkan deployment frekuensi 3x.
+                        </p>
+                      </div>
                     </div>
-                    <p className="text-xs text-neutral-400 leading-relaxed">
-                      • Merancang arsitektur microservices terdistribusi dengan Go & PostgreSQL yang memproses 120M+ event/hari dengan latensi p99 &lt; 45ms.
-                    </p>
-                    <p className="text-xs text-neutral-400 leading-relaxed">
-                      • Mengoptimalkan pipeline CI/CD Kubernetes yang memangkas waktu build sebesar 64% dan meningkatkan deployment frekuensi 3x.
-                    </p>
-                  </div>
-                </div>
 
-                {/* Skills Matrix */}
-                <div className="space-y-2">
-                  <div className="text-xs font-bold text-neutral-400 uppercase tracking-wider">
-                    Keahlian Kunci Terdeteksi Mesin ATS
-                  </div>
-                  <div className="flex flex-wrap gap-1.5">
-                    {["TypeScript", "Go", "Kubernetes", "PostgreSQL", "Docker", "Kafka", "Redis", "CI/CD"].map((skill) => (
-                      <span
-                        key={skill}
-                        className="px-2.5 py-1 bg-neutral-800/90 border border-neutral-700 text-neutral-200 rounded-lg text-xs font-semibold"
-                      >
-                        {skill}
+                    {/* Skills Matrix */}
+                    <div className="space-y-2">
+                      <div className="text-xs font-bold text-neutral-400 uppercase tracking-wider">
+                        Keahlian Kunci Terdeteksi Mesin ATS
+                      </div>
+                      <div className="flex flex-wrap gap-1.5">
+                        {["TypeScript", "Go", "Kubernetes", "PostgreSQL", "Docker", "Kafka", "Redis", "CI/CD"].map((skill) => (
+                          <span
+                            key={skill}
+                            className="px-2.5 py-1 bg-neutral-800/90 border border-neutral-700 text-neutral-200 rounded-lg text-xs font-semibold"
+                          >
+                            {skill}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Integrated Documents Strip */}
+                    <div className="pt-2 border-t border-neutral-800 flex items-center justify-between text-[11px] text-neutral-400">
+                      <span className="flex items-center gap-1.5 text-neutral-300 font-medium">
+                        <FileCheck2 className="w-3.5 h-3.5 text-purple-400" />
+                        Surat Lamaran Kerja Terhubung
                       </span>
-                    ))}
+                      <span className="flex items-center gap-1.5 text-neutral-300 font-medium">
+                        <QrCode className="w-3.5 h-3.5 text-blue-400" />
+                        QR Code Portofolio
+                      </span>
+                    </div>
                   </div>
-                </div>
-
-                {/* Integrated Documents Strip */}
-                <div className="pt-2 border-t border-neutral-800 flex items-center justify-between text-[11px] text-neutral-400">
-                  <span className="flex items-center gap-1.5 text-neutral-300 font-medium">
-                    <FileCheck2 className="w-3.5 h-3.5 text-purple-400" />
-                    Surat Lamaran Kerja Terhubung
-                  </span>
-                  <span className="flex items-center gap-1.5 text-neutral-300 font-medium">
-                    <QrCode className="w-3.5 h-3.5 text-blue-400" />
-                    QR Code Portofolio
-                  </span>
                 </div>
               </div>
             </div>
-          </div>
-      </div>
           </div >
         </section >
 
-      {/* COMPARISON SECTION: Mengapa Berbeda */ }
-      < section id = "komparasi" className = "py-20 bg-neutral-900/60 border-y border-neutral-800/80" >
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
-          <div className="text-center space-y-3 max-w-2xl mx-auto">
-            <Badge className="bg-red-950 text-red-400 border border-red-800 font-bold uppercase text-[10px]">
-              Perbandingan Nyata
-            </Badge>
-            <h2 className="text-3xl sm:text-4xl font-black text-white tracking-tight">
-              Mengapa ResumeCraft AI Lebih Unggul?
-            </h2>
-            <p className="text-sm text-neutral-400">
-              Banyak pelamar gugur bukan karena kurang kompeten, melainkan karena file CV gagal dibaca oleh robot ATS (Applicant Tracking System) perusahaan.
-            </p>
+        {/* COMPARISON SECTION: Mengapa Berbeda */}
+        < section id="komparasi" className="py-20 bg-neutral-900/60 border-y border-neutral-800/80" >
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+            <div className="text-center space-y-3 max-w-2xl mx-auto">
+              <Badge className="bg-red-950 text-red-400 border border-red-800 font-bold uppercase text-[10px]">
+                Perbandingan Nyata
+              </Badge>
+              <h2 className="text-3xl sm:text-4xl font-black text-white tracking-tight">
+                Mengapa ResumeCraft AI Lebih Unggul?
+              </h2>
+              <p className="text-sm text-neutral-400">
+                Banyak pelamar gugur bukan karena kurang kompeten, melainkan karena file CV gagal dibaca oleh robot ATS (Applicant Tracking System) perusahaan.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {/* Card 1: Template Biasa Canva / Word */}
+              <div className="p-6 rounded-2xl bg-neutral-950 border border-neutral-800 space-y-4">
+                <div className="w-10 h-10 rounded-xl bg-red-950/60 border border-red-900/40 text-red-400 flex items-center justify-center font-bold">
+                  <X className="w-5 h-5" />
+                </div>
+                <h3 className="text-base font-bold text-white">Canva / Word Standar</h3>
+                <p className="text-xs text-neutral-400 leading-relaxed">
+                  Desain grafis warna-warni yang sering menggunakan format tabel rumit, ikon terpisah, dan font non-standar yang sering dibaca sebagai teks acak atau blank oleh ATS.
+                </p>
+                <ul className="space-y-2 text-xs text-neutral-400">
+                  <li className="flex items-center gap-2 text-red-400">
+                    <X className="w-3.5 h-3.5" /> Kolom sering tertukar saat di-parse
+                  </li>
+                  <li className="flex items-center gap-2 text-red-400">
+                    <X className="w-3.5 h-3.5" /> Tidak ada panduan formula STAR
+                  </li>
+                  <li className="flex items-center gap-2 text-red-400">
+                    <X className="w-3.5 h-3.5" /> Terpisah dari surat lamaran kerja
+                  </li>
+                </ul>
+              </div>
+
+              {/* Card 2: ResumeCraft AI (Featured) */}
+              <div className="p-6 rounded-2xl bg-gradient-to-b from-neutral-900 to-neutral-950 border-2 border-red-600 shadow-xl shadow-red-600/10 space-y-4 relative">
+                <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-red-600 text-white text-[10px] font-black uppercase tracking-wider px-3 py-0.5 rounded-full shadow">
+                  Direkomendasikan HRD
+                </div>
+                <div className="w-10 h-10 rounded-xl bg-red-600 text-white flex items-center justify-center font-bold shadow-md shadow-red-600/30">
+                  <Sparkles className="w-5 h-5" />
+                </div>
+                <h3 className="text-base font-bold text-white">ResumeCraft AI Studio</h3>
+                <p className="text-xs text-neutral-300 leading-relaxed">
+                  Struktur hierarki semantik 100% ramah ATS dengan ekspor teks vektor tajam, ukuran A4 & Letter presisi, plus integrasi surat lamaran dan draf pesan HRD.
+                </p>
+                <ul className="space-y-2 text-xs text-neutral-200 font-medium">
+                  <li className="flex items-center gap-2 text-emerald-400">
+                    <Check className="w-4 h-4" /> 29 Template lolos screening sistem ATS
+                  </li>
+                  <li className="flex items-center gap-2 text-emerald-400">
+                    <Check className="w-4 h-4" /> AI Polish & Koreksi Ejaan EYD Baku
+                  </li>
+                  <li className="flex items-center gap-2 text-emerald-400">
+                    <Check className="w-4 h-4" /> 25 Format Surat Lamaran Kerja terhubung
+                  </li>
+                  <li className="flex items-center gap-2 text-emerald-400">
+                    <Check className="w-4 h-4" /> Garis pembatas cetak A4 anti-terpotong
+                  </li>
+                  <li className="flex items-center gap-2 text-emerald-400">
+                    <Check className="w-4 h-4" /> QR Code portofolio langsung tercetak
+                  </li>
+                </ul>
+              </div>
+
+              {/* Card 3: Jasa Pembuatan CV Manual */}
+              <div className="p-6 rounded-2xl bg-neutral-950 border border-neutral-800 space-y-4">
+                <div className="w-10 h-10 rounded-xl bg-amber-950/60 border border-amber-900/40 text-amber-400 flex items-center justify-center font-bold">
+                  <Clock className="w-5 h-5" />
+                </div>
+                <h3 className="text-base font-bold text-white">Jasa CV Manual Berbayar</h3>
+                <p className="text-xs text-neutral-400 leading-relaxed">
+                  Memerlukan biaya ratusan ribu rupiah setiap kali ingin memperbarui satu atau dua kalimat saat melamar ke lowongan pekerjaan yang berbeda.
+                </p>
+                <ul className="space-y-2 text-xs text-neutral-400">
+                  <li className="flex items-center gap-2 text-amber-400">
+                    <Clock className="w-3.5 h-3.5" /> Waktu tunggu 1–3 hari kerja
+                  </li>
+                  <li className="flex items-center gap-2 text-amber-400">
+                    <Clock className="w-3.5 h-3.5" /> Biaya revisi tambahan
+                  </li>
+                  <li className="flex items-center gap-2 text-amber-400">
+                    <Clock className="w-3.5 h-3.5" /> Privasi data tidak terjamin di cloud
+                  </li>
+                </ul>
+              </div>
+            </div>
           </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* Card 1: Template Biasa Canva / Word */}
-            <div className="p-6 rounded-2xl bg-neutral-950 border border-neutral-800 space-y-4">
-              <div className="w-10 h-10 rounded-xl bg-red-950/60 border border-red-900/40 text-red-400 flex items-center justify-center font-bold">
-                <X className="w-5 h-5" />
-              </div>
-              <h3 className="text-base font-bold text-white">Canva / Word Standar</h3>
-              <p className="text-xs text-neutral-400 leading-relaxed">
-                Desain grafis warna-warni yang sering menggunakan format tabel rumit, ikon terpisah, dan font non-standar yang sering dibaca sebagai teks acak atau blank oleh ATS.
-              </p>
-              <ul className="space-y-2 text-xs text-neutral-400">
-                <li className="flex items-center gap-2 text-red-400">
-                  <X className="w-3.5 h-3.5" /> Kolom sering tertukar saat di-parse
-                </li>
-                <li className="flex items-center gap-2 text-red-400">
-                  <X className="w-3.5 h-3.5" /> Tidak ada panduan formula STAR
-                </li>
-                <li className="flex items-center gap-2 text-red-400">
-                  <X className="w-3.5 h-3.5" /> Terpisah dari surat lamaran kerja
-                </li>
-              </ul>
-            </div>
-
-            {/* Card 2: ResumeCraft AI (Featured) */}
-            <div className="p-6 rounded-2xl bg-gradient-to-b from-neutral-900 to-neutral-950 border-2 border-red-600 shadow-xl shadow-red-600/10 space-y-4 relative">
-              <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-red-600 text-white text-[10px] font-black uppercase tracking-wider px-3 py-0.5 rounded-full shadow">
-                Direkomendasikan HRD
-              </div>
-              <div className="w-10 h-10 rounded-xl bg-red-600 text-white flex items-center justify-center font-bold shadow-md shadow-red-600/30">
-                <Sparkles className="w-5 h-5" />
-              </div>
-              <h3 className="text-base font-bold text-white">ResumeCraft AI Studio</h3>
-              <p className="text-xs text-neutral-300 leading-relaxed">
-                Struktur hierarki semantik 100% ramah ATS dengan ekspor teks vektor tajam, ukuran A4 & Letter presisi, plus integrasi surat lamaran dan draf pesan HRD.
-              </p>
-              <ul className="space-y-2 text-xs text-neutral-200 font-medium">
-                <li className="flex items-center gap-2 text-emerald-400">
-                  <Check className="w-4 h-4" /> 29 Template lolos screening sistem ATS
-                </li>
-                <li className="flex items-center gap-2 text-emerald-400">
-                  <Check className="w-4 h-4" /> AI Polish & Koreksi Ejaan EYD Baku
-                </li>
-                <li className="flex items-center gap-2 text-emerald-400">
-                  <Check className="w-4 h-4" /> 25 Format Surat Lamaran Kerja terhubung
-                </li>
-                <li className="flex items-center gap-2 text-emerald-400">
-                  <Check className="w-4 h-4" /> Garis pembatas cetak A4 anti-terpotong
-                </li>
-                <li className="flex items-center gap-2 text-emerald-400">
-                  <Check className="w-4 h-4" /> QR Code portofolio langsung tercetak
-                </li>
-              </ul>
-            </div>
-
-            {/* Card 3: Jasa Pembuatan CV Manual */}
-            <div className="p-6 rounded-2xl bg-neutral-950 border border-neutral-800 space-y-4">
-              <div className="w-10 h-10 rounded-xl bg-amber-950/60 border border-amber-900/40 text-amber-400 flex items-center justify-center font-bold">
-                <Clock className="w-5 h-5" />
-              </div>
-              <h3 className="text-base font-bold text-white">Jasa CV Manual Berbayar</h3>
-              <p className="text-xs text-neutral-400 leading-relaxed">
-                Memerlukan biaya ratusan ribu rupiah setiap kali ingin memperbarui satu atau dua kalimat saat melamar ke lowongan pekerjaan yang berbeda.
-              </p>
-              <ul className="space-y-2 text-xs text-neutral-400">
-                <li className="flex items-center gap-2 text-amber-400">
-                  <Clock className="w-3.5 h-3.5" /> Waktu tunggu 1–3 hari kerja
-                </li>
-                <li className="flex items-center gap-2 text-amber-400">
-                  <Clock className="w-3.5 h-3.5" /> Biaya revisi tambahan
-                </li>
-                <li className="flex items-center gap-2 text-amber-400">
-                  <Clock className="w-3.5 h-3.5" /> Privasi data tidak terjamin di cloud
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
         </section >
 
-      {/* TEMPLATE SHOWCASE SECTION */ }
-      < section id = "template" className = "py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10" >
+        {/* TEMPLATE SHOWCASE SECTION */}
+        < section id="template" className="py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10" >
           <div className="text-center space-y-3 max-w-2xl mx-auto">
             <Badge className="bg-neutral-800 text-neutral-300 font-bold uppercase text-[10px]">
               Koleksi Desain Terlengkap
@@ -616,11 +616,10 @@ export default function Home() {
                 <button
                   key={cat}
                   onClick={() => setTemplateFilter(cat)}
-                  className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all ${
-                    templateFilter === cat
+                  className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all ${templateFilter === cat
                       ? "bg-white text-neutral-900 shadow-sm"
                       : "bg-neutral-900 text-neutral-400 hover:text-white border border-neutral-800"
-                  }`}
+                    }`}
                 >
                   {cat === "All" ? "Semua Desain (29)" : cat}
                 </button>
@@ -675,60 +674,60 @@ export default function Home() {
           </div>
         </section >
 
-      {/* HOW IT WORKS SECTION */ }
-      < section id = "carakerja" className = "py-20 bg-neutral-900/40 border-t border-neutral-800/80" >
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
-          <div className="text-center space-y-3 max-w-2xl mx-auto">
-            <Badge className="bg-neutral-800 text-neutral-300 font-bold uppercase text-[10px]">
-              Langkah Sederhana
-            </Badge>
-            <h2 className="text-3xl sm:text-4xl font-black text-white tracking-tight">
-              3 Langkah Cepat Menuju CV Siap Kerja
-            </h2>
-            <p className="text-sm text-neutral-400">
-              Dari lembar kosong hingga resume siap lamar dalam hitungan beberapa menit saja.
-            </p>
+        {/* HOW IT WORKS SECTION */}
+        < section id="carakerja" className="py-20 bg-neutral-900/40 border-t border-neutral-800/80" >
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+            <div className="text-center space-y-3 max-w-2xl mx-auto">
+              <Badge className="bg-neutral-800 text-neutral-300 font-bold uppercase text-[10px]">
+                Langkah Sederhana
+              </Badge>
+              <h2 className="text-3xl sm:text-4xl font-black text-white tracking-tight">
+                3 Langkah Cepat Menuju CV Siap Kerja
+              </h2>
+              <p className="text-sm text-neutral-400">
+                Dari lembar kosong hingga resume siap lamar dalam hitungan beberapa menit saja.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="p-6 rounded-2xl bg-neutral-950 border border-neutral-800 relative">
+                <span className="text-4xl font-black text-neutral-800 absolute top-5 right-6">01</span>
+                <div className="w-10 h-10 rounded-xl bg-red-600/20 text-red-400 flex items-center justify-center font-bold mb-4">
+                  <FileText className="w-5 h-5" />
+                </div>
+                <h3 className="text-base font-bold text-white mb-2">Isi Data atau Impor CV</h3>
+                <p className="text-xs text-neutral-400 leading-relaxed">
+                  Ketik informasi profil, pengalaman kerja, pendidikan, dan sertifikasi pada formulir terstruktur, atau unggah resume lama Anda untuk diimpor instan.
+                </p>
+              </div>
+
+              <div className="p-6 rounded-2xl bg-neutral-950 border border-neutral-800 relative">
+                <span className="text-4xl font-black text-neutral-800 absolute top-5 right-6">02</span>
+                <div className="w-10 h-10 rounded-xl bg-amber-600/20 text-amber-400 flex items-center justify-center font-bold mb-4">
+                  <Sparkles className="w-5 h-5" />
+                </div>
+                <h3 className="text-base font-bold text-white mb-2">Poles dengan AI & Skor ATS</h3>
+                <p className="text-xs text-neutral-400 leading-relaxed">
+                  Gunakan asisten AI untuk menyempurnakan tata bahasa, merapikan formula STAR, memperbaiki ejaan EYD, dan mencocokkan kata kunci lowongan target.
+                </p>
+              </div>
+
+              <div className="p-6 rounded-2xl bg-neutral-950 border border-neutral-800 relative">
+                <span className="text-4xl font-black text-neutral-800 absolute top-5 right-6">03</span>
+                <div className="w-10 h-10 rounded-xl bg-emerald-600/20 text-emerald-400 flex items-center justify-center font-bold mb-4">
+                  <FileCheck2 className="w-5 h-5" />
+                </div>
+                <h3 className="text-base font-bold text-white mb-2">Ekspor PDF & Lamar Kerja</h3>
+                <p className="text-xs text-neutral-400 leading-relaxed">
+                  Cetak PDF vektor jernih dalam standar A4 atau Letter, buat surat lamaran kerja terhubung, dan bagikan tautan portofolio online kepada HRD.
+                </p>
+              </div>
+            </div>
           </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="p-6 rounded-2xl bg-neutral-950 border border-neutral-800 relative">
-              <span className="text-4xl font-black text-neutral-800 absolute top-5 right-6">01</span>
-              <div className="w-10 h-10 rounded-xl bg-red-600/20 text-red-400 flex items-center justify-center font-bold mb-4">
-                <FileText className="w-5 h-5" />
-              </div>
-              <h3 className="text-base font-bold text-white mb-2">Isi Data atau Impor CV</h3>
-              <p className="text-xs text-neutral-400 leading-relaxed">
-                Ketik informasi profil, pengalaman kerja, pendidikan, dan sertifikasi pada formulir terstruktur, atau unggah resume lama Anda untuk diimpor instan.
-              </p>
-            </div>
-
-            <div className="p-6 rounded-2xl bg-neutral-950 border border-neutral-800 relative">
-              <span className="text-4xl font-black text-neutral-800 absolute top-5 right-6">02</span>
-              <div className="w-10 h-10 rounded-xl bg-amber-600/20 text-amber-400 flex items-center justify-center font-bold mb-4">
-                <Sparkles className="w-5 h-5" />
-              </div>
-              <h3 className="text-base font-bold text-white mb-2">Poles dengan AI & Skor ATS</h3>
-              <p className="text-xs text-neutral-400 leading-relaxed">
-                Gunakan asisten AI untuk menyempurnakan tata bahasa, merapikan formula STAR, memperbaiki ejaan EYD, dan mencocokkan kata kunci lowongan target.
-              </p>
-            </div>
-
-            <div className="p-6 rounded-2xl bg-neutral-950 border border-neutral-800 relative">
-              <span className="text-4xl font-black text-neutral-800 absolute top-5 right-6">03</span>
-              <div className="w-10 h-10 rounded-xl bg-emerald-600/20 text-emerald-400 flex items-center justify-center font-bold mb-4">
-                <FileCheck2 className="w-5 h-5" />
-              </div>
-              <h3 className="text-base font-bold text-white mb-2">Ekspor PDF & Lamar Kerja</h3>
-              <p className="text-xs text-neutral-400 leading-relaxed">
-                Cetak PDF vektor jernih dalam standar A4 atau Letter, buat surat lamaran kerja terhubung, dan bagikan tautan portofolio online kepada HRD.
-              </p>
-            </div>
-          </div>
-        </div>
         </section >
 
-      {/* FAQ ACCORDION SECTION */ }
-      < section id = "faq" className = "py-20 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10" >
+        {/* FAQ ACCORDION SECTION */}
+        < section id="faq" className="py-20 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10" >
           <div className="text-center space-y-3">
             <Badge className="bg-neutral-800 text-neutral-300 font-bold uppercase text-[10px]">
               Tanya Jawab
@@ -774,9 +773,8 @@ export default function Home() {
                 >
                   <span>{faq.q}</span>
                   <ChevronDown
-                    className={`w-4 h-4 text-neutral-400 transition-transform duration-200 shrink-0 ml-4 ${
-                      openFaq === idx ? "rotate-180 text-white" : ""
-                    }`}
+                    className={`w-4 h-4 text-neutral-400 transition-transform duration-200 shrink-0 ml-4 ${openFaq === idx ? "rotate-180 text-white" : ""
+                      }`}
                   />
                 </button>
                 {openFaq === idx && (
@@ -789,37 +787,37 @@ export default function Home() {
           </div>
         </section >
 
-      {/* FINAL CTA BANNER */ }
-      < section className = "py-16 bg-gradient-to-r from-red-950 via-neutral-950 to-neutral-950 border-t border-neutral-800 relative overflow-hidden" >
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-6 relative z-10">
-          <h2 className="text-3xl sm:text-4xl font-black text-white tracking-tight">
-            {t("landing_page.final_cta_title", "Siap Raih Karir Impian Anda Sekarang?")}
-          </h2>
-          <p className="text-sm sm:text-base text-neutral-400 max-w-xl mx-auto">
-            {t("landing_page.final_cta_desc", "Bergabunglah dengan ribuan profesional dan fresh graduate yang berhasil lolos wawancara kerja dengan ResumeCraft AI.")}
-          </p>
-          <Button
-            size="lg"
-            onClick={() => navigate("/login")}
-            className="bg-red-600 hover:bg-red-500 text-white font-black text-sm px-8 py-6 rounded-2xl shadow-xl shadow-red-600/30 gap-2"
-          >
-            <span>{t("landing_page.final_cta_btn", "Mulai Buat Resume Gratis Sekarang")}</span>
-            <ArrowRight className="w-4 h-4" />
-          </Button>
-        </div>
+        {/* FINAL CTA BANNER */}
+        < section className="py-16 bg-gradient-to-r from-red-950 via-neutral-950 to-neutral-950 border-t border-neutral-800 relative overflow-hidden" >
+          <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-6 relative z-10">
+            <h2 className="text-3xl sm:text-4xl font-black text-white tracking-tight">
+              {t("landing_page.final_cta_title", "Siap Raih Karir Impian Anda Sekarang?")}
+            </h2>
+            <p className="text-sm sm:text-base text-neutral-400 max-w-xl mx-auto">
+              {t("landing_page.final_cta_desc", "Bergabunglah dengan ribuan profesional dan fresh graduate yang berhasil lolos wawancara kerja dengan ResumeCraft AI.")}
+            </p>
+            <Button
+              size="lg"
+              onClick={() => navigate("/login")}
+              className="bg-red-600 hover:bg-red-500 text-white font-black text-sm px-8 py-6 rounded-2xl shadow-xl shadow-red-600/30 gap-2"
+            >
+              <span>{t("landing_page.final_cta_btn", "Mulai Buat Resume Gratis Sekarang")}</span>
+              <ArrowRight className="w-4 h-4" />
+            </Button>
+          </div>
         </section >
 
-      {/* FOOTER */ }
-      < footer className = "border-t border-neutral-800 py-8 bg-neutral-950 text-neutral-500 text-xs" >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2 text-neutral-400">
-            <Sparkles className="w-4 h-4 text-red-500" />
-            <span className="font-bold text-white">ResumeCraft AI</span> — {t("landing_page.footer_tagline", "Standar Keunggulan Karir Profesional.")}
+        {/* FOOTER */}
+        < footer className="border-t border-neutral-800 py-8 bg-neutral-950 text-neutral-500 text-xs" >
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="flex items-center gap-2 text-neutral-400">
+              <Sparkles className="w-4 h-4 text-red-500" />
+              <span className="font-bold text-white">ResumeCraft AI</span> — {t("landing_page.footer_tagline", "Standar Keunggulan Karir Profesional.")}
+            </div>
+            <div>
+              © {new Date().getFullYear()} {t("landing_page.footer_copyright", "ResumeCraft AI. Dilindungi Hak Cipta.")}
+            </div>
           </div>
-          <div>
-            © {new Date().getFullYear()} {t("landing_page.footer_copyright", "ResumeCraft AI. Dilindungi Hak Cipta.")}
-          </div>
-        </div>
         </footer >
       </div >
     );
@@ -842,10 +840,10 @@ export default function Home() {
                 <h1 className="text-sm sm:text-lg font-bold text-neutral-900 leading-tight truncate">
                   ResumeCraft <span className="text-red-600">AI</span>
                 </h1>
-                <p className="text-[10px] sm:text-[11px] text-neutral-500 truncate block">
-                  {t("dashboard.welcome_back", "Selamat datang kembali,")}{" "}
-                  <span className="font-semibold text-neutral-700">{user?.name || user?.username || t("dashboard.user", "Pengguna")}</span>
-                </p>
+                  <p className="text-[10px] sm:text-[11px] text-neutral-500 truncate block">
+                    {t("dashboard.welcome_back", "Selamat datang kembali,")}{" "}
+                    <span className="font-semibold text-neutral-700">{user?.name || user?.username || t("dashboard.user", "Pengguna")}</span>
+                  </p>
               </div>
             </div>
 

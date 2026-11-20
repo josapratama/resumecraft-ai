@@ -585,21 +585,19 @@ Hormat saya,
         <div className="flex items-center bg-slate-100 p-0.5 rounded-lg border border-slate-200 text-xs shrink-0">
           <button
             onClick={() => setLanguage("id")}
-            className={`px-1.5 sm:px-2.5 py-1 rounded-md font-semibold text-[11px] sm:text-xs transition-all ${
-              language === "id"
-                ? "bg-white text-slate-900 shadow-xs"
-                : "text-slate-500 hover:text-slate-900"
-            }`}
+            className={`px-1.5 sm:px-2.5 py-1 rounded-md font-semibold text-[11px] sm:text-xs transition-all ${language === "id"
+              ? "bg-white text-slate-900 shadow-xs"
+              : "text-slate-500 hover:text-slate-900"
+              }`}
           >
             ID <span className="hidden sm:inline">(Baku)</span>
           </button>
           <button
             onClick={() => setLanguage("en")}
-            className={`px-1.5 sm:px-2.5 py-1 rounded-md font-semibold text-[11px] sm:text-xs transition-all ${
-              language === "en"
-                ? "bg-white text-slate-900 shadow-xs"
-                : "text-slate-500 hover:text-slate-900"
-            }`}
+            className={`px-1.5 sm:px-2.5 py-1 rounded-md font-semibold text-[11px] sm:text-xs transition-all ${language === "en"
+              ? "bg-white text-slate-900 shadow-xs"
+              : "text-slate-500 hover:text-slate-900"
+              }`}
           >
             EN <span className="hidden sm:inline">(Global)</span>
           </button>
@@ -793,11 +791,10 @@ Hormat saya,
         <button
           type="button"
           onClick={() => setMobileTab("editor")}
-          className={`flex-1 py-1.5 text-xs font-bold rounded-lg transition-all flex items-center justify-center gap-1.5 ${
-            mobileTab === "editor"
-              ? "bg-white text-slate-900 shadow-xs"
-              : "text-slate-600 hover:text-slate-900"
-          }`}
+          className={`flex-1 py-1.5 text-xs font-bold rounded-lg transition-all flex items-center justify-center gap-1.5 ${mobileTab === "editor"
+            ? "bg-white text-slate-900 shadow-xs"
+            : "text-slate-600 hover:text-slate-900"
+            }`}
         >
           <Edit3 className="w-3.5 h-3.5" />
           <span>{t("cover_letter.btn_edit_mobile", "Sunting Surat")}</span>
@@ -805,11 +802,10 @@ Hormat saya,
         <button
           type="button"
           onClick={() => setMobileTab("preview")}
-          className={`flex-1 py-1.5 text-xs font-bold rounded-lg transition-all flex items-center justify-center gap-1.5 ${
-            mobileTab === "preview"
-              ? "bg-blue-600 text-white shadow-xs"
-              : "text-blue-700 bg-blue-50 hover:bg-blue-100"
-          }`}
+          className={`flex-1 py-1.5 text-xs font-bold rounded-lg transition-all flex items-center justify-center gap-1.5 ${mobileTab === "preview"
+            ? "bg-blue-600 text-white shadow-xs"
+            : "text-blue-700 bg-blue-50 hover:bg-blue-100"
+            }`}
         >
           <FileText className="w-3.5 h-3.5" />
           <span>{t("cover_letter.btn_preview_mobile", "Lihat Surat A4")}</span>
@@ -820,17 +816,16 @@ Hormat saya,
       <div className="flex-1 min-h-0 w-full flex flex-col md:flex-row overflow-hidden bg-slate-100">
         {/* Left Control Panel (Responsive) */}
         <aside
-          className={`w-full md:w-[420px] lg:w-[460px] h-full flex flex-col shrink-0 min-h-0 bg-white border-r border-slate-200 overflow-hidden shadow-sm ${
-            mobileTab !== "editor" ? "hidden md:flex" : "flex"
-          }`}
+          className={`w-full md:w-[420px] lg:w-[460px] h-full flex flex-col shrink-0 min-h-0 bg-white border-r border-slate-200 overflow-hidden shadow-sm ${mobileTab !== "editor" ? "hidden md:flex" : "flex"
+            }`}
         >
           {/* Workspace Tabs (Scrollable on small mobile) */}
           <div className="flex border-b border-slate-200 px-2 sm:px-3 pt-2 bg-slate-50/60 shrink-0 gap-1 text-xs overflow-x-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
             <button
               onClick={() => setActiveTab("templates")}
               className={`flex items-center gap-1.5 py-2 px-2.5 sm:px-3 border-b-2 font-semibold transition-all shrink-0 ${activeTab === "templates"
-                  ? "border-blue-600 text-blue-600 bg-white rounded-t-lg shadow-2xs"
-                  : "border-transparent text-slate-600 hover:text-slate-900"
+                ? "border-blue-600 text-blue-600 bg-white rounded-t-lg shadow-2xs"
+                : "border-transparent text-slate-600 hover:text-slate-900"
                 }`}
             >
               <Layout className="w-3.5 h-3.5" />
@@ -840,8 +835,8 @@ Hormat saya,
             <button
               onClick={() => setActiveTab("ai")}
               className={`flex items-center gap-1.5 py-2 px-2.5 sm:px-3 border-b-2 font-semibold transition-all shrink-0 ${activeTab === "ai"
-                  ? "border-blue-600 text-blue-600 bg-white rounded-t-lg shadow-2xs"
-                  : "border-transparent text-slate-600 hover:text-slate-900"
+                ? "border-blue-600 text-blue-600 bg-white rounded-t-lg shadow-2xs"
+                : "border-transparent text-slate-600 hover:text-slate-900"
                 }`}
             >
               <Sparkles className="w-3.5 h-3.5 text-blue-600" />
@@ -851,8 +846,8 @@ Hormat saya,
             <button
               onClick={() => setActiveTab("edit")}
               className={`flex items-center gap-1.5 py-2 px-2.5 sm:px-3 border-b-2 font-semibold transition-all shrink-0 ${activeTab === "edit"
-                  ? "border-blue-600 text-blue-600 bg-white rounded-t-lg shadow-2xs"
-                  : "border-transparent text-slate-600 hover:text-slate-900"
+                ? "border-blue-600 text-blue-600 bg-white rounded-t-lg shadow-2xs"
+                : "border-transparent text-slate-600 hover:text-slate-900"
                 }`}
             >
               <Edit3 className="w-3.5 h-3.5" />
@@ -862,8 +857,8 @@ Hormat saya,
             <button
               onClick={() => setActiveTab("style")}
               className={`flex items-center gap-1.5 py-2 px-2.5 sm:px-3 border-b-2 font-semibold transition-all shrink-0 ${activeTab === "style"
-                  ? "border-blue-600 text-blue-600 bg-white rounded-t-lg shadow-2xs"
-                  : "border-transparent text-slate-600 hover:text-slate-900"
+                ? "border-blue-600 text-blue-600 bg-white rounded-t-lg shadow-2xs"
+                : "border-transparent text-slate-600 hover:text-slate-900"
                 }`}
             >
               <Palette className="w-3.5 h-3.5" />
@@ -908,8 +903,8 @@ Hormat saya,
                         key={cat.id}
                         onClick={() => setTemplateCategory(cat.id)}
                         className={`px-2.5 py-1 rounded-md font-semibold transition-all ${templateCategory === cat.id
-                            ? "bg-slate-900 text-white shadow-2xs"
-                            : "bg-slate-100 text-slate-600 hover:bg-slate-200/80"
+                          ? "bg-slate-900 text-white shadow-2xs"
+                          : "bg-slate-100 text-slate-600 hover:bg-slate-200/80"
                           }`}
                       >
                         {cat.label}
@@ -927,8 +922,8 @@ Hormat saya,
                         key={tpl.id}
                         onClick={() => setSelectedTemplate(tpl.id)}
                         className={`p-3 rounded-xl border text-left cursor-pointer transition-all ${isSelected
-                            ? "border-blue-600 bg-blue-50/70 shadow-xs ring-1 ring-blue-600/30"
-                            : "border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50/60"
+                          ? "border-blue-600 bg-blue-50/70 shadow-xs ring-1 ring-blue-600/30"
+                          : "border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50/60"
                           }`}
                       >
                         {/* Mini visual indicator header */}
@@ -941,8 +936,8 @@ Hormat saya,
                           </div>
                           <span
                             className={`text-[9px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider ${isSelected
-                                ? "bg-blue-600 text-white"
-                                : "bg-slate-100 text-slate-600"
+                              ? "bg-blue-600 text-white"
+                              : "bg-slate-100 text-slate-600"
                               }`}
                           >
                             {tpl.badge}
@@ -1219,331 +1214,330 @@ Hormat saya,
                 </div>
 
                 <div>
-                    <div className="flex items-center justify-between mb-1">
-                      <Label className="text-xs font-semibold text-slate-700">{t("cover_letter.attachments_label", "Daftar Berkas Lampiran")}</Label>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          const updated = attachmentsText.trim()
-                            ? `${attachmentsText.trimEnd()}\n`
-                            : "";
-                          setAttachmentsText(updated + "Salinan Dokumen Tambahan");
-                          setLetterData(prev => ({
-                            ...prev,
-                            attachments: (updated + "Salinan Dokumen Tambahan")
-                              .split("\n")
-                              .map(s => s.trim())
-                              .filter(Boolean),
-                          }));
-                        }}
-                        className="text-[11px] text-blue-600 hover:text-blue-700 font-semibold flex items-center gap-1 hover:underline"
-                      >
-                        {t("cover_letter.add_attachment_point", "+ Tambah Poin Baru")}
-                      </button>
-                    </div>
-                    <Textarea
-                      value={attachmentsText}
-                      onChange={e => {
-                        const val = e.target.value;
-                        setAttachmentsText(val);
+                  <div className="flex items-center justify-between mb-1">
+                    <Label className="text-xs font-semibold text-slate-700">{t("cover_letter.attachments_label", "Daftar Berkas Lampiran")}</Label>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const updated = attachmentsText.trim()
+                          ? `${attachmentsText.trimEnd()}\n`
+                          : "";
+                        setAttachmentsText(updated + "Salinan Dokumen Tambahan");
                         setLetterData(prev => ({
                           ...prev,
-                          attachments: val
+                          attachments: (updated + "Salinan Dokumen Tambahan")
                             .split("\n")
                             .map(s => s.trim())
                             .filter(Boolean),
                         }));
                       }}
-                      rows={5}
-                      placeholder={t("cover_letter.attachments_placeholder", "Curriculum Vitae (CV) Terbaru\nSalinan Ijazah dan Transkrip Nilai\nTekan Enter untuk menambah poin ke bawah")}
-                      className="mt-1 border-slate-200 rounded-lg text-xs leading-relaxed"
-                    />
-                    <p className="text-[10px] text-slate-400 mt-1">
-                      {t("cover_letter.attachments_hint", "* Tekan Enter di keyboard atau klik tombol + Tambah Poin Baru di atas untuk menambah baris lampiran.")}
-                    </p>
+                      className="text-[11px] text-blue-600 hover:text-blue-700 font-semibold flex items-center gap-1 hover:underline"
+                    >
+                      {t("cover_letter.add_attachment_point", "+ Tambah Poin Baru")}
+                    </button>
                   </div>
-
-                  <div>
-                    <Label className="text-xs font-semibold text-slate-700">{t("cover_letter.closing_label", "Paragraf Penutup")}</Label>
-                    <Textarea
-                      value={letterData.closing}
-                      onChange={e => setLetterData({ ...letterData, closing: e.target.value })}
-                      rows={3}
-                      className="mt-1 border-slate-200 rounded-lg text-xs leading-relaxed"
-                    />
-                  </div>
-
-                  <div>
-                    <Label className="text-xs font-semibold text-slate-700">{t("cover_letter.signoff_label", "Salam Penutup")}</Label>
-                    <Input
-                      value={letterData.signOff}
-                      onChange={e => setLetterData({ ...letterData, signOff: e.target.value })}
-                      className="mt-1 border-slate-200 rounded-lg text-xs"
-                    />
-                  </div>
+                  <Textarea
+                    value={attachmentsText}
+                    onChange={e => {
+                      const val = e.target.value;
+                      setAttachmentsText(val);
+                      setLetterData(prev => ({
+                        ...prev,
+                        attachments: val
+                          .split("\n")
+                          .map(s => s.trim())
+                          .filter(Boolean),
+                      }));
+                    }}
+                    rows={5}
+                    placeholder={t("cover_letter.attachments_placeholder", "Curriculum Vitae (CV) Terbaru\nSalinan Ijazah dan Transkrip Nilai\nTekan Enter untuk menambah poin ke bawah")}
+                    className="mt-1 border-slate-200 rounded-lg text-xs leading-relaxed"
+                  />
+                  <p className="text-[10px] text-slate-400 mt-1">
+                    {t("cover_letter.attachments_hint", "* Tekan Enter di keyboard atau klik tombol + Tambah Poin Baru di atas untuk menambah baris lampiran.")}
+                  </p>
                 </div>
+
+                <div>
+                  <Label className="text-xs font-semibold text-slate-700">{t("cover_letter.closing_label", "Paragraf Penutup")}</Label>
+                  <Textarea
+                    value={letterData.closing}
+                    onChange={e => setLetterData({ ...letterData, closing: e.target.value })}
+                    rows={3}
+                    className="mt-1 border-slate-200 rounded-lg text-xs leading-relaxed"
+                  />
+                </div>
+
+                <div>
+                  <Label className="text-xs font-semibold text-slate-700">{t("cover_letter.signoff_label", "Salam Penutup")}</Label>
+                  <Input
+                    value={letterData.signOff}
+                    onChange={e => setLetterData({ ...letterData, signOff: e.target.value })}
+                    className="mt-1 border-slate-200 rounded-lg text-xs"
+                  />
+                </div>
+              </div>
             )}
 
-                {/* TAB 4: STYLE & DESIGN */}
-                {activeTab === "style" && (
-                  <div className="space-y-4">
-                    <div>
-                      <h3 className="font-bold text-slate-900 text-sm">{t("cover_letter.style_title", "Kustomisasi Dokumen & Desain")}</h3>
-                      <p className="text-slate-500 text-[11px] mt-0.5">
-                        {t("cover_letter.style_desc", "Sesuaikan elemen surat (judul, nomor dinas, tabel), tipografi, dan warna.")}
-                      </p>
-                    </div>
+            {/* TAB 4: STYLE & DESIGN */}
+            {activeTab === "style" && (
+              <div className="space-y-4">
+                <div>
+                  <h3 className="font-bold text-slate-900 text-sm">{t("cover_letter.style_title", "Kustomisasi Dokumen & Desain")}</h3>
+                  <p className="text-slate-500 text-[11px] mt-0.5">
+                    {t("cover_letter.style_desc", "Sesuaikan elemen surat (judul, nomor dinas, tabel), tipografi, dan warna.")}
+                  </p>
+                </div>
 
-                    {/* Struktur Khusus Surat (Custom Header & Element Toggles) */}
-                    <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl space-y-3">
-                      <span className="text-xs font-bold text-slate-800 uppercase tracking-wider block">
-                        {t("cover_letter.layout_heading", "Elemen & Tata Letak Surat")}
+                {/* Struktur Khusus Surat (Custom Header & Element Toggles) */}
+                <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl space-y-3">
+                  <span className="text-xs font-bold text-slate-800 uppercase tracking-wider block">
+                    {t("cover_letter.layout_heading", "Elemen & Tata Letak Surat")}
+                  </span>
+
+                  {/* Toggle Judul SURAT LAMARAN KERJA */}
+                  <div className="space-y-1.5">
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={letterData.includeLetterTitle !== false}
+                        onChange={e =>
+                          setLetterData({ ...letterData, includeLetterTitle: e.target.checked })
+                        }
+                        className="w-4 h-4 rounded text-blue-600 focus:ring-blue-500 border-slate-300 cursor-pointer"
+                      />
+                      <span className="text-xs font-semibold text-slate-800">
+                        {t("cover_letter.toggle_title", "Judul Dokumen di Tengah Atas")}
                       </span>
+                    </label>
+                    {letterData.includeLetterTitle !== false && (
+                      <Input
+                        value={letterData.letterTitle || "SURAT LAMARAN KERJA"}
+                        onChange={e =>
+                          setLetterData({ ...letterData, letterTitle: e.target.value })
+                        }
+                        placeholder="SURAT LAMARAN KERJA"
+                        className="h-7 text-xs border-slate-200 bg-white rounded-md mt-1"
+                      />
+                    )}
+                  </div>
 
-                      {/* Toggle Judul SURAT LAMARAN KERJA */}
-                      <div className="space-y-1.5">
-                        <label className="flex items-center gap-2 cursor-pointer">
-                          <input
-                            type="checkbox"
-                            checked={letterData.includeLetterTitle !== false}
-                            onChange={e =>
-                              setLetterData({ ...letterData, includeLetterTitle: e.target.checked })
-                            }
-                            className="w-4 h-4 rounded text-blue-600 focus:ring-blue-500 border-slate-300 cursor-pointer"
-                          />
-                          <span className="text-xs font-semibold text-slate-800">
-                            {t("cover_letter.toggle_title", "Judul Dokumen di Tengah Atas")}
-                          </span>
-                        </label>
-                        {letterData.includeLetterTitle !== false && (
-                          <Input
-                            value={letterData.letterTitle || "SURAT LAMARAN KERJA"}
-                            onChange={e =>
-                              setLetterData({ ...letterData, letterTitle: e.target.value })
-                            }
-                            placeholder="SURAT LAMARAN KERJA"
-                            className="h-7 text-xs border-slate-200 bg-white rounded-md mt-1"
-                          />
-                        )}
+                  {/* Toggle Nomor Surat Kedinasan */}
+                  <div className="space-y-1.5 pt-2 border-t border-slate-200/60">
+                    <label className="flex items-start gap-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={Boolean(letterData.includeReferenceNumber)}
+                        onChange={e =>
+                          setLetterData({ ...letterData, includeReferenceNumber: e.target.checked })
+                        }
+                        className="w-4 h-4 rounded text-blue-600 focus:ring-blue-500 border-slate-300 cursor-pointer mt-0.5"
+                      />
+                      <div>
+                        <span className="text-xs font-semibold text-slate-800 block">
+                          {t("cover_letter.toggle_ref", "Tampilkan Nomor Surat Kedinasan (Nomor : ...)")}
+                        </span>
+                        <span className="text-[10px] text-slate-500 leading-tight block">
+                          {t("cover_letter.toggle_ref_desc", "Nonaktifkan (OFF) untuk pelamar umum perseorangan. Hanya aktifkan bila instansi memerlukan penomoran arsip.")}
+                        </span>
                       </div>
+                    </label>
+                    {letterData.includeReferenceNumber && (
+                      <Input
+                        value={letterData.referenceNumber || ""}
+                        onChange={e =>
+                          setLetterData({ ...letterData, referenceNumber: e.target.value })
+                        }
+                        placeholder="Contoh: LP/2026/XI/01"
+                        className="h-7 text-xs border-slate-200 bg-white rounded-md mt-1"
+                      />
+                    )}
+                  </div>
 
-                      {/* Toggle Nomor Surat Kedinasan */}
-                      <div className="space-y-1.5 pt-2 border-t border-slate-200/60">
-                        <label className="flex items-start gap-2 cursor-pointer">
-                          <input
-                            type="checkbox"
-                            checked={Boolean(letterData.includeReferenceNumber)}
-                            onChange={e =>
-                              setLetterData({ ...letterData, includeReferenceNumber: e.target.checked })
-                            }
-                            className="w-4 h-4 rounded text-blue-600 focus:ring-blue-500 border-slate-300 cursor-pointer mt-0.5"
-                          />
-                          <div>
-                            <span className="text-xs font-semibold text-slate-800 block">
-                              {t("cover_letter.toggle_ref", "Tampilkan Nomor Surat Kedinasan (Nomor : ...)")}
-                            </span>
-                            <span className="text-[10px] text-slate-500 leading-tight block">
-                              {t("cover_letter.toggle_ref_desc", "Nonaktifkan (OFF) untuk pelamar umum perseorangan. Hanya aktifkan bila instansi memerlukan penomoran arsip.")}
-                            </span>
-                          </div>
-                        </label>
-                        {letterData.includeReferenceNumber && (
-                          <Input
-                            value={letterData.referenceNumber || ""}
-                            onChange={e =>
-                              setLetterData({ ...letterData, referenceNumber: e.target.value })
-                            }
-                            placeholder="Contoh: LP/2026/XI/01"
-                            className="h-7 text-xs border-slate-200 bg-white rounded-md mt-1"
-                          />
-                        )}
+                  {/* Toggle Baris Lampiran di Atas */}
+                  <div className="pt-2 border-t border-slate-200/60">
+                    <label className="flex items-start gap-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={Boolean(letterData.includeAttachmentsHeader)}
+                        onChange={e =>
+                          setLetterData({ ...letterData, includeAttachmentsHeader: e.target.checked })
+                        }
+                        className="w-4 h-4 rounded text-blue-600 focus:ring-blue-500 border-slate-300 cursor-pointer mt-0.5"
+                      />
+                      <div>
+                        <span className="text-xs font-semibold text-slate-800 block">
+                          {t("cover_letter.toggle_attachments", 'Tampilkan Baris "Lampiran" di Header Atas')}
+                        </span>
+                        <span className="text-[10px] text-slate-500 leading-tight block">
+                          {t("cover_letter.toggle_attachments_desc", 'Menambahkan "Lampiran : 1 (Satu) Berkas Lengkap" tepat di bawah Perihal.')}
+                        </span>
                       </div>
+                    </label>
+                  </div>
 
-                      {/* Toggle Baris Lampiran di Atas */}
-                      <div className="pt-2 border-t border-slate-200/60">
-                        <label className="flex items-start gap-2 cursor-pointer">
-                          <input
-                            type="checkbox"
-                            checked={Boolean(letterData.includeAttachmentsHeader)}
-                            onChange={e =>
-                              setLetterData({ ...letterData, includeAttachmentsHeader: e.target.checked })
-                            }
-                            className="w-4 h-4 rounded text-blue-600 focus:ring-blue-500 border-slate-300 cursor-pointer mt-0.5"
-                          />
-                          <div>
-                            <span className="text-xs font-semibold text-slate-800 block">
-                              {t("cover_letter.toggle_attachments", 'Tampilkan Baris "Lampiran" di Header Atas')}
-                            </span>
-                            <span className="text-[10px] text-slate-500 leading-tight block">
-                              {t("cover_letter.toggle_attachments_desc", 'Menambahkan "Lampiran : 1 (Satu) Berkas Lengkap" tepat di bawah Perihal.')}
-                            </span>
-                          </div>
-                        </label>
+                  {/* Toggle Tabel Biodata Ringkas */}
+                  <div className="pt-2 border-t border-slate-200/60">
+                    <label className="flex items-start gap-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={Boolean(letterData.includeBiodataTable)}
+                        onChange={e =>
+                          setLetterData({ ...letterData, includeBiodataTable: e.target.checked })
+                        }
+                        className="w-4 h-4 rounded text-blue-600 focus:ring-blue-500 border-slate-300 cursor-pointer mt-0.5"
+                      />
+                      <div>
+                        <span className="text-xs font-semibold text-slate-800 block">
+                          {t("cover_letter.toggle_biodata", "Tampilkan Tabel Biodata Ringkas")}
+                        </span>
+                        <span className="text-[10px] text-slate-500 leading-tight block">
+                          {t("cover_letter.toggle_biodata_desc", "Menampilkan tabel Nama, Pendidikan, Domisili, dan No. HP di tengah surat.")}
+                        </span>
                       </div>
+                    </label>
+                  </div>
+                </div>
 
-                      {/* Toggle Tabel Biodata Ringkas */}
-                      <div className="pt-2 border-t border-slate-200/60">
-                        <label className="flex items-start gap-2 cursor-pointer">
-                          <input
-                            type="checkbox"
-                            checked={Boolean(letterData.includeBiodataTable)}
-                            onChange={e =>
-                              setLetterData({ ...letterData, includeBiodataTable: e.target.checked })
-                            }
-                            className="w-4 h-4 rounded text-blue-600 focus:ring-blue-500 border-slate-300 cursor-pointer mt-0.5"
-                          />
-                          <div>
-                            <span className="text-xs font-semibold text-slate-800 block">
-                              {t("cover_letter.toggle_biodata", "Tampilkan Tabel Biodata Ringkas")}
-                            </span>
-                            <span className="text-[10px] text-slate-500 leading-tight block">
-                              {t("cover_letter.toggle_biodata_desc", "Menampilkan tabel Nama, Pendidikan, Domisili, dan No. HP di tengah surat.")}
-                            </span>
-                          </div>
-                        </label>
-                      </div>
-                    </div>
+                <div>
+                  <Label className="text-xs font-semibold text-slate-700 mb-2 block">{t("cover_letter.accent_color_label", "Warna Aksen")}</Label>
+                  <div className="flex flex-wrap gap-2.5">
+                    {ACCENT_COLORS.map(c => {
+                      const isSelected = letterData.accentColor === c.value;
+                      return (
+                        <button
+                          key={c.value}
+                          onClick={() => setLetterData({ ...letterData, accentColor: c.value })}
+                          className={`w-7 h-7 rounded-full flex items-center justify-center transition-all ${isSelected
+                            ? "ring-2 ring-offset-2 ring-slate-900 scale-110 shadow-xs"
+                            : "hover:scale-105"
+                            }`}
+                          style={{ backgroundColor: c.value }}
+                          title={c.name}
+                        >
+                          {isSelected && <Check className="w-3.5 h-3.5 text-white" />}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
 
+                <div>
+                  <Label className="text-xs font-semibold text-slate-700 mb-1.5 block">{t("cover_letter.font_family_label", "Keluarga Font (Tipografi)")}</Label>
+                  <Select
+                    value={letterData.fontFamily}
+                    onValueChange={val => setLetterData({ ...letterData, fontFamily: val })}
+                  >
+                    <SelectTrigger className="border-slate-200 rounded-lg text-xs">
+                      <SelectValue placeholder="Pilih font" />
+                    </SelectTrigger>
+                    <SelectContent className="rounded-xl border-slate-200">
+                      <SelectItem value="'Times New Roman', Times, serif" className="text-xs">
+                        Formal Times New Roman (Standar Surat Lamaran Indonesia & BUMN)
+                      </SelectItem>
+                      <SelectItem value="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" className="text-xs">
+                        Modern Sans (Inter / Segoe UI / Roboto)
+                      </SelectItem>
+                      <SelectItem value="Georgia, Cambria, serif" className="text-xs">
+                        Classic Serif (Georgia / Cambria)
+                      </SelectItem>
+                      <SelectItem value="'Palatino Linotype', Palatino, serif" className="text-xs">
+                        Executive Palatino (Elegan)
+                      </SelectItem>
+                      <SelectItem value="Consolas, 'Roboto Mono', Monaco, monospace" className="text-xs">
+                        Code Monospace (Terminal Developer)
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="pt-2 border-t border-slate-100 space-y-2">
+                  <div className="flex items-center justify-between">
                     <div>
-                      <Label className="text-xs font-semibold text-slate-700 mb-2 block">{t("cover_letter.accent_color_label", "Warna Aksen")}</Label>
-                      <div className="flex flex-wrap gap-2.5">
-                        {ACCENT_COLORS.map(c => {
-                          const isSelected = letterData.accentColor === c.value;
-                          return (
-                            <button
-                              key={c.value}
-                              onClick={() => setLetterData({ ...letterData, accentColor: c.value })}
-                              className={`w-7 h-7 rounded-full flex items-center justify-center transition-all ${isSelected
-                                  ? "ring-2 ring-offset-2 ring-slate-900 scale-110 shadow-xs"
-                                  : "hover:scale-105"
-                                }`}
-                              style={{ backgroundColor: c.value }}
-                              title={c.name}
-                            >
-                              {isSelected && <Check className="w-3.5 h-3.5 text-white" />}
-                            </button>
-                          );
-                        })}
-                      </div>
+                      <p className="font-semibold text-slate-900 text-xs">{t("cover_letter.sig_title", "Tanda Tangan Digital")}</p>
+                      <p className="text-[11px] text-slate-500">{t("cover_letter.sig_subtitle", "Tampilkan tanda tangan di atas nama")}</p>
                     </div>
+                    <input
+                      type="checkbox"
+                      checked={letterData.includeSignature}
+                      onChange={e => setLetterData({ ...letterData, includeSignature: e.target.checked })}
+                      className="w-4 h-4 rounded text-blue-600 focus:ring-blue-500 border-slate-300 cursor-pointer"
+                    />
+                  </div>
 
+                  {letterData.includeSignature && (
                     <div>
-                      <Label className="text-xs font-semibold text-slate-700 mb-1.5 block">{t("cover_letter.font_family_label", "Keluarga Font (Tipografi)")}</Label>
-                      <Select
-                        value={letterData.fontFamily}
-                        onValueChange={val => setLetterData({ ...letterData, fontFamily: val })}
-                      >
-                        <SelectTrigger className="border-slate-200 rounded-lg text-xs">
-                          <SelectValue placeholder="Pilih font" />
-                        </SelectTrigger>
-                        <SelectContent className="rounded-xl border-slate-200">
-                          <SelectItem value="'Times New Roman', Times, serif" className="text-xs">
-                            Formal Times New Roman (Standar Surat Lamaran Indonesia & BUMN)
-                          </SelectItem>
-                          <SelectItem value="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" className="text-xs">
-                            Modern Sans (Inter / Segoe UI / Roboto)
-                          </SelectItem>
-                          <SelectItem value="Georgia, Cambria, serif" className="text-xs">
-                            Classic Serif (Georgia / Cambria)
-                          </SelectItem>
-                          <SelectItem value="'Palatino Linotype', Palatino, serif" className="text-xs">
-                            Executive Palatino (Elegan)
-                          </SelectItem>
-                          <SelectItem value="Consolas, 'Roboto Mono', Monaco, monospace" className="text-xs">
-                            Code Monospace (Terminal Developer)
-                          </SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-
-                    <div className="pt-2 border-t border-slate-100 space-y-2">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="font-semibold text-slate-900 text-xs">{t("cover_letter.sig_title", "Tanda Tangan Digital")}</p>
-                          <p className="text-[11px] text-slate-500">{t("cover_letter.sig_subtitle", "Tampilkan tanda tangan di atas nama")}</p>
-                        </div>
-                        <input
-                          type="checkbox"
-                          checked={letterData.includeSignature}
-                          onChange={e => setLetterData({ ...letterData, includeSignature: e.target.checked })}
-                          className="w-4 h-4 rounded text-blue-600 focus:ring-blue-500 border-slate-300 cursor-pointer"
-                        />
-                      </div>
-
-                      {letterData.includeSignature && (
-                        <div>
-                          {letterData.signatureDataUrl ? (
-                            <div className="p-2.5 bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-between gap-2">
-                              <div className="flex items-center gap-2.5 min-w-0">
-                                <div className="w-16 h-10 bg-white rounded-lg border border-slate-200 flex items-center justify-center p-1 shrink-0 shadow-2xs overflow-hidden">
-                                  <img
-                                    src={letterData.signatureDataUrl}
-                                    alt="Tanda Tangan Digital"
-                                    className="max-h-full max-w-full object-contain mix-blend-multiply"
-                                  />
-                                </div>
-                                <div className="min-w-0">
-                                  <p className="text-xs font-semibold text-slate-800 truncate">
-                                    {t("cover_letter.sig_custom", "Tanda Tangan Khusus")}
-                                  </p>
-                                  <span className="inline-flex items-center text-[10px] text-emerald-600 font-medium">
-                                    {t("cover_letter.sig_installed", "● Terpasang di Dokumen")}
-                                  </span>
-                                </div>
-                              </div>
-                              <div className="flex items-center gap-1 shrink-0">
-                                <button
-                                  type="button"
-                                  onClick={() => setIsSignatureModalOpen(true)}
-                                  className="p-1.5 text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-lg text-xs font-medium transition-colors"
-                                  title="Ubah / Gambar Ulang"
-                                >
-                                  <PenTool className="w-3.5 h-3.5" />
-                                </button>
-                                <button
-                                  type="button"
-                                  onClick={() =>
-                                    setLetterData({
-                                      ...letterData,
-                                      signatureDataUrl: undefined,
-                                      signatureType: undefined,
-                                    })
-                                  }
-                                  className="p-1.5 text-rose-500 hover:text-rose-700 hover:bg-rose-50 rounded-lg text-xs font-medium transition-colors"
-                                  title="Hapus (Gunakan Font Standar)"
-                                >
-                                  <Trash2 className="w-3.5 h-3.5" />
-                                </button>
-                              </div>
+                      {letterData.signatureDataUrl ? (
+                        <div className="p-2.5 bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-between gap-2">
+                          <div className="flex items-center gap-2.5 min-w-0">
+                            <div className="w-16 h-10 bg-white rounded-lg border border-slate-200 flex items-center justify-center p-1 shrink-0 shadow-2xs overflow-hidden">
+                              <img
+                                src={letterData.signatureDataUrl}
+                                alt="Tanda Tangan Digital"
+                                className="max-h-full max-w-full object-contain mix-blend-multiply"
+                              />
                             </div>
-                          ) : (
-                            <div className="space-y-1.5">
-                              <button
-                                type="button"
-                                onClick={() => setIsSignatureModalOpen(true)}
-                                className="w-full py-2 px-3 bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200/80 rounded-xl text-xs font-semibold flex items-center justify-center gap-2 transition-colors shadow-2xs cursor-pointer"
-                              >
-                                <PenTool className="w-3.5 h-3.5" />
-                                {t("cover_letter.sig_draw_upload", "Gambar / Upload Tanda Tangan")}
-                              </button>
-                              <p className="text-[10px] text-slate-400 text-center">
-                                {t("cover_letter.sig_hint", "Bisa gambar dengan jari/mouse, upload file PNG, atau pilih kaligrafi")}
+                            <div className="min-w-0">
+                              <p className="text-xs font-semibold text-slate-800 truncate">
+                                {t("cover_letter.sig_custom", "Tanda Tangan Khusus")}
                               </p>
+                              <span className="inline-flex items-center text-[10px] text-emerald-600 font-medium">
+                                {t("cover_letter.sig_installed", "● Terpasang di Dokumen")}
+                              </span>
                             </div>
-                          )}
+                          </div>
+                          <div className="flex items-center gap-1 shrink-0">
+                            <button
+                              type="button"
+                              onClick={() => setIsSignatureModalOpen(true)}
+                              className="p-1.5 text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-lg text-xs font-medium transition-colors"
+                              title="Ubah / Gambar Ulang"
+                            >
+                              <PenTool className="w-3.5 h-3.5" />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() =>
+                                setLetterData({
+                                  ...letterData,
+                                  signatureDataUrl: undefined,
+                                  signatureType: undefined,
+                                })
+                              }
+                              className="p-1.5 text-rose-500 hover:text-rose-700 hover:bg-rose-50 rounded-lg text-xs font-medium transition-colors"
+                              title="Hapus (Gunakan Font Standar)"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="space-y-1.5">
+                          <button
+                            type="button"
+                            onClick={() => setIsSignatureModalOpen(true)}
+                            className="w-full py-2 px-3 bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200/80 rounded-xl text-xs font-semibold flex items-center justify-center gap-2 transition-colors shadow-2xs cursor-pointer"
+                          >
+                            <PenTool className="w-3.5 h-3.5" />
+                            {t("cover_letter.sig_draw_upload", "Gambar / Upload Tanda Tangan")}
+                          </button>
+                          <p className="text-[10px] text-slate-400 text-center">
+                            {t("cover_letter.sig_hint", "Bisa gambar dengan jari/mouse, upload file PNG, atau pilih kaligrafi")}
+                          </p>
                         </div>
                       )}
                     </div>
-                  </div>
-                )}
+                  )}
+                </div>
               </div>
+            )}
+          </div>
         </aside>
 
         {/* Right Live Preview Workspace - single clean scrollbar only */}
         <main
-          className={`flex-1 min-h-0 h-full overflow-y-auto p-2 sm:p-8 flex flex-col items-center custom-cl-scrollbar ${
-            mobileTab !== "preview" ? "hidden md:flex" : "flex"
-          }`}
+          className={`flex-1 min-h-0 h-full overflow-y-auto p-2 sm:p-8 flex flex-col items-center custom-cl-scrollbar ${mobileTab !== "preview" ? "hidden md:flex" : "flex"
+            }`}
         >
           {/* Zoom & Scaling Controls */}
           <div className="w-full max-w-[820px] mb-3 flex items-center justify-between text-xs text-slate-500 shrink-0 gap-2">
@@ -1595,11 +1589,10 @@ Hormat saya,
             }}
           >
             <div
-              className="transition-transform duration-200 ease-out"
+              className="origin-top-left transition-transform duration-200 ease-out"
               style={{
                 width: "794px",
                 transform: `scale(${zoomLevel / 100})`,
-                transformOrigin: "top left",
               }}
             >
               <div

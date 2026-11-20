@@ -71,6 +71,19 @@ export default function JobMatcherModal({
     });
   };
 
+  const handleAddAllMissingKeywords = () => {
+    if (!result?.missingKeywords || result.missingKeywords.length === 0) return;
+    result.missingKeywords.forEach((kw: string) => {
+      addSkillMutation.mutate({
+        cvId,
+        skillName: kw,
+        category: "Technical & Core Skills",
+        proficiency: "intermediate",
+      });
+    });
+    toast.success(t("job_matcher.all_inserted", "Semua kata kunci yang hilang telah disisipkan ke daftar keahlian CV!"));
+  };
+
   const matchMutation = trpc.cvAI.matchJobDescription.useMutation({
     onSuccess: () => {
       toast.success(t("job_matcher.analysis_success", "Analisis kecocokan lowongan berhasil!"));
@@ -208,16 +221,25 @@ export default function JobMatcherModal({
 
                 {/* Missing Keywords */}
                 <div className="bg-white p-4 rounded-xl border border-neutral-200/90 shadow-2xs space-y-2.5">
-                  <div className="flex items-center justify-between text-xs font-bold text-rose-800">
+                  <div className="flex items-center justify-between text-xs font-bold text-rose-800 flex-wrap gap-2">
                     <div className="flex items-center gap-2">
                       <XCircle className="w-4 h-4 text-rose-600" />
                       <span>
                         {t("job_matcher.missing_keywords", "Kata Kunci Hilang")} ({result.missingKeywords?.length || 0})
                       </span>
                     </div>
-                    <span className="text-[10px] text-neutral-400 font-normal">
-                      {t("job_matcher.click_insert_hint", "💡 Klik kata kunci untuk sisipkan ke CV")}
-                    </span>
+                    {result.missingKeywords && result.missingKeywords.length > 0 && (
+                      <button
+                        type="button"
+                        onClick={handleAddAllMissingKeywords}
+                        disabled={addSkillMutation.isPending}
+                        className="text-[11px] px-2.5 py-0.5 rounded-md bg-rose-600 text-white hover:bg-rose-700 font-semibold inline-flex items-center gap-1 transition-all shadow-2xs active:scale-95 cursor-pointer"
+                        title={t("job_matcher.insert_all_tooltip", "Sisipkan seluruh kata kunci ini langsung ke CV")}
+                      >
+                        <Plus className="w-3 h-3" />
+                        <span>{t("job_matcher.insert_all_btn", "Sisipkan Semua")}</span>
+                      </button>
+                    )}
                   </div>
                   <div className="flex flex-wrap gap-1.5">
                     {result.missingKeywords?.map((kw: string, i: number) => (

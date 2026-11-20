@@ -379,7 +379,14 @@
     "pdf": "PDFダウンロード",
     "public": "公開",
     "private": "非公開",
-    "updated": "更新日"
+    "updated": "更新日",
+    "saving_cloud": "保存中...",
+    "synced": "クラウドに保存済み",
+    "hr_scan": "6秒HRスクリーニング診断",
+    "hr_scan_desc": "採用担当者の目視スキャン速度を診断",
+    "json_resume_format": "標準JSON Resume (.json)",
+    "json_resume_desc": "jsonresume.org標準スキーマ",
+    "json_resume_success": "標準JSON Resume (.json) がダウンロードされました！"
   },
   "tabs": {
     "personal": "基本情報",
@@ -682,7 +689,9 @@
     "btn_compact": "1ページに圧縮",
     "btn_compact_active": "1ページ圧縮: オン",
     "guide_on": "区切り線: オン",
-    "guide_off": "区切り線: オフ"
+    "guide_off": "区切り線: オフ",
+    "page_break_1": "✂️ 1ページ目の区切り ({paper})",
+    "page_break_2": "✂️ 2ページ目の区切り ({paper})"
   },
   "doc_switcher": {
     "cv": "職務経歴書 (CV)",
@@ -789,5 +798,50 @@
     "prompt_verbs": "効果的なアクション動詞を提案してください",
     "prompt_skills": "スキルの項目を強化するには？",
     "prompt_metrics": "業務実績を数値化してアピールしたい"
+  },
+  "job_matcher": {
+    "insert_all_btn": "すべて挿入",
+    "insert_all_tooltip": "すべての不足キーワードをCVに直接挿入",
+    "all_inserted": "すべての不足キーワードがスキルに追加されました！"
+  },
+  "public_cv": {
+    "view_paper": "書類プレビュー",
+    "view_portfolio": "ポートフォリオWeb",
+    "role_placeholder": "プロフェッショナル",
+    "sec_experience": "職務経歴",
+    "sec_skills": "スキル・技術",
+    "sec_projects": "注目プロジェクト",
+    "sec_education": "学歴",
+    "sec_certifications": "資格・認定",
+    "create_own": "無料でCVを作成する",
+    "create_own_cta": "このようなWebポートフォリオを作成しますか？今すぐ無料作成 →"
+  },
+  "hr_screen": {
+    "modal_title": "6秒HRスクリーニング診断",
+    "modal_desc": "大量の履歴書を選考する採用担当者の視線スキャン速度をシミュレート",
+    "verdict_excellent": "HRスクリーニング通過率が非常に高い状態です！",
+    "verdict_good": "可読性は良好ですが、さらに最適化の余地があります",
+    "verdict_needs_work": "6秒で目を引くよう改善が必要です",
+    "est_scan_time": "推定HRスキャン時間:",
+    "card_metrics": "数値・成果指標",
+    "card_verbs": "強力なアクション動詞",
+    "card_standard": "HR業界の標準基準",
+    "findings_title": "可読性評価の診断結果:",
+    "verbs_arsenal": "追加すべき代表的なアクション動詞:",
+    "verbs_copied": "アクション動詞リストをコピーしました！",
+    "metric_strong_title": "定量的な数値指標が豊富です",
+    "metric_strong_desc": "{n}件の定量的成果が見つかりました。明確な成果を証明できます。",
+    "metric_avg_title": "定量的な数値指標が少なめです",
+    "metric_avg_desc": "{n}件の成果指標が見つかりました。4つ以上を目標に追加してください。",
+    "metric_low_title": "定量的な数値指標が見つかりません",
+    "metric_low_desc": "日常業務をパーセンテージや数値を用いた具体的な成果に書き換えてください。",
+    "verbs_strong_title": "説得力のある動詞が使われています",
+    "verbs_strong_desc": "強力な動詞（{verbs}）を使用しており、能動的な印象を与えます。",
+    "verbs_low_title": "より多くのアクション動詞が必要です",
+    "verbs_low_desc": "各箇条書きを「設計」「開発」「統括」などの明確な動詞から始めてください。",
+    "summary_ideal_title": "職務要約の長さが適切です",
+    "summary_ideal_desc": "要約は{n}単語で、冒頭2秒でスムーズに要点が把握できます。",
+    "summary_long_title": "職務要約が長すぎます",
+    "summary_long_desc": "要約が{n}単語あります。読み飛ばされないよう3〜4文程度にまとめてください。"
   }
 }

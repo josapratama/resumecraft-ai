@@ -379,7 +379,14 @@
     "pdf": "Unduh PDF",
     "public": "Publik",
     "private": "Pribadi",
-    "updated": "Diperbarui"
+    "updated": "Diperbarui",
+    "saving_cloud": "Menyimpan...",
+    "synced": "Tersimpan di Cloud",
+    "hr_scan": "Audit Keterbacaan HRD 6 Detik",
+    "hr_scan_desc": "Simulasi kecepatan scan recruiter",
+    "json_resume_format": "Standar JSON Resume (.json)",
+    "json_resume_desc": "Standar portabilitas jsonresume.org",
+    "json_resume_success": "Standar JSON Resume (.json) berhasil diunduh!"
   },
   "tabs": {
     "personal": "Pribadi",
@@ -682,7 +689,9 @@
     "btn_compact": "Padatkan",
     "btn_compact_active": "1 Hal: Aktif",
     "guide_on": "Garis: On",
-    "guide_off": "Garis: Off"
+    "guide_off": "Garis: Off",
+    "page_break_1": "✂️ Batas Halaman 1 ({paper})",
+    "page_break_2": "✂️ Batas Halaman 2 ({paper})"
   },
   "doc_switcher": {
     "cv": "Curriculum Vitae",
@@ -789,5 +798,50 @@
     "prompt_verbs": "Rekomendasikan action verbs yang kuat",
     "prompt_skills": "Bagaimana meningkatkan bagian keahlian saya?",
     "prompt_metrics": "Ubah deskripsi kerja menjadi terukur dengan metrik"
+  },
+  "job_matcher": {
+    "insert_all_btn": "Sisipkan Semua",
+    "insert_all_tooltip": "Sisipkan seluruh kata kunci ini langsung ke CV",
+    "all_inserted": "Semua kata kunci yang hilang telah disisipkan ke daftar keahlian CV!"
+  },
+  "public_cv": {
+    "view_paper": "Dokumen CV",
+    "view_portfolio": "Web Portofolio",
+    "role_placeholder": "Profesional",
+    "sec_experience": "Pengalaman Kerja",
+    "sec_skills": "Keahlian & Kompetensi",
+    "sec_projects": "Proyek Unggulan",
+    "sec_education": "Pendidikan",
+    "sec_certifications": "Sertifikasi & Lisensi",
+    "create_own": "Buat CV Anda Sendiri Gratis",
+    "create_own_cta": "Ingin CV & Web Portofolio seperti ini? Buat sekarang gratis →"
+  },
+  "hr_screen": {
+    "modal_title": "Audit Keterbacaan HRD 6 Detik (6-Second Screening)",
+    "modal_desc": "Simulasi kecepatan scan mata recruiter saat menyeleksi ratusan CV kandidat",
+    "verdict_excellent": "Sangat Siap Tembus HR Screening!",
+    "verdict_good": "Keterbacaan Cukup Baik, Ada Ruang Optimasi",
+    "verdict_needs_work": "Perlu Dioptimalkan Agar Menarik dalam 6 Detik",
+    "est_scan_time": "Estimasi Waktu Pindai HRD:",
+    "card_metrics": "Metrik / Angka Hasil",
+    "card_verbs": "Action Verbs Kuat",
+    "card_standard": "Standar Industri HR",
+    "findings_title": "Catatan Evaluasi Keterbacaan:",
+    "verbs_arsenal": "Koleksi Action Verbs Populer untuk Disisipkan:",
+    "verbs_copied": "Daftar 20 Action Verbs populer disalin!",
+    "metric_strong_title": "Kepadatan Metrik & Angka Sangat Kuat",
+    "metric_strong_desc": "Ditemukan {n} bukti kuantitatif. Recruiter menyukai angka nyata karena langsung membuktikan dampak kerja.",
+    "metric_avg_title": "Metrik Terukur Masih Cukup Sedikit",
+    "metric_avg_desc": "Ditemukan {n} angka hasil. Tingkatkan menjadi minimal 4 (contoh: \"Meningkatkan konversi 25%\", \"Memimpin 5 anggota tim\").",
+    "metric_low_title": "Belum Ada Angka / Metrik Terukur",
+    "metric_low_desc": "Recruiter menilai CV berbasis hasil. Ubah tugas harian menjadi pencapaian dengan persentase atau nominal angka.",
+    "verbs_strong_title": "Kata Kerja Aksi (Action Verbs) Dominan",
+    "verbs_strong_desc": "Menggunakan kata kerja kuat ({verbs}). Ini membuat profil Anda berkesan proaktif.",
+    "verbs_low_title": "Perlu Lebih Banyak Action Verbs",
+    "verbs_low_desc": "Mulai setiap poin pengalaman kerja dengan kata kerja aksi tegas seperti \"Merancang\", \"Mengembangkan\", atau \"Memimpin\".",
+    "summary_ideal_title": "Panjang Ringkasan Profesional Ideal",
+    "summary_ideal_desc": "Ringkasan terdiri dari {n} kata (ideal 30-60 kata). Tuntas dibaca recruiter dalam 2 detik pertama.",
+    "summary_long_title": "Ringkasan Terlalu Panjang",
+    "summary_long_desc": "Ringkasan Anda memiliki {n} kata. Persingkat menjadi maksimal 3-4 kalimat padat agar tidak di-skip oleh HRD."
   }
 }

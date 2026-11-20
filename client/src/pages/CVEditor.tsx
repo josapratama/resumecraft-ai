@@ -3,6 +3,7 @@ import { useParams, useLocation } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { exportCVToPDF } from "@/lib/pdfExport";
 import { exportCVToDOCX } from "@/lib/docxExport";
+import { downloadJSONResumeFile } from "@/lib/jsonResume";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -41,6 +42,9 @@ import {
   FileCheck2,
   DollarSign,
   FileCode2,
+  FileJson,
+  Timer,
+  Cloud,
   Mic,
   MoreHorizontal,
   Copy,
@@ -77,6 +81,7 @@ import JobMatcherModal from "@/components/CVEditor/JobMatcherModal";
 import TemplateGalleryModal from "@/components/CVEditor/TemplateGalleryModal";
 import ATSReadinessBadge from "@/components/CVEditor/ATSReadinessBadge";
 import DuplicateCVModal from "@/components/CVEditor/DuplicateCVModal";
+import HRScreeningModal from "@/components/CVEditor/HRScreeningModal";
 import CVPreview from "@/components/CVEditor/CVPreview";
 import { AIChatBox } from "@/components/AIChatBox";
 import { useAuth } from "@/_core/hooks/useAuth";
@@ -214,6 +219,7 @@ export default function CVEditor() {
   const [showGalleryModal, setShowGalleryModal] = useState(false);
   const [showJobMatcherModal, setShowJobMatcherModal] = useState(false);
   const [showDuplicateModal, setShowDuplicateModal] = useState(false);
+  const [showHRScreeningModal, setShowHRScreeningModal] = useState(false);
 
   const handleBackupCV = () => {
     if (!cvData) return;
@@ -233,7 +239,7 @@ export default function CVEditor() {
     try {
       const saved = localStorage.getItem(`resumecraft_order_${cvIdNum}`);
       if (saved) return JSON.parse(saved);
-    } catch {}
+    } catch { }
     return SECTIONS.map(s => s.id);
   });
 
@@ -254,7 +260,7 @@ export default function CVEditor() {
       copy.splice(target, 0, item);
       try {
         localStorage.setItem(`resumecraft_order_${cvIdNum}`, JSON.stringify(copy));
-      } catch {}
+      } catch { }
       toast.success("Urutan bagian CV diperbarui!");
       return copy;
     });
@@ -517,6 +523,18 @@ export default function CVEditor() {
                       {t("topbar.public", "Public")}
                     </Badge>
                   )}
+                  {/* Real-time Cloud Sync Indicator */}
+                  {renameMutation.isPending || updateCVMutation.isPending || updateDesignMutation.isPending ? (
+                    <span className="inline-flex items-center gap-1 text-[10px] font-medium text-amber-700 bg-amber-50 border border-amber-200/80 px-2 py-0.5 rounded-full shadow-2xs">
+                      <Spinner className="w-2.5 h-2.5 text-amber-600" />
+                      <span className="hidden xs:inline">{t("topbar.saving_cloud", "Menyimpan...")}</span>
+                    </span>
+                  ) : (
+                    <span className="inline-flex items-center gap-1 text-[10px] font-medium text-emerald-700 bg-emerald-50 border border-emerald-200/80 px-2 py-0.5 rounded-full shadow-2xs">
+                      <Check className="w-2.5 h-2.5 text-emerald-600" />
+                      <span className="hidden xs:inline">{t("topbar.synced", "Tersimpan di Cloud")}</span>
+                    </span>
+                  )}
                 </div>
               </div>
             </div>
@@ -619,6 +637,19 @@ export default function CVEditor() {
                     <div>
                       <p className="text-xs font-semibold text-neutral-900">{t("topbar.ats_match", "ATS Match Score")}</p>
                       <p className="text-[10px] text-neutral-500">{t("topbar.ats_desc", "Benchmark against job vacancy")}</p>
+                    </div>
+                  </DropdownMenuItem>
+
+                  <DropdownMenuItem
+                    onClick={() => setShowHRScreeningModal(true)}
+                    className="gap-2.5 p-2 rounded-lg cursor-pointer hover:bg-amber-50"
+                  >
+                    <div className="w-7 h-7 rounded-md bg-amber-100 text-amber-700 flex items-center justify-center flex-shrink-0">
+                      <Timer className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <p className="text-xs font-semibold text-neutral-900">{t("topbar.hr_scan", "Audit Keterbacaan HRD 6 Detik")}</p>
+                      <p className="text-[10px] text-neutral-500">{t("topbar.hr_scan_desc", "Simulasi kecepatan scan recruiter")}</p>
                     </div>
                   </DropdownMenuItem>
 
@@ -825,9 +856,8 @@ export default function CVEditor() {
                                 template: t.id,
                               });
                             }}
-                            className={`cursor-pointer rounded-md text-xs py-1.5 px-2.5 flex items-center justify-between ${
-                              template === t.id ? "font-semibold bg-neutral-100 text-neutral-900" : "text-neutral-600"
-                            }`}
+                            className={`cursor-pointer rounded-md text-xs py-1.5 px-2.5 flex items-center justify-between ${template === t.id ? "font-semibold bg-neutral-100 text-neutral-900" : "text-neutral-600"
+                              }`}
                           >
                             <span>{t.label}</span>
                             {template === t.id && (
@@ -866,15 +896,15 @@ export default function CVEditor() {
                           `${cvData.cv.title || "resume"}.pdf`,
                           paperSize
                         );
-                        toast.info(t("topbar.pdf_dialog_info", "Pilih 'Save as PDF' pada dialog cetak untuk mengunduh PDF."), {
-                          duration: 5000,
-                        });
-                      } catch (err: any) {
-                        toast.error(`${t("topbar.pdf_failed", "Export PDF gagal:")} ${err.message || String(err)}`);
-                      } finally {
-                        setIsExporting(false);
-                      }
-                    }}
+                          toast.info(t("topbar.pdf_dialog_info", "Pilih 'Save as PDF' pada dialog cetak untuk mengunduh PDF."), {
+                            duration: 5000,
+                          });
+                        } catch (err: any) {
+                          toast.error(`${t("topbar.pdf_failed", "Export PDF gagal:")} ${err.message || String(err)}`);
+                        } finally {
+                          setIsExporting(false);
+                        }
+                      }}
                     className="flex items-center gap-2.5 text-xs font-medium cursor-pointer rounded-lg py-2"
                   >
                     <div className="w-7 h-7 rounded-md bg-red-50 text-red-600 flex items-center justify-center shrink-0">
@@ -911,6 +941,22 @@ export default function CVEditor() {
                     <div>
                       <p className="font-bold text-neutral-900">{t("topbar.word_format", "Format Word (.docx)")}</p>
                       <p className="text-[10px] text-neutral-500">{t("topbar.word_desc", "Bisa diedit di Word / WPS")}</p>
+                    </div>
+                  </DropdownMenuItem>
+
+                  <DropdownMenuItem
+                    onClick={() => {
+                      downloadJSONResumeFile(cvData);
+                      toast.success(t("topbar.json_resume_success", "Standar JSON Resume (.json) berhasil diunduh!"));
+                    }}
+                    className="flex items-center gap-2.5 text-xs font-medium cursor-pointer rounded-lg py-2"
+                  >
+                    <div className="w-7 h-7 rounded-md bg-amber-50 text-amber-600 flex items-center justify-center shrink-0">
+                      <FileJson className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <p className="font-bold text-neutral-900">{t("topbar.json_resume_format", "Standar JSON Resume (.json)")}</p>
+                      <p className="text-[10px] text-neutral-500">{t("topbar.json_resume_desc", "Standar portabilitas jsonresume.org")}</p>
                     </div>
                   </DropdownMenuItem>
 
@@ -1084,11 +1130,10 @@ export default function CVEditor() {
             <div className="flex items-center justify-center gap-1.5 bg-neutral-100/70 p-1 rounded-xl">
               <button
                 onClick={() => handleSetMobileTab("editor")}
-                className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-xs font-bold rounded-lg transition-all ${
-                  mobileTab === "editor"
+                className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-xs font-bold rounded-lg transition-all ${mobileTab === "editor"
                     ? "bg-white text-neutral-900 shadow-sm"
                     : "text-neutral-500 hover:text-neutral-800"
-                }`}
+                  }`}
               >
                 <Pencil className="w-3.5 h-3.5" />
                 <span>{t("topbar.tab_form", "Formulir")}</span>
@@ -1096,11 +1141,10 @@ export default function CVEditor() {
 
               <button
                 onClick={() => handleSetMobileTab("preview")}
-                className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-xs font-bold rounded-lg transition-all ${
-                  mobileTab === "preview"
+                className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-xs font-bold rounded-lg transition-all ${mobileTab === "preview"
                     ? "bg-white text-neutral-900 shadow-sm"
                     : "text-neutral-500 hover:text-neutral-800"
-                }`}
+                  }`}
               >
                 <Eye className="w-3.5 h-3.5 text-blue-600" />
                 <span>{t("topbar.tab_preview", "Pratinjau CV")}</span>
@@ -1108,11 +1152,10 @@ export default function CVEditor() {
 
               <button
                 onClick={() => handleSetMobileTab("chat")}
-                className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-xs font-bold rounded-lg transition-all ${
-                  mobileTab === "chat"
+                className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-xs font-bold rounded-lg transition-all ${mobileTab === "chat"
                     ? "bg-indigo-600 text-white shadow-sm"
                     : "text-indigo-600 hover:bg-white/60"
-                }`}
+                  }`}
               >
                 <Bot className="w-3.5 h-3.5" />
                 <span>{t("topbar.tab_chat", "Obrolan AI")}</span>
@@ -1157,11 +1200,10 @@ export default function CVEditor() {
                   return (
                     <div
                       key={section.id}
-                      className={`inline-flex items-center rounded-lg transition-all ${
-                        isActive
+                      className={`inline-flex items-center rounded-lg transition-all ${isActive
                           ? "bg-white text-neutral-900 shadow-xs font-semibold"
                           : "text-neutral-600 hover:text-neutral-900 hover:bg-white/50"
-                      }`}
+                        }`}
                     >
                       <button
                         type="button"
@@ -1172,11 +1214,10 @@ export default function CVEditor() {
                         <span>{sectionLabel}</span>
                         {count > 0 && (
                           <span
-                            className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${
-                              isActive
+                            className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${isActive
                                 ? "bg-neutral-100 text-neutral-900"
                                 : "bg-neutral-300/70 text-neutral-700"
-                            }`}
+                              }`}
                           >
                             {count}
                           </span>
@@ -1392,6 +1433,12 @@ export default function CVEditor() {
         isOpen={showATSModal}
         onClose={() => setShowATSModal(false)}
         defaultRole={cvData.cv.targetRole || cvData.cv.title}
+      />
+
+      <HRScreeningModal
+        isOpen={showHRScreeningModal}
+        onClose={() => setShowHRScreeningModal(false)}
+        cvData={displayData}
       />
 
       <CoverLetterModal

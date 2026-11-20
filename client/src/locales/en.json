@@ -379,7 +379,14 @@
     "pdf": "Download PDF",
     "public": "Public",
     "private": "Private",
-    "updated": "Updated"
+    "updated": "Updated",
+    "saving_cloud": "Saving...",
+    "synced": "Saved to Cloud",
+    "hr_scan": "6-Second HR Screening Audit",
+    "hr_scan_desc": "Simulate recruiter eye-scan speed",
+    "json_resume_format": "Standard JSON Resume (.json)",
+    "json_resume_desc": "Open-source jsonresume.org schema",
+    "json_resume_success": "Standard JSON Resume (.json) downloaded successfully!"
   },
   "tabs": {
     "personal": "Personal",
@@ -682,7 +689,9 @@
     "btn_compact": "Compact",
     "btn_compact_active": "1 Page: Active",
     "guide_on": "Guide: On",
-    "guide_off": "Guide: Off"
+    "guide_off": "Guide: Off",
+    "page_break_1": "✂️ Page 1 Break ({paper})",
+    "page_break_2": "✂️ Page 2 Break ({paper})"
   },
   "doc_switcher": {
     "cv": "Curriculum Vitae",
@@ -789,5 +798,50 @@
     "prompt_verbs": "Recommend strong action verbs",
     "prompt_skills": "How can I improve my skills section?",
     "prompt_metrics": "Quantify job descriptions with metrics"
+  },
+  "job_matcher": {
+    "insert_all_btn": "Insert All",
+    "insert_all_tooltip": "Insert all missing keywords directly into CV",
+    "all_inserted": "All missing keywords have been inserted into CV skills!"
+  },
+  "public_cv": {
+    "view_paper": "Document Paper",
+    "view_portfolio": "Web Portfolio",
+    "role_placeholder": "Professional",
+    "sec_experience": "Work Experience",
+    "sec_skills": "Skills & Competencies",
+    "sec_projects": "Featured Projects",
+    "sec_education": "Education",
+    "sec_certifications": "Certifications & Licenses",
+    "create_own": "Create Your Own Free CV",
+    "create_own_cta": "Want a CV & Web Portfolio like this? Create yours free →"
+  },
+  "hr_screen": {
+    "modal_title": "6-Second HR Screening Audit",
+    "modal_desc": "Simulate recruiter eye-scan reading speed across candidate resumes",
+    "verdict_excellent": "Highly Ready to Pass HR Screening!",
+    "verdict_good": "Good Skimmability, Some Room for Optimization",
+    "verdict_needs_work": "Needs Optimization to Stand Out in 6 Seconds",
+    "est_scan_time": "Estimated HR Scan Time:",
+    "card_metrics": "Quantified Metrics & Results",
+    "card_verbs": "Strong Action Verbs",
+    "card_standard": "HR Industry Benchmark",
+    "findings_title": "Skimmability Evaluation Findings:",
+    "verbs_arsenal": "Popular Action Verbs to Include:",
+    "verbs_copied": "20 Popular Action Verbs copied!",
+    "metric_strong_title": "Strong Metric & Number Density",
+    "metric_strong_desc": "Found {n} quantitative proof points. Recruiters value metrics that prove impact.",
+    "metric_avg_title": "Few Quantified Metrics",
+    "metric_avg_desc": "Found {n} metrics. Aim for at least 4 (e.g., \"Increased conversion by 25%\").",
+    "metric_low_title": "No Quantified Metrics Found",
+    "metric_low_desc": "Recruiters evaluate impact. Turn daily duties into achievements with numbers.",
+    "verbs_strong_title": "Strong Action Verbs Dominant",
+    "verbs_strong_desc": "Using powerful verbs ({verbs}). This projects proactive leadership.",
+    "verbs_low_title": "More Action Verbs Needed",
+    "verbs_low_desc": "Start each bullet with an active verb like \"Engineered\", \"Spearheaded\", or \"Optimized\".",
+    "summary_ideal_title": "Ideal Professional Summary Length",
+    "summary_ideal_desc": "Summary has {n} words (ideal 30-60 words). Easily read in 2 seconds.",
+    "summary_long_title": "Summary Too Long",
+    "summary_long_desc": "Summary has {n} words. Shorten to 3-4 crisp sentences."
   }
 }

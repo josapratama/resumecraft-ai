@@ -830,32 +830,32 @@ export default function Home() {
     <div className="min-h-screen bg-neutral-50 flex flex-col text-neutral-900">
       {/* Top Header */}
       <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-neutral-200 shadow-xs">
-        <div className="container mx-auto px-4 sm:px-6 py-3.5">
-          <div className="flex items-center justify-between gap-4">
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-red-600 to-amber-500 flex items-center justify-center shadow-xs">
+        <div className="container mx-auto px-3 sm:px-6 py-2.5 sm:py-3.5">
+          <div className="flex items-center justify-between gap-2 sm:gap-4">
+            <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+              <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-red-600 to-amber-500 flex items-center justify-center shadow-xs shrink-0">
                 <Sparkles className="w-4 h-4 text-white" />
               </div>
-              <div>
-                <h1 className="text-base sm:text-lg font-bold text-neutral-900 leading-tight">
+              <div className="min-w-0">
+                <h1 className="text-sm sm:text-lg font-bold text-neutral-900 leading-tight truncate">
                   ResumeCraft <span className="text-red-600">AI</span>
                 </h1>
-                <p className="text-[11px] text-neutral-500">
+                <p className="text-[10px] sm:text-[11px] text-neutral-500 truncate hidden sm:block">
                   Selamat datang kembali,{" "}
                   <span className="font-semibold text-neutral-700">{user?.name || user?.username || "Pengguna"}</span>
                 </p>
               </div>
             </div>
 
-            <div className="flex items-center gap-2 sm:gap-3">
+            <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
               {/* Import Resume with AI */}
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() => setIsImportDialogOpen(true)}
-                className="gap-1.5 border-indigo-200 text-indigo-700 bg-indigo-50/60 hover:bg-indigo-100 rounded-xl text-xs font-semibold h-9"
+                className="gap-1 border-indigo-200 text-indigo-700 bg-indigo-50/60 hover:bg-indigo-100 rounded-xl text-xs font-semibold h-8 sm:h-9 px-2 sm:px-3"
               >
-                <Sparkles className="w-3.5 h-3.5 text-indigo-600" />
+                <Sparkles className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
                 <span className="hidden sm:inline">Impor CV Otomatis</span>
                 <span className="sm:hidden">Impor</span>
               </Button>
@@ -864,17 +864,18 @@ export default function Home() {
               <Button
                 size="sm"
                 onClick={() => setIsCreateDialogOpen(true)}
-                className="bg-neutral-900 text-white hover:bg-neutral-800 gap-1.5 rounded-xl text-xs font-semibold h-9 shadow-sm"
+                className="bg-neutral-900 text-white hover:bg-neutral-800 gap-1 rounded-xl text-xs font-semibold h-8 sm:h-9 px-2.5 sm:px-3.5 shadow-sm"
               >
-                <Plus className="w-3.5 h-3.5" />
-                <span>Buat CV Baru</span>
+                <Plus className="w-3.5 h-3.5 shrink-0" />
+                <span className="hidden sm:inline">Buat CV Baru</span>
+                <span className="sm:hidden">Buat CV</span>
               </Button>
 
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={logout}
-                className="text-neutral-500 hover:text-neutral-900 text-xs h-9 px-2.5 rounded-xl"
+                className="text-neutral-500 hover:text-neutral-900 text-xs h-8 sm:h-9 px-2 sm:px-2.5 rounded-xl"
               >
                 Keluar
               </Button>

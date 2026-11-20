@@ -161,8 +161,8 @@ export default function CVPreview({
   return (
     <Card className="overflow-hidden shadow-sm border border-neutral-200/80 bg-neutral-100/50 rounded-2xl">
       {/* Top Interactive Preview Toolbar - Modern Refined Studio Bar */}
-      <div className="flex items-center justify-between px-3.5 py-2.5 bg-slate-900 text-white text-xs border-b border-slate-800/90 gap-2 flex-nowrap">
-        <div className="flex items-center gap-2 min-w-0 flex-nowrap overflow-hidden">
+      <div className="flex items-center justify-between px-3 py-2 bg-slate-900 text-white text-xs border-b border-slate-800/90 gap-2 overflow-x-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+        <div className="flex items-center gap-2 min-w-0 flex-nowrap shrink-0">
           <span className="font-bold tracking-wide capitalize text-white text-xs truncate shrink-0">
             {template}
           </span>

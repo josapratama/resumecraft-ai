@@ -980,43 +980,72 @@ export default function CVEditor() {
             </div>
           </div>
 
-          {/* Mobile / Tablet Segmented View Switcher (Sangat Bersih & Nyaman) */}
-          <div className="lg:hidden mt-2.5 pt-2 border-t border-neutral-100 flex items-center justify-center gap-1.5 bg-neutral-100/70 p-1 rounded-xl">
-            <button
-              onClick={() => setMobileTab("editor")}
-              className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-xs font-bold rounded-lg transition-all ${
-                mobileTab === "editor"
-                  ? "bg-white text-neutral-900 shadow-sm"
-                  : "text-neutral-500 hover:text-neutral-800"
-              }`}
-            >
-              <Pencil className="w-3.5 h-3.5" />
-              <span>Formulir</span>
-            </button>
+          {/* Mobile / Tablet Document Switcher & View Switcher */}
+          <div className="lg:hidden mt-2 pt-2 border-t border-neutral-100 flex flex-col gap-1.5">
+            {/* Quick Document Navigation Strip for Mobile */}
+            <div className="flex items-center justify-between bg-blue-50/70 border border-blue-200/60 px-2.5 py-1.5 rounded-xl text-xs">
+              <div className="flex items-center gap-1.5 text-blue-900 font-bold truncate">
+                <FileText className="w-3.5 h-3.5 text-blue-600 shrink-0" />
+                <span className="truncate">Dokumen: CV</span>
+              </div>
+              <div className="flex items-center gap-1.5 shrink-0">
+                <button
+                  type="button"
+                  onClick={() => setShowCoverLetterModal(true)}
+                  className="px-2.5 py-1 bg-white hover:bg-purple-50 text-purple-700 border border-purple-200 rounded-lg text-[11px] font-bold shadow-2xs flex items-center gap-1 transition-colors"
+                >
+                  <FileCode2 className="w-3 h-3 text-purple-600 shrink-0" />
+                  <span>Surat Lamaran</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowEmailDraftModal(true)}
+                  className="px-2 py-1 bg-white hover:bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-lg text-[11px] font-bold shadow-2xs flex items-center gap-1 transition-colors"
+                >
+                  <Mail className="w-3 h-3 text-emerald-600 shrink-0" />
+                  <span>Email</span>
+                </button>
+              </div>
+            </div>
 
-            <button
-              onClick={() => setMobileTab("preview")}
-              className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-xs font-bold rounded-lg transition-all ${
-                mobileTab === "preview"
-                  ? "bg-white text-neutral-900 shadow-sm"
-                  : "text-neutral-500 hover:text-neutral-800"
-              }`}
-            >
-              <Eye className="w-3.5 h-3.5 text-blue-600" />
-              <span>Pratinjau CV</span>
-            </button>
+            {/* Segmented View Switcher */}
+            <div className="flex items-center justify-center gap-1.5 bg-neutral-100/70 p-1 rounded-xl">
+              <button
+                onClick={() => setMobileTab("editor")}
+                className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-xs font-bold rounded-lg transition-all ${
+                  mobileTab === "editor"
+                    ? "bg-white text-neutral-900 shadow-sm"
+                    : "text-neutral-500 hover:text-neutral-800"
+                }`}
+              >
+                <Pencil className="w-3.5 h-3.5" />
+                <span>Formulir</span>
+              </button>
 
-            <button
-              onClick={() => setMobileTab("chat")}
-              className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-xs font-bold rounded-lg transition-all ${
-                mobileTab === "chat"
-                  ? "bg-indigo-600 text-white shadow-sm"
-                  : "text-indigo-600 hover:bg-white/60"
-              }`}
-            >
-              <Bot className="w-3.5 h-3.5" />
-              <span>Obrolan AI</span>
-            </button>
+              <button
+                onClick={() => setMobileTab("preview")}
+                className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-xs font-bold rounded-lg transition-all ${
+                  mobileTab === "preview"
+                    ? "bg-white text-neutral-900 shadow-sm"
+                    : "text-neutral-500 hover:text-neutral-800"
+                }`}
+              >
+                <Eye className="w-3.5 h-3.5 text-blue-600" />
+                <span>Pratinjau CV</span>
+              </button>
+
+              <button
+                onClick={() => setMobileTab("chat")}
+                className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-xs font-bold rounded-lg transition-all ${
+                  mobileTab === "chat"
+                    ? "bg-indigo-600 text-white shadow-sm"
+                    : "text-indigo-600 hover:bg-white/60"
+                }`}
+              >
+                <Bot className="w-3.5 h-3.5" />
+                <span>Obrolan AI</span>
+              </button>
+            </div>
           </div>
         </div>
       </header>

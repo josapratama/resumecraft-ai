@@ -174,11 +174,17 @@ export default function CoverLetterWorkspace({
 
   // Active Tab: 'templates' | 'ai' | 'edit' | 'style'
   const [activeTab, setActiveTab] = useState<"templates" | "ai" | "edit" | "style">("edit");
+  const [mobileTab, setMobileTab] = useState<"editor" | "preview">("preview");
   const [selectedTemplate, setSelectedTemplate] = useState<CoverLetterTemplateId>("standard-indonesian");
   const [templateCategory, setTemplateCategory] = useState<string>("Semua");
   const [templateSearch, setTemplateSearch] = useState<string>("");
   const [language, setLanguage] = useState<"id" | "en">("id");
-  const [zoomLevel, setZoomLevel] = useState<number>(85);
+  const [zoomLevel, setZoomLevel] = useState<number>(() => {
+    if (typeof window !== "undefined" && window.innerWidth < 640) {
+      return Math.max(42, Math.floor(((window.innerWidth - 32) / 794) * 100));
+    }
+    return 85;
+  });
   const [copied, setCopied] = useState(false);
   const [copiedSubject, setCopiedSubject] = useState(false);
   const [isSignatureModalOpen, setIsSignatureModalOpen] = useState(false);
@@ -505,38 +511,38 @@ ${letterData.fullName}`;
       `}</style>
 
       {/* Top Navigation Bar - Clean, Minimalist, Responsive */}
-      <header className="h-14 bg-white border-b border-slate-200 px-3 sm:px-6 flex items-center justify-between shrink-0 shadow-xs z-10 gap-2">
+      <header className="h-14 bg-white border-b border-slate-200 px-2 sm:px-6 flex items-center justify-between shrink-0 shadow-xs z-10 gap-1.5 sm:gap-2">
         {/* Left: Document Title & Cloud Save Status */}
-        <div className="flex items-center gap-2.5 min-w-0">
-          <div className="w-8 h-8 rounded-lg bg-blue-600 text-white flex items-center justify-center shadow-xs shrink-0">
-            <FileText className="w-4 h-4" />
+        <div className="flex items-center gap-2 min-w-0">
+          <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-blue-600 text-white flex items-center justify-center shadow-xs shrink-0">
+            <FileText className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           </div>
           <div className="min-w-0">
-            <div className="flex items-center gap-2 min-w-0">
+            <div className="flex items-center gap-1.5 min-w-0">
               <h1 className="text-xs sm:text-sm font-bold text-slate-900 truncate">
-                Surat Lamaran Kerja
+                Surat Lamaran
               </h1>
               {cloudSaved ? (
-                <span className="text-[10px] font-medium text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full hidden sm:inline-flex items-center gap-1 shrink-0">
-                  <Check className="w-3 h-3 text-emerald-600" /> Tersimpan
+                <span className="text-[9px] sm:text-[10px] font-medium text-emerald-700 bg-emerald-50 border border-emerald-200 px-1.5 py-0.2 rounded-full hidden sm:inline-flex items-center gap-0.5 shrink-0">
+                  <Check className="w-2.5 h-2.5 text-emerald-600" /> Tersimpan
                 </span>
               ) : isSavingCloud ? (
                 <span className="text-[10px] text-slate-400 animate-pulse hidden sm:inline shrink-0">
-                  Menyimpan...
+                  ...
                 </span>
               ) : null}
             </div>
-            <p className="text-[11px] text-slate-500 truncate hidden md:block">
+            <p className="text-[10px] sm:text-[11px] text-slate-500 truncate hidden md:block">
               {COVER_LETTER_TEMPLATES.find(t => t.id === selectedTemplate)?.name || "Standar Indonesia"}
             </p>
           </div>
         </div>
 
-        {/* Center: Language Switcher */}
+        {/* Center: Language Switcher (Compact) */}
         <div className="flex items-center bg-slate-100 p-0.5 rounded-lg border border-slate-200 text-xs shrink-0">
           <button
             onClick={() => setLanguage("id")}
-            className={`px-2 sm:px-2.5 py-1 rounded-md font-semibold transition-all ${
+            className={`px-1.5 sm:px-2.5 py-1 rounded-md font-semibold text-[11px] sm:text-xs transition-all ${
               language === "id"
                 ? "bg-white text-slate-900 shadow-xs"
                 : "text-slate-500 hover:text-slate-900"
@@ -546,7 +552,7 @@ ${letterData.fullName}`;
           </button>
           <button
             onClick={() => setLanguage("en")}
-            className={`px-2 sm:px-2.5 py-1 rounded-md font-semibold transition-all ${
+            className={`px-1.5 sm:px-2.5 py-1 rounded-md font-semibold text-[11px] sm:text-xs transition-all ${
               language === "en"
                 ? "bg-white text-slate-900 shadow-xs"
                 : "text-slate-500 hover:text-slate-900"
@@ -557,17 +563,17 @@ ${letterData.fullName}`;
         </div>
 
         {/* Right: Consolidated Tools & Actions */}
-        <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-          {/* AI EYD & Kesopanan */}
+        <div className="flex items-center gap-1 sm:gap-2 shrink-0">
+          {/* AI EYD (Desktop only, mobile available in ...) */}
           <Button
             variant="outline"
             size="sm"
             onClick={() => setShowGrammarModal(true)}
-            className="text-xs gap-1.5 h-8 sm:h-9 border-purple-200 text-purple-700 bg-purple-50/70 hover:bg-purple-100 font-semibold rounded-lg px-2 sm:px-3"
+            className="hidden sm:inline-flex text-xs gap-1.5 h-8 sm:h-9 border-purple-200 text-purple-700 bg-purple-50/70 hover:bg-purple-100 font-semibold rounded-lg px-2 sm:px-3"
             title="Periksa kaidah EYD V, kesopanan salam, dan perbaiki ejaan tidak baku otomatis"
           >
             <Sparkles className="w-3.5 h-3.5 text-purple-600 shrink-0" />
-            <span className="hidden sm:inline">Periksa EYD</span>
+            <span>Periksa EYD</span>
           </Button>
 
           {/* Opsi & Aksi Tambahan Dropdown (...) */}
@@ -576,13 +582,27 @@ ${letterData.fullName}`;
               <Button
                 variant="outline"
                 size="sm"
-                className="h-8 sm:h-9 w-8 sm:w-9 p-0 text-slate-600 border-slate-200 hover:bg-slate-100 rounded-lg"
+                className="h-8 w-8 sm:h-9 sm:w-9 p-0 text-slate-600 border-slate-200 hover:bg-slate-100 rounded-lg"
                 title="Menu & Opsi Tambahan"
               >
                 <MoreHorizontal className="w-4 h-4" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-60 rounded-xl shadow-xl border-slate-200 p-1.5">
+              {/* Mobile EYD Shortcut */}
+              <DropdownMenuItem
+                onClick={() => setShowGrammarModal(true)}
+                className="sm:hidden gap-2.5 py-2 px-2.5 rounded-lg cursor-pointer text-xs"
+              >
+                <div className="w-6 h-6 rounded-md bg-purple-50 text-purple-600 flex items-center justify-center shrink-0">
+                  <Sparkles className="w-3.5 h-3.5" />
+                </div>
+                <div>
+                  <p className="font-semibold text-slate-900">Periksa EYD & Ejaan</p>
+                  <p className="text-[10px] text-slate-500">Perbaiki typo & kesopanan baku</p>
+                </div>
+              </DropdownMenuItem>
+
               <DropdownMenuItem
                 onClick={handleSyncFromCV}
                 className="gap-2.5 py-2 px-2.5 rounded-lg cursor-pointer text-xs"
@@ -637,7 +657,7 @@ ${letterData.fullName}`;
             <DropdownMenuTrigger asChild>
               <Button
                 size="sm"
-                className="gap-1.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold h-8 sm:h-9 px-2.5 sm:px-3.5 rounded-lg shadow-sm"
+                className="gap-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold h-8 sm:h-9 px-2 sm:px-3 rounded-lg shadow-sm"
               >
                 <Download className="w-3.5 h-3.5" />
                 <span className="text-xs">Unduh</span>
@@ -689,7 +709,7 @@ ${letterData.fullName}`;
           {/* Close Modal Button */}
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-lg hover:bg-slate-100 flex items-center justify-center text-slate-500 hover:text-slate-900 ml-0.5 sm:ml-1 transition-colors"
+            className="w-8 h-8 rounded-lg hover:bg-slate-100 flex items-center justify-center text-slate-500 hover:text-slate-900 transition-colors"
             title="Tutup Workspace"
           >
             <X className="w-5 h-5" />
@@ -697,15 +717,47 @@ ${letterData.fullName}`;
         </div>
       </header>
 
+      {/* Mobile / Tablet Segmented Switcher (Hanya muncul di Smartphone/Tablet) */}
+      <div className="md:hidden flex items-center bg-slate-200/90 p-1 mx-3 mt-2 mb-1 rounded-xl shrink-0 gap-1">
+        <button
+          type="button"
+          onClick={() => setMobileTab("editor")}
+          className={`flex-1 py-1.5 text-xs font-bold rounded-lg transition-all flex items-center justify-center gap-1.5 ${
+            mobileTab === "editor"
+              ? "bg-white text-slate-900 shadow-xs"
+              : "text-slate-600 hover:text-slate-900"
+          }`}
+        >
+          <Edit3 className="w-3.5 h-3.5" />
+          <span>Sunting Surat</span>
+        </button>
+        <button
+          type="button"
+          onClick={() => setMobileTab("preview")}
+          className={`flex-1 py-1.5 text-xs font-bold rounded-lg transition-all flex items-center justify-center gap-1.5 ${
+            mobileTab === "preview"
+              ? "bg-blue-600 text-white shadow-xs"
+              : "text-blue-700 bg-blue-50 hover:bg-blue-100"
+          }`}
+        >
+          <FileText className="w-3.5 h-3.5" />
+          <span>Lihat Surat A4</span>
+        </button>
+      </div>
+
       {/* Main Workspace Layout - strictly 100% height without leaking scrollbars */}
       <div className="flex-1 min-h-0 w-full flex flex-col md:flex-row overflow-hidden bg-slate-100">
-        {/* Left Control Panel */}
-        <aside className="w-full md:w-[420px] lg:w-[460px] h-full flex flex-col shrink-0 min-h-0 bg-white border-r border-slate-200 overflow-hidden shadow-sm">
-          {/* Workspace Tabs */}
-          <div className="flex border-b border-slate-200 px-3 pt-2 bg-slate-50/60 shrink-0 gap-1 text-xs">
+        {/* Left Control Panel (Responsive) */}
+        <aside
+          className={`w-full md:w-[420px] lg:w-[460px] h-full flex flex-col shrink-0 min-h-0 bg-white border-r border-slate-200 overflow-hidden shadow-sm ${
+            mobileTab !== "editor" ? "hidden md:flex" : "flex"
+          }`}
+        >
+          {/* Workspace Tabs (Scrollable on small mobile) */}
+          <div className="flex border-b border-slate-200 px-2 sm:px-3 pt-2 bg-slate-50/60 shrink-0 gap-1 text-xs overflow-x-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
             <button
               onClick={() => setActiveTab("templates")}
-              className={`flex items-center gap-1.5 py-2 px-3 border-b-2 font-semibold transition-all ${activeTab === "templates"
+              className={`flex items-center gap-1.5 py-2 px-2.5 sm:px-3 border-b-2 font-semibold transition-all shrink-0 ${activeTab === "templates"
                   ? "border-blue-600 text-blue-600 bg-white rounded-t-lg shadow-2xs"
                   : "border-transparent text-slate-600 hover:text-slate-900"
                 }`}
@@ -716,7 +768,7 @@ ${letterData.fullName}`;
 
             <button
               onClick={() => setActiveTab("ai")}
-              className={`flex items-center gap-1.5 py-2 px-3 border-b-2 font-semibold transition-all ${activeTab === "ai"
+              className={`flex items-center gap-1.5 py-2 px-2.5 sm:px-3 border-b-2 font-semibold transition-all shrink-0 ${activeTab === "ai"
                   ? "border-blue-600 text-blue-600 bg-white rounded-t-lg shadow-2xs"
                   : "border-transparent text-slate-600 hover:text-slate-900"
                 }`}
@@ -727,7 +779,7 @@ ${letterData.fullName}`;
 
             <button
               onClick={() => setActiveTab("edit")}
-              className={`flex items-center gap-1.5 py-2 px-3 border-b-2 font-semibold transition-all ${activeTab === "edit"
+              className={`flex items-center gap-1.5 py-2 px-2.5 sm:px-3 border-b-2 font-semibold transition-all shrink-0 ${activeTab === "edit"
                   ? "border-blue-600 text-blue-600 bg-white rounded-t-lg shadow-2xs"
                   : "border-transparent text-slate-600 hover:text-slate-900"
                 }`}
@@ -738,7 +790,7 @@ ${letterData.fullName}`;
 
             <button
               onClick={() => setActiveTab("style")}
-              className={`flex items-center gap-1.5 py-2 px-3 border-b-2 font-semibold transition-all ${activeTab === "style"
+              className={`flex items-center gap-1.5 py-2 px-2.5 sm:px-3 border-b-2 font-semibold transition-all shrink-0 ${activeTab === "style"
                   ? "border-blue-600 text-blue-600 bg-white rounded-t-lg shadow-2xs"
                   : "border-transparent text-slate-600 hover:text-slate-900"
                 }`}
@@ -1401,23 +1453,27 @@ ${letterData.fullName}`;
         </aside>
 
         {/* Right Live Preview Workspace - single clean scrollbar only */}
-        <main className="flex-1 min-h-0 h-full overflow-y-auto p-4 sm:p-8 flex flex-col items-center custom-cl-scrollbar">
+        <main
+          className={`flex-1 min-h-0 h-full overflow-y-auto p-2 sm:p-8 flex flex-col items-center custom-cl-scrollbar ${
+            mobileTab !== "preview" ? "hidden md:flex" : "flex"
+          }`}
+        >
           {/* Zoom & Scaling Controls */}
-          <div className="w-full max-w-[820px] mb-3 flex items-center justify-between text-xs text-slate-500 shrink-0">
-            <div className="flex items-center gap-1.5 font-medium">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              <span>Pratinjau Kertas {currentPaperSize.toUpperCase()} (Live Preview)</span>
+          <div className="w-full max-w-[820px] mb-3 flex items-center justify-between text-xs text-slate-500 shrink-0 gap-2">
+            <div className="flex items-center gap-1.5 font-medium truncate">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
+              <span className="truncate">Pratinjau Kertas {currentPaperSize.toUpperCase()}</span>
             </div>
 
-            <div className="flex items-center gap-1 bg-white border border-slate-200/80 rounded-lg p-0.5 shadow-2xs">
+            <div className="flex items-center gap-1 bg-white border border-slate-200/80 rounded-lg p-0.5 shadow-2xs shrink-0">
               <button
-                onClick={() => setZoomLevel(Math.max(60, zoomLevel - 10))}
+                onClick={() => setZoomLevel(Math.max(35, zoomLevel - 10))}
                 className="p-1 hover:bg-slate-100 rounded text-slate-600"
                 title="Perkecil"
               >
                 <ZoomOut className="w-3.5 h-3.5" />
               </button>
-              <span className="px-2 font-mono font-semibold text-[11px] text-slate-700 min-w-[40px] text-center">
+              <span className="px-1.5 font-mono font-semibold text-[11px] text-slate-700 min-w-[36px] text-center">
                 {zoomLevel}%
               </span>
               <button
@@ -1428,9 +1484,15 @@ ${letterData.fullName}`;
                 <ZoomIn className="w-3.5 h-3.5" />
               </button>
               <button
-                onClick={() => setZoomLevel(85)}
+                onClick={() => {
+                  if (typeof window !== "undefined" && window.innerWidth < 640) {
+                    setZoomLevel(Math.max(40, Math.floor(((window.innerWidth - 32) / 794) * 100)));
+                  } else {
+                    setZoomLevel(85);
+                  }
+                }}
                 className="p-1 hover:bg-slate-100 rounded text-slate-600 ml-0.5"
-                title="Reset Ukuran"
+                title="Paskan Layar (Fit)"
               >
                 <Maximize2 className="w-3.5 h-3.5" />
               </button>

@@ -388,7 +388,11 @@
     "json_resume_desc": "Standar portabilitas jsonresume.org",
     "json_resume_success": "Standar JSON Resume (.json) berhasil diunduh!",
     "wa_pitch": "Pesan WhatsApp HRD",
-    "wa_pitch_desc": "Template kirim CV & follow-up chat WA"
+    "wa_pitch_desc": "Template kirim CV & follow-up chat WA",
+    "version_snapshots": "Riwayat & Snapshot Versi",
+    "snapshots_desc": "Cadangkan & pulihkan draf kapan saja",
+    "bundle_format": "Paket Gabungan (CV + Surat Lamaran)",
+    "bundle_desc": "Ekspor 1 PDF lengkap siap kirim"
   },
   "tabs": {
     "personal": "Pribadi",
@@ -418,7 +422,9 @@
     "save_changes": "Simpan Perubahan",
     "saving": "Menyimpan Perubahan...",
     "saved": "Tersimpan & Terkini",
-    "unsaved": "Ada perubahan belum disimpan"
+    "unsaved": "Ada perubahan belum disimpan",
+    "adjust_photo": "Paskan Foto",
+    "photo_cropped_success": "Foto berhasil dipotong & disesuaikan! Klik Simpan untuk menerapkan."
   },
   "education": {
     "title": "Pendidikan",
@@ -805,7 +811,12 @@
   "job_matcher": {
     "insert_all_btn": "Sisipkan Semua",
     "insert_all_tooltip": "Sisipkan seluruh kata kunci ini langsung ke CV",
-    "all_inserted": "Semua kata kunci yang hilang telah disisipkan ke daftar keahlian CV!"
+    "all_inserted": "Semua kata kunci yang hilang telah disisipkan ke daftar keahlian CV!",
+    "btn_upload_poster": "Unggah Poster / Screenshot Loker",
+    "extracting": "Menganalisis poster lowongan kerja dengan AI Vision...",
+    "extracting_short": "Mengekstrak...",
+    "extract_success": "Informasi lowongan dari poster berhasil diekstrak oleh AI!",
+    "extract_failed": "Gagal mengekstrak poster:"
   },
   "public_cv": {
     "view_paper": "Dokumen CV",
@@ -861,5 +872,39 @@
     "badge_followup": "Template Follow-Up Santun",
     "btn_open_wa": "Buka di WA",
     "copied_toast": "Format pesan WhatsApp berhasil disalin!"
+  },
+  "photo_cropper": {
+    "title": "Atur & Paskan Foto Profil",
+    "subtitle": "Geser dan perbesar agar posisi wajah tepat di tengah bingkai CV.",
+    "zoom": "Perbesaran",
+    "drag_hint": "Klik dan geser gambar untuk mengatur posisi",
+    "reset": "Reset",
+    "apply": "Terapkan Foto"
+  },
+  "snapshot": {
+    "modal_title": "Riwayat & Snapshot Versi CV",
+    "modal_desc": "Simpan titik cadangan CV Anda sebelum melakukan perubahan besar atau pulihkan versi sebelumnya kapan saja.",
+    "input_placeholder": "Nama versi (cth: Versi BUMN, Revisi Review AI, Draft 1 Hal)",
+    "default_name": "Versi",
+    "btn_save": "Simpan Versi Saat Ini",
+    "btn_restore": "Pulihkan",
+    "created_success": "Snapshot versi CV berhasil disimpan!",
+    "deleted_success": "Snapshot versi CV dihapus.",
+    "confirm_restore": "Apakah Anda yakin ingin memulihkan versi ini? Data CV aktif saat ini akan diperbarui.",
+    "restored_toast": "Data CV berhasil dipulihkan!",
+    "restore_failed": "Gagal memulihkan snapshot:",
+    "empty_title": "Belum Ada Snapshot Versi",
+    "empty_desc": "Ketik nama versi di atas dan klik 'Simpan Versi Saat Ini' untuk mencadangkan kondisi CV Anda.",
+    "auto_safe_note": "Tersimpan aman di peramban Anda."
+  },
+  "interview_prep": {
+    "toast_generated": "Pertanyaan wawancara & panduan berhasil dibuat!",
+    "toast_gen_failed": "Gagal membuat panduan:",
+    "toast_evaluated": "Evaluasi jawaban wawancara selesai!",
+    "toast_eval_failed": "Evaluasi gagal:",
+    "tts_unsupported": "Browser Anda tidak mendukung Text-to-Speech",
+    "stt_unsupported": "Fitur Speech-to-Text tidak didukung browser ini. Gunakan Google Chrome atau Edge.",
+    "mic_active": "Silakan bicara sekarang... Mikrofon aktif.",
+    "transcribed": "Suara berhasil ditranskripsikan ke teks!"
   }
 }

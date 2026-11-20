@@ -191,17 +191,20 @@ export default function PublicCV() {
 
       {/* Main Content Area */}
       <main className="max-w-5xl mx-auto py-5 sm:py-8 px-3 sm:px-6 flex-1 w-full">
-        {viewMode === "paper" ? (
-          /* Paper View Mode */
-          <div id="public-cv-content" className="animate-in fade-in-50 duration-200">
-            <CVPreview
-              template={template}
-              cvData={cvData}
-              paperSize={paperSize}
-              onPaperSizeChange={setPaperSize}
-            />
-          </div>
-        ) : (
+        {/* Paper View Container - Keep mounted so exportCVToPDF always finds #public-cv-content */}
+        <div
+          id="public-cv-content"
+          className={viewMode === "paper" ? "animate-in fade-in-50 duration-200" : "hidden"}
+        >
+          <CVPreview
+            template={template}
+            cvData={cvData}
+            paperSize={paperSize}
+            onPaperSizeChange={setPaperSize}
+          />
+        </div>
+
+        {viewMode === "portfolio" && (
           /* Modern Interactive Web Portfolio Mode */
           <div className="space-y-6 animate-in fade-in-50 duration-200">
             {/* Hero Profile Banner */}

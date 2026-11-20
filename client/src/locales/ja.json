@@ -388,7 +388,11 @@
     "json_resume_desc": "jsonresume.org標準スキーマ",
     "json_resume_success": "標準JSON Resume (.json) がダウンロードされました！",
     "wa_pitch": "採用担当者向けWhatsApp文面",
-    "wa_pitch_desc": "CV送信用＆フォローアップの定型文"
+    "wa_pitch_desc": "CV送信用＆フォローアップの定型文",
+    "version_snapshots": "バージョン履歴とスナップショット",
+    "snapshots_desc": "いつでもバックアップと復元が可能",
+    "bundle_format": "応募書類セット（履歴書＋添え状）",
+    "bundle_desc": "提出用の結合PDF1ファイルを即座に出力"
   },
   "tabs": {
     "personal": "基本情報",
@@ -418,7 +422,9 @@
     "save_changes": "変更を保存",
     "saving": "保存中...",
     "saved": "保存済み",
-    "unsaved": "未保存の変更があります"
+    "unsaved": "未保存の変更があります",
+    "adjust_photo": "写真を調整",
+    "photo_cropped_success": "証明写真のトリミングが完了しました！適用するには保存をクリックしてください。"
   },
   "education": {
     "title": "学歴",
@@ -805,7 +811,12 @@
   "job_matcher": {
     "insert_all_btn": "すべて挿入",
     "insert_all_tooltip": "すべての不足キーワードをCVに直接挿入",
-    "all_inserted": "すべての不足キーワードがスキルに追加されました！"
+    "all_inserted": "すべての不足キーワードがスキルに追加されました！",
+    "btn_upload_poster": "求人ポスター/スクショをアップロード",
+    "extracting": "AI Visionで求人ポスターを解析中...",
+    "extracting_short": "抽出中...",
+    "extract_success": "ポスターから求人要件が正常に抽出されました！",
+    "extract_failed": "ポスターの抽出に失敗しました:"
   },
   "public_cv": {
     "view_paper": "書類プレビュー",
@@ -861,5 +872,39 @@
     "badge_followup": "丁寧な進捗確認テンプレート",
     "btn_open_wa": "WhatsAppで開く",
     "copied_toast": "WhatsAppメッセージをコピーしました！"
+  },
+  "photo_cropper": {
+    "title": "証明写真のフレーム調整",
+    "subtitle": "ドラッグとズームで顔の位置を履歴書の枠の中央にきれいに合わせます。",
+    "zoom": "拡大縮小",
+    "drag_hint": "画像をドラッグして位置を調整します",
+    "reset": "リセット",
+    "apply": "写真を適用"
+  },
+  "snapshot": {
+    "modal_title": "履歴書のバージョン履歴とスナップショット",
+    "modal_desc": "大幅な編集の前にバックアップスナップショットを保存し、いつでも以前の下書きに戻せます。",
+    "input_placeholder": "バージョン名（例: 大手企業向け, AI推敲後, 1枚形式）",
+    "default_name": "バージョン",
+    "btn_save": "現在のバージョンを保存",
+    "btn_restore": "復元",
+    "created_success": "履歴書バージョンのスナップショットを保存しました！",
+    "deleted_success": "スナップショットを削除しました。",
+    "confirm_restore": "このバージョンを復元してもよろしいですか？現在の履歴書データが更新されます。",
+    "restored_toast": "履歴書データを正常に復元しました！",
+    "restore_failed": "スナップショットの復元に失敗しました:",
+    "empty_title": "保存されたスナップショットはまだありません",
+    "empty_desc": "上記にバージョン名を入力し、「現在のバージョンを保存」をクリックしてバックアップしてください。",
+    "auto_safe_note": "ブラウザのローカルストレージに安全に保管されます。"
+  },
+  "interview_prep": {
+    "toast_generated": "面接の質問と回答のポイントを生成しました！",
+    "toast_gen_failed": "コーチングの生成に失敗しました:",
+    "toast_evaluated": "面接回答の評価が完了しました！",
+    "toast_eval_failed": "評価に失敗しました:",
+    "tts_unsupported": "お使いのブラウザは音声読み上げに対応していません",
+    "stt_unsupported": "このブラウザは音声認識に対応していません。ChromeまたはEdgeをご利用ください。",
+    "mic_active": "お話しください...マイクが認識中です。",
+    "transcribed": "音声がテキストに変換されました！"
   }
 }

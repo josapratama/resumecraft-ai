@@ -49,6 +49,7 @@ import {
   MoreHorizontal,
   Copy,
   MessageCircle,
+  History,
 } from "lucide-react";
 import { toast } from "sonner";
 import {
@@ -84,6 +85,7 @@ import ATSReadinessBadge from "@/components/CVEditor/ATSReadinessBadge";
 import DuplicateCVModal from "@/components/CVEditor/DuplicateCVModal";
 import HRScreeningModal from "@/components/CVEditor/HRScreeningModal";
 import WhatsAppPitchModal from "@/components/CVEditor/WhatsAppPitchModal";
+import CVSnapshotModal from "@/components/CVEditor/CVSnapshotModal";
 import CVPreview from "@/components/CVEditor/CVPreview";
 import { AIChatBox } from "@/components/AIChatBox";
 import { useAuth } from "@/_core/hooks/useAuth";
@@ -223,6 +225,7 @@ export default function CVEditor() {
   const [showDuplicateModal, setShowDuplicateModal] = useState(false);
   const [showHRScreeningModal, setShowHRScreeningModal] = useState(false);
   const [showWAPitchModal, setShowWAPitchModal] = useState(false);
+  const [showSnapshotModal, setShowSnapshotModal] = useState(false);
 
   const handleBackupCV = () => {
     if (!cvData) return;
@@ -281,6 +284,7 @@ export default function CVEditor() {
     data: cvData,
     isLoading,
     error,
+    refetch: refetchFullCV,
   } = trpc.cv.loadFull.useQuery(
     { cvId: cvIdNum },
     { enabled: cvIdNum > 0 && isAuthenticated }
@@ -980,6 +984,19 @@ export default function CVEditor() {
                     </div>
                   </DropdownMenuItem>
 
+                  <DropdownMenuItem
+                    onClick={() => setShowCoverLetterModal(true)}
+                    className="flex items-center gap-2.5 text-xs font-medium cursor-pointer rounded-lg py-2"
+                  >
+                    <div className="w-7 h-7 rounded-md bg-purple-50 text-purple-600 flex items-center justify-center shrink-0">
+                      <Layers className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <p className="font-bold text-neutral-900">{t("topbar.bundle_format", "Paket Gabungan (CV + Surat Lamaran)")}</p>
+                      <p className="text-[10px] text-neutral-500">{t("topbar.bundle_desc", "Ekspor 1 PDF lengkap siap kirim")}</p>
+                    </div>
+                  </DropdownMenuItem>
+
                   <DropdownMenuSeparator />
 
                   <DropdownMenuItem
@@ -1048,6 +1065,18 @@ export default function CVEditor() {
                     <div>
                       <p className="font-semibold text-neutral-900">{t("topbar.duplicate_cv", "Duplikasi CV (Varian)")}</p>
                       <p className="text-[10px] text-neutral-500">{t("topbar.duplicate_desc", "Targetkan ke posisi lowongan lain")}</p>
+                    </div>
+                  </DropdownMenuItem>
+
+                  {/* CV Version Snapshot & Rollback */}
+                  <DropdownMenuItem
+                    onClick={() => setShowSnapshotModal(true)}
+                    className="gap-2.5 py-2 px-2.5 rounded-lg cursor-pointer text-xs"
+                  >
+                    <History className="w-4 h-4 text-purple-600 shrink-0" />
+                    <div>
+                      <p className="font-semibold text-neutral-900">{t("topbar.version_snapshots", "Riwayat & Snapshot Versi")}</p>
+                      <p className="text-[10px] text-neutral-500">{t("topbar.snapshots_desc", "Cadangkan & pulihkan draf kapan saja")}</p>
                     </div>
                   </DropdownMenuItem>
 
@@ -1586,6 +1615,17 @@ export default function CVEditor() {
         cvId={cvIdNum}
         currentTitle={cvData.cv.title || "CV"}
         currentTargetRole={cvData.cv.targetRole}
+      />
+
+      <CVSnapshotModal
+        cvId={cvIdNum}
+        isOpen={showSnapshotModal}
+        onClose={() => setShowSnapshotModal(false)}
+        currentCVData={displayData}
+        onRestoreSuccess={() => {
+          refetchFullCV();
+          toast.success(t("snapshot.restored_toast", "Data CV berhasil dipulihkan!"));
+        }}
       />
 
       {/* Mobile Sticky Floating Navigation & Quick Action Bar */}

@@ -194,3 +194,46 @@
 .cv-one-page-compact .mb-4 {
   margin-bottom: 0.5rem !important;
 }
+
+/* Print-optimized layout for native Ctrl+P / Cmd+P */
+@media print {
+  header,
+  nav,
+  aside,
+  button,
+  .print\:hidden,
+  [role="dialog"],
+  .fixed,
+  .sticky,
+  .lg\:col-span-7,
+  .lg\:col-span-4 {
+    display: none !important;
+  }
+
+  body, html {
+    background: white !important;
+    color: black !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  #cv-preview-content,
+  .cv-template-root {
+    box-shadow: none !important;
+    border: none !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 auto !important;
+    overflow: visible !important;
+  }
+
+  .cv-scroll-wrapper {
+    background: white !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    overflow: visible !important;
+    max-height: none !important;
+  }
+}

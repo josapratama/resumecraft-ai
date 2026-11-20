@@ -42,9 +42,11 @@ import {
   HelpCircle,
   QrCode,
   Compass,
+  Kanban,
 } from "lucide-react";
 import { toast } from "sonner";
 import ImportResumeModal from "@/components/ImportResumeModal";
+import JobTrackerModal from "@/components/JobTracker/JobTrackerModal";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -212,6 +214,7 @@ export default function Home() {
   const [filterType, setFilterType] = useState<"all" | "complete" | "draft">("all");
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isImportDialogOpen, setIsImportDialogOpen] = useState(false);
+  const [isJobTrackerOpen, setIsJobTrackerOpen] = useState(false);
   const [templateFilter, setTemplateFilter] = useState("All");
   const [openFaq, setOpenFaq] = useState<number | null>(null);
 
@@ -850,6 +853,18 @@ export default function Home() {
             </div>
 
             <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
+              {/* Job Tracker Quick Access */}
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setIsJobTrackerOpen(true)}
+                className="gap-1.5 border-blue-200 text-blue-700 bg-blue-50/60 hover:bg-blue-100 rounded-xl text-xs font-semibold h-8 sm:h-9 px-2.5 sm:px-3 shadow-2xs"
+              >
+                <Kanban className="w-3.5 h-3.5 text-blue-600 shrink-0" />
+                <span className="hidden sm:inline">{t("dashboard.job_tracker", "Job Tracker")}</span>
+                <span className="sm:hidden">Tracker</span>
+              </Button>
+
               {/* Import Resume with AI */}
               <Button
                 variant="outline"
@@ -1125,6 +1140,11 @@ export default function Home() {
       <ImportResumeModal
         isOpen={isImportDialogOpen}
         onClose={() => setIsImportDialogOpen(false)}
+      />
+
+      <JobTrackerModal
+        isOpen={isJobTrackerOpen}
+        onClose={() => setIsJobTrackerOpen(false)}
       />
     </div>
   );

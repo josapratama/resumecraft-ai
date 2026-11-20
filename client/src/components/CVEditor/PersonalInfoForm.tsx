@@ -6,8 +6,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Spinner } from "@/components/ui/spinner";
-import { Wand2, Circle, User, Mail, Phone, MapPin, Check, Save, Camera, Trash2, Upload, Briefcase, QrCode, Globe } from "lucide-react";
+import { Wand2, Circle, User, Mail, Phone, MapPin, Check, Save, Camera, Trash2, Upload, Briefcase, QrCode, Globe, Crop } from "lucide-react";
 import AIAssistant from "./AIAssistant";
+import PhotoCropperModal from "./PhotoCropperModal";
 import { toast } from "sonner";
 import { useI18n } from "@/lib/i18n";
 import type { PersonalInfo } from "@/types/cv";
@@ -111,6 +112,9 @@ export default function PersonalInfoForm({
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
+  const [rawImageForCrop, setRawImageForCrop] = useState<string>("");
+  const [showCropperModal, setShowCropperModal] = useState<boolean>(false);
+
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -120,36 +124,19 @@ export default function PersonalInfoForm({
     }
     const reader = new FileReader();
     reader.onload = () => {
-      const img = new Image();
-      img.onload = () => {
-        const canvas = document.createElement("canvas");
-        const maxDim = 400;
-        let width = img.width;
-        let height = img.height;
-        if (width > height) {
-          if (width > maxDim) {
-            height = Math.round((height * maxDim) / width);
-            width = maxDim;
-          }
-        } else {
-          if (height > maxDim) {
-            width = Math.round((width * maxDim) / height);
-            height = maxDim;
-          }
-        }
-        canvas.width = width;
-        canvas.height = height;
-        const ctx = canvas.getContext("2d");
-        if (ctx) {
-          ctx.drawImage(img, 0, 0, width, height);
-          const dataUrl = canvas.toDataURL("image/jpeg", 0.85);
-          handleChange("photoUrl", dataUrl);
-          toast.success(t("personal.photo_loaded", "Foto profil berhasil dimuat! Klik Simpan untuk menerapkan."));
-        }
-      };
-      img.src = reader.result as string;
+      if (reader.result) {
+        setRawImageForCrop(reader.result as string);
+        setShowCropperModal(true);
+      }
     };
     reader.readAsDataURL(file);
+    // Clear input so same file can be re-selected
+    e.target.value = "";
+  };
+
+  const handleCropComplete = (croppedDataUrl: string) => {
+    handleChange("photoUrl", croppedDataUrl);
+    toast.success(t("personal.photo_cropped_success", "Foto berhasil dipotong & disesuaikan! Klik Simpan untuk menerapkan."));
   };
 
   const handleRemovePhoto = () => {
@@ -237,16 +224,32 @@ export default function PersonalInfoForm({
                   />
                 </label>
                 {formData.photoUrl && (
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    onClick={handleRemovePhoto}
-                    className="text-xs text-red-600 hover:text-red-700 hover:bg-red-50 h-8 px-2.5 rounded-lg"
-                  >
-                    <Trash2 className="w-3.5 h-3.5 mr-1" />
-                    {t("personal.remove_photo", "Remove")}
-                  </Button>
+                  <>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        setRawImageForCrop(formData.photoUrl);
+                        setShowCropperModal(true);
+                      }}
+                      className="text-xs h-8 px-2.5 rounded-lg border-neutral-300 gap-1 text-neutral-700 hover:bg-neutral-100"
+                    >
+                      <Crop className="w-3.5 h-3.5 text-blue-600" />
+                      <span>{t("personal.adjust_photo", "Paskan Foto")}</span>
+                    </Button>
+
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={handleRemovePhoto}
+                      className="text-xs text-red-600 hover:text-red-700 hover:bg-red-50 h-8 px-2.5 rounded-lg"
+                    >
+                      <Trash2 className="w-3.5 h-3.5 mr-1" />
+                      {t("personal.remove_photo", "Remove")}
+                    </Button>
+                  </>
                 )}
               </div>
               <Input
@@ -497,6 +500,13 @@ export default function PersonalInfoForm({
           )}
         </Button>
       </div>
+
+      <PhotoCropperModal
+        isOpen={showCropperModal}
+        onClose={() => setShowCropperModal(false)}
+        imageSrc={rawImageForCrop}
+        onCropComplete={handleCropComplete}
+      />
     </Card>
   );
 }

@@ -21,7 +21,10 @@ import {
   Lightbulb,
   FileSearch,
   Plus,
+  Upload,
+  Image as ImageIcon,
 } from "lucide-react";
+import { Spinner } from "@/components/ui/spinner";
 import { toast } from "sonner";
 
 interface JobMatcherModalProps {
@@ -93,6 +96,43 @@ export default function JobMatcherModal({
     },
   });
 
+  const extractMutation = trpc.cvAI.extractJobVacancyFromImage.useMutation({
+    onSuccess: (data: any) => {
+      const parts: string[] = [];
+      if (data.companyName) parts.push(`Perusahaan: ${data.companyName}`);
+      if (data.jobTitle) parts.push(`Posisi: ${data.jobTitle}`);
+      if (data.requirements && Array.isArray(data.requirements)) {
+        parts.push(`Kualifikasi & Persyaratan:\n${data.requirements.map((r: string) => `• ${r}`).join("\n")}`);
+      }
+      if (data.responsibilities && Array.isArray(data.responsibilities)) {
+        parts.push(`Tanggung Jawab:\n${data.responsibilities.map((r: string) => `• ${r}`).join("\n")}`);
+      }
+      if (data.skills && Array.isArray(data.skills)) {
+        parts.push(`Keahlian Dibutuhkan: ${data.skills.join(", ")}`);
+      }
+      const combined = parts.join("\n\n");
+      setJobDescription(combined);
+      toast.success(t("job_matcher.extract_success", "Informasi lowongan dari poster berhasil diekstrak oleh AI!"));
+    },
+    onError: (err: any) => {
+      toast.error(`${t("job_matcher.extract_failed", "Gagal mengekstrak poster:")} ${err.message}`);
+    },
+  });
+
+  const handleUploadPoster = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (reader.result) {
+        toast.info(t("job_matcher.extracting", "Menganalisis poster lowongan kerja dengan AI Vision..."));
+        extractMutation.mutate({ imageBase64: reader.result as string });
+      }
+    };
+    reader.readAsDataURL(file);
+    e.target.value = "";
+  };
+
   const handleAnalyze = () => {
     if (jobDescription.trim().length < 20) {
       toast.error(t("job_matcher.min_chars_error", "Mohon tempelkan deskripsi lowongan kerja minimal 20 karakter."));
@@ -136,16 +176,31 @@ export default function JobMatcherModal({
         <div className="flex-1 overflow-y-auto p-5 space-y-5 bg-neutral-50/60">
           {/* Input Job Description Card */}
           <div className="bg-white p-4 rounded-xl border border-neutral-200/90 shadow-2xs space-y-3">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-wrap items-center justify-between gap-2">
               <label className="text-xs font-bold text-neutral-800 flex items-center gap-1.5">
                 <FileSearch className="w-4 h-4 text-blue-600" />
                 {t("job_matcher.input_label", "Tempel Deskripsi Lowongan Kerja (Job Vacancy / Job Desc)")}
               </label>
-              {defaultRole && (
-                <span className="text-[11px] text-neutral-500">
-                  {t("job_matcher.target_role", "Target Posisi:")} <strong>{defaultRole}</strong>
+
+              <label className="cursor-pointer inline-flex items-center gap-1.5 text-[11px] font-semibold text-blue-700 bg-blue-50 hover:bg-blue-100 border border-blue-200/80 px-2.5 py-1 rounded-lg transition-colors">
+                {extractMutation.isPending ? (
+                  <Spinner className="w-3 h-3" />
+                ) : (
+                  <Upload className="w-3 h-3" />
+                )}
+                <span>
+                  {extractMutation.isPending
+                    ? t("job_matcher.extracting_short", "Mengekstrak...")
+                    : t("job_matcher.btn_upload_poster", "Unggah Poster / Screenshot Loker")}
                 </span>
-              )}
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleUploadPoster}
+                  disabled={extractMutation.isPending}
+                  className="hidden"
+                />
+              </label>
             </div>
 
             <Textarea

@@ -388,7 +388,11 @@
     "json_resume_desc": "Open-source jsonresume.org schema",
     "json_resume_success": "Standard JSON Resume (.json) downloaded successfully!",
     "wa_pitch": "WhatsApp Recruiter Pitch",
-    "wa_pitch_desc": "Templates for sending CV & follow-up chat"
+    "wa_pitch_desc": "Templates for sending CV & follow-up chat",
+    "version_snapshots": "Version History & Snapshots",
+    "snapshots_desc": "Backup & restore versions anytime",
+    "bundle_format": "Application Bundle (CV + Cover Letter)",
+    "bundle_desc": "Export 1 unified PDF ready for HR submission"
   },
   "tabs": {
     "personal": "Personal",
@@ -418,7 +422,9 @@
     "save_changes": "Save Changes",
     "saving": "Saving Changes...",
     "saved": "Saved & Up to Date",
-    "unsaved": "Unsaved changes"
+    "unsaved": "Unsaved changes",
+    "adjust_photo": "Adjust Frame",
+    "photo_cropped_success": "Profile photo framed successfully! Click Save to apply."
   },
   "education": {
     "title": "Education",
@@ -805,7 +811,12 @@
   "job_matcher": {
     "insert_all_btn": "Insert All",
     "insert_all_tooltip": "Insert all missing keywords directly into CV",
-    "all_inserted": "All missing keywords have been inserted into CV skills!"
+    "all_inserted": "All missing keywords have been inserted into CV skills!",
+    "btn_upload_poster": "Upload Job Poster / Screenshot",
+    "extracting": "Analyzing job vacancy poster with AI Vision...",
+    "extracting_short": "Extracting...",
+    "extract_success": "Job requirements extracted from poster successfully by AI!",
+    "extract_failed": "Failed to extract poster:"
   },
   "public_cv": {
     "view_paper": "Document Paper",
@@ -861,5 +872,39 @@
     "badge_followup": "Polite Follow-Up Template",
     "btn_open_wa": "Open in WA",
     "copied_toast": "WhatsApp message format copied successfully!"
+  },
+  "photo_cropper": {
+    "title": "Adjust & Frame Profile Photo",
+    "subtitle": "Pan and zoom to center your face cleanly in the CV frame.",
+    "zoom": "Zoom",
+    "drag_hint": "Click and drag the image to reposition",
+    "reset": "Reset",
+    "apply": "Apply Photo"
+  },
+  "snapshot": {
+    "modal_title": "CV Version History & Snapshots",
+    "modal_desc": "Save backup milestone snapshots before major edits or restore earlier drafts anytime.",
+    "input_placeholder": "Version name (e.g. Corporate Target, Post AI Review, 1-Page Format)",
+    "default_name": "Version",
+    "btn_save": "Save Current Version",
+    "btn_restore": "Restore",
+    "created_success": "CV version snapshot saved successfully!",
+    "deleted_success": "CV version snapshot deleted.",
+    "confirm_restore": "Are you sure you want to restore this version? Your current active CV data will be updated.",
+    "restored_toast": "CV data restored successfully!",
+    "restore_failed": "Failed to restore snapshot:",
+    "empty_title": "No Snapshots Saved Yet",
+    "empty_desc": "Enter a version name above and click 'Save Current Version' to back up your CV milestone.",
+    "auto_safe_note": "Stored securely in your local browser storage."
+  },
+  "interview_prep": {
+    "toast_generated": "Interview questions & coaching points generated successfully!",
+    "toast_gen_failed": "Failed to generate coaching:",
+    "toast_evaluated": "Interview answer evaluated successfully!",
+    "toast_eval_failed": "Evaluation failed:",
+    "tts_unsupported": "Your browser does not support Text-to-Speech",
+    "stt_unsupported": "Speech-to-Text is not supported on this browser. Please use Chrome or Edge.",
+    "mic_active": "Please speak now... Microphone is listening.",
+    "transcribed": "Speech transcribed to text successfully!"
   }
 }

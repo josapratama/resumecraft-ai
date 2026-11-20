@@ -71,7 +71,7 @@ export default function InterviewPrepModal({
   onClose,
   defaultRole = "",
 }: InterviewPrepModalProps) {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const [targetRole, setTargetRole] = useState(defaultRole);
   const [jobDescription, setJobDescription] = useState("");
   const [result, setResult] = useState<InterviewResult | null>(null);
@@ -87,20 +87,20 @@ export default function InterviewPrepModal({
   const generateMutation = trpc.cvAI.generateInterviewPrep.useMutation({
     onSuccess: data => {
       setResult(data as unknown as InterviewResult);
-      toast.success("Interview questions & coaching points generated!");
+      toast.success(t("interview_prep.toast_generated", "Pertanyaan wawancara & panduan berhasil dibuat!"));
     },
     onError: err => {
-      toast.error(`Generation failed: ${err.message}`);
+      toast.error(`${t("interview_prep.toast_gen_failed", "Gagal membuat panduan:")} ${err.message}`);
     },
   });
 
   const evaluateMutation = trpc.cvAI.evaluateMockInterviewAnswer.useMutation({
     onSuccess: (data: any) => {
       setEvaluation(data as EvaluationResult);
-      toast.success("Evaluasi jawaban wawancara selesai!");
+      toast.success(t("interview_prep.toast_evaluated", "Evaluasi jawaban wawancara selesai!"));
     },
     onError: (err: any) => {
-      toast.error(`Evaluasi gagal: ${err.message}`);
+      toast.error(`${t("interview_prep.toast_eval_failed", "Evaluasi gagal:")} ${err.message}`);
     },
   });
 
@@ -115,9 +115,15 @@ export default function InterviewPrepModal({
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [isListening, setIsListening] = useState(false);
 
+  const getLocaleLangTag = () => {
+    if (locale === "en") return "en-US";
+    if (locale === "ja") return "ja-JP";
+    return "id-ID";
+  };
+
   const handleSpeakText = (text: string) => {
     if (typeof window === "undefined" || !("speechSynthesis" in window)) {
-      toast.error("Browser Anda tidak mendukung Text-to-Speech");
+      toast.error(t("interview_prep.tts_unsupported", "Browser Anda tidak mendukung Text-to-Speech"));
       return;
     }
     window.speechSynthesis.cancel();
@@ -126,7 +132,7 @@ export default function InterviewPrepModal({
       return;
     }
     const utter = new SpeechSynthesisUtterance(text);
-    utter.lang = "id-ID";
+    utter.lang = getLocaleLangTag();
     utter.rate = 0.95;
     utter.onend = () => setIsSpeaking(false);
     utter.onerror = () => setIsSpeaking(false);
@@ -138,7 +144,7 @@ export default function InterviewPrepModal({
     const SpeechRec =
       (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     if (!SpeechRec) {
-      toast.error("Fitur Speech-to-Text tidak didukung browser ini. Gunakan Google Chrome atau Edge.");
+      toast.error(t("interview_prep.stt_unsupported", "Fitur Speech-to-Text tidak didukung browser ini. Gunakan Google Chrome atau Edge."));
       return;
     }
     if (isListening) {
@@ -147,18 +153,18 @@ export default function InterviewPrepModal({
     }
     try {
       const recognition = new SpeechRec();
-      recognition.lang = "id-ID";
+      recognition.lang = getLocaleLangTag();
       recognition.continuous = false;
       recognition.interimResults = false;
       recognition.onstart = () => {
         setIsListening(true);
-        toast.info("Silakan bicara sekarang... Mikrofon aktif.");
+        toast.info(t("interview_prep.mic_active", "Silakan bicara sekarang... Mikrofon aktif."));
       };
       recognition.onresult = (e: any) => {
         const transcript = e.results[0][0].transcript;
         setUserAnswer(prev => (prev ? `${prev} ${transcript}` : transcript));
         setIsListening(false);
-        toast.success("Suara berhasil ditranskripsikan ke teks!");
+        toast.success(t("interview_prep.transcribed", "Suara berhasil ditranskripsikan ke teks!"));
       };
       recognition.onerror = () => {
         setIsListening(false);

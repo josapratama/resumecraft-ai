@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { trpc } from "@/lib/trpc";
+import { useI18n } from "@/lib/i18n";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
@@ -40,6 +41,7 @@ export default function ImportResumeModal({
   onClose,
   initialUrl,
 }: ImportResumeModalProps) {
+  const { t } = useI18n();
   const [, navigate] = useLocation();
   const utils = trpc.useUtils();
   const [activeTab, setActiveTab] = useState<"file" | "url" | "text">("file");
@@ -67,40 +69,40 @@ export default function ImportResumeModal({
   const parseDocMutation = trpc.cvAI.parseResumeDocument.useMutation({
     onSuccess: data => {
       setParsedResult(data);
-      setCvTitle(data.suggestedTitle || "CV dari Dokumen");
-      toast.success("Dokumen PDF berhasil di-parse oleh AI!");
+      setCvTitle(data.suggestedTitle || t("import_modal.doc_cv_title", "CV dari Dokumen"));
+      toast.success(t("import_modal.doc_parsed_toast", "Dokumen PDF berhasil di-parse oleh AI!"));
     },
     onError: err => {
-      toast.error(`Gagal memproses dokumen: ${err.message}`);
+      toast.error(`${t("import_modal.doc_error_toast", "Gagal memproses dokumen:")} ${err.message}`);
     },
   });
 
   const parseTextMutation = trpc.cvAI.parseResumeText.useMutation({
     onSuccess: data => {
       setParsedResult(data);
-      setCvTitle(data.suggestedTitle || "CV Profesional");
-      toast.success("Resume berhasil di-parse oleh AI!");
+      setCvTitle(data.suggestedTitle || t("import_modal.pro_cv_title", "CV Profesional"));
+      toast.success(t("import_modal.text_parsed_toast", "Resume berhasil di-parse oleh AI!"));
     },
     onError: err => {
-      toast.error(`Gagal memproses resume: ${err.message}`);
+      toast.error(`${t("import_modal.text_error_toast", "Gagal memproses resume:")} ${err.message}`);
     },
   });
 
   const parseUrlMutation = trpc.cvAI.parseFromUrl.useMutation({
     onSuccess: data => {
       setParsedResult(data);
-      setCvTitle(data.suggestedTitle || "CV dari Portfolio Web");
-      toast.success("Data dari portfolio / link berhasil diambil!");
+      setCvTitle(data.suggestedTitle || t("import_modal.url_cv_title", "CV dari Portfolio Web"));
+      toast.success(t("import_modal.url_parsed_toast", "Data dari portfolio / link berhasil diambil!"));
     },
     onError: err => {
-      toast.error(`Gagal memuat URL: ${err.message}`);
+      toast.error(`${t("import_modal.url_error_toast", "Gagal memuat URL:")} ${err.message}`);
     },
   });
 
   const createMutation = trpc.cvAI.createFromParsed.useMutation({
     onSuccess: newCV => {
       utils.cv.list.invalidate();
-      toast.success("CV baru berhasil dibuat!");
+      toast.success(t("import_modal.cv_created_toast", "CV baru berhasil dibuat!"));
       onClose();
       // Clean query params if any
       if (typeof window !== "undefined" && window.location.search.includes("import=")) {
@@ -109,7 +111,7 @@ export default function ImportResumeModal({
       navigate(`/cv/${newCV.id}`);
     },
     onError: err => {
-      toast.error(`Gagal membuat CV: ${err.message}`);
+      toast.error(`${t("import_modal.create_error_toast", "Gagal membuat CV:")} ${err.message}`);
     },
   });
 
@@ -175,7 +177,7 @@ export default function ImportResumeModal({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-xl font-bold text-gray-900">
             <Sparkles className="w-5 h-5 text-indigo-600" />
-            AI Resume / CV Importer Otomatis
+            {t("import_modal.modal_title", "AI Resume / CV Importer Otomatis")}
           </DialogTitle>
         </DialogHeader>
 
@@ -189,15 +191,15 @@ export default function ImportResumeModal({
               <TabsList className="grid grid-cols-3 w-full mb-3">
                 <TabsTrigger value="file" className="flex items-center gap-1.5 text-xs">
                   <Upload className="w-3.5 h-3.5" />
-                  Unggah PDF / Dokumen
+                  {t("import_modal.tab_pdf", "Unggah PDF / Dokumen")}
                 </TabsTrigger>
                 <TabsTrigger value="url" className="flex items-center gap-1.5 text-xs">
                   <Globe className="w-3.5 h-3.5" />
-                  Link Portfolio Web
+                  {t("import_modal.tab_url", "Link Portfolio Web")}
                 </TabsTrigger>
                 <TabsTrigger value="text" className="flex items-center gap-1.5 text-xs">
                   <FileText className="w-3.5 h-3.5" />
-                  Tempel Teks
+                  {t("import_modal.tab_text", "Tempel Teks")}
                 </TabsTrigger>
               </TabsList>
 
@@ -206,10 +208,10 @@ export default function ImportResumeModal({
                 <div className="p-3.5 bg-blue-50/70 border border-blue-100 rounded-xl text-xs text-blue-900 space-y-1">
                   <p className="font-semibold flex items-center gap-1.5 text-blue-950">
                     <Sparkles className="w-3.5 h-3.5 text-blue-600" />
-                    Punya CV Lama dalam Format PDF?
+                    {t("import_modal.pdf_box_title", "Punya CV Lama dalam Format PDF?")}
                   </p>
                   <p className="text-gray-600">
-                    Unggah dokumen resume PDF Anda. AI otomatis mengekstrak informasi biodata, pengalaman kerja, pendidikan, dan keahlian tanpa perlu salin-tempel manual.
+                    {t("import_modal.pdf_box_desc", "Unggah dokumen resume PDF Anda. AI otomatis mengekstrak informasi biodata, pengalaman kerja, pendidikan, dan keahlian tanpa perlu salin-tempel manual.")}
                   </p>
                 </div>
 
@@ -230,16 +232,16 @@ export default function ImportResumeModal({
                     <div>
                       <p className="text-xs font-bold text-neutral-900">{selectedFile.name}</p>
                       <p className="text-[11px] text-neutral-500 mt-0.5">
-                        {(selectedFile.size / 1024).toFixed(1)} KB · Klik untuk mengganti berkas
+                        {(selectedFile.size / 1024).toFixed(1)} KB · {t("import_modal.replace_file_hint", "Klik untuk mengganti berkas")}
                       </p>
                     </div>
                   ) : (
                     <div>
                       <p className="text-xs font-semibold text-neutral-800">
-                        Klik atau seret file PDF resume ke area ini
+                        {t("import_modal.dropzone_text", "Klik atau seret file PDF resume ke area ini")}
                       </p>
                       <p className="text-[11px] text-neutral-400 mt-1">
-                        Mendukung PDF, DOCX, atau teks (maks 10 MB)
+                        {t("import_modal.dropzone_formats", "Mendukung PDF, DOCX, atau teks (maks 10 MB)")}
                       </p>
                     </div>
                   )}
@@ -254,12 +256,12 @@ export default function ImportResumeModal({
                     {parseDocMutation.isPending ? (
                       <>
                         <Spinner className="w-4 h-4 text-white" />
-                        <span>Mengekstrak Dokumen dengan AI...</span>
+                        <span>{t("import_modal.extracting_doc", "Mengekstrak Dokumen dengan AI...")}</span>
                       </>
                     ) : (
                       <>
                         <Sparkles className="w-4 h-4" />
-                        <span>Ekstrak Data Resume</span>
+                        <span>{t("import_modal.extract_btn", "Ekstrak Data Resume")}</span>
                       </>
                     )}
                   </Button>
@@ -271,20 +273,16 @@ export default function ImportResumeModal({
                 <div className="p-3.5 bg-indigo-50/70 border border-indigo-100 rounded-xl text-xs text-indigo-900 space-y-1">
                   <p className="font-semibold flex items-center gap-1.5 text-indigo-950">
                     <Sparkles className="w-3.5 h-3.5 text-indigo-600" />
-                    Cukup Masukkan Link, CV Langsung Jadi
+                    {t("import_modal.url_box_title", "Cukup Masukkan Link, CV Langsung Jadi")}
                   </p>
                   <p className="text-gray-600">
-                    Masukkan URL portfolio atau profil web (seperti{" "}
-                    <code className="text-indigo-700 bg-white px-1 py-0.5 rounded border border-indigo-200">
-                      https://irma-iryani.josapratama.com/
-                    </code>
-                    ). Sistem akan otomatis membaca profil, pendidikan, pengalaman kerja, keahlian, dan sertifikasi.
+                    {t("import_modal.url_box_desc", "Masukkan URL portfolio atau profil web. Sistem akan otomatis membaca profil, pendidikan, pengalaman kerja, keahlian, dan sertifikasi.")}
                   </p>
                 </div>
 
                 <div className="space-y-2">
                   <Label htmlFor="portfolioUrl" className="font-semibold text-gray-800">
-                    URL Portfolio / Website Profil
+                    {t("import_modal.url_label", "URL Portfolio / Website Profil")}
                   </Label>
                   <div className="flex gap-2">
                     <div className="relative flex-1">
@@ -303,7 +301,7 @@ export default function ImportResumeModal({
 
                   {/* Preset quick chip */}
                   <div className="flex items-center gap-1.5 flex-wrap pt-1">
-                    <span className="text-xs text-gray-500 font-medium">Contoh cepat:</span>
+                    <span className="text-xs text-gray-500 font-medium">{t("import_modal.quick_example", "Contoh cepat:")}</span>
                     <button
                       type="button"
                       onClick={() => setTargetUrl("https://irma-iryani.josapratama.com/")}
@@ -316,7 +314,7 @@ export default function ImportResumeModal({
 
                 <div className="flex justify-end gap-2 pt-2 border-t">
                   <Button variant="outline" onClick={handleModalClose} disabled={isParsing}>
-                    Batal
+                    {t("actions.cancel", "Batal")}
                   </Button>
                   <Button
                     onClick={handleParseUrl}
@@ -325,11 +323,11 @@ export default function ImportResumeModal({
                   >
                     {parseUrlMutation.isPending ? (
                       <>
-                        <Spinner className="w-4 h-4" /> Mengambil & Membaca Data...
+                        <Spinner className="w-4 h-4" /> {t("import_modal.fetching_data", "Mengambil & Membaca Data...")}
                       </>
                     ) : (
                       <>
-                        <Sparkles className="w-4 h-4" /> Ambil Data & Buat CV
+                        <Sparkles className="w-4 h-4" /> {t("import_modal.fetch_btn", "Ambil Data & Buat CV")}
                       </>
                     )}
                   </Button>
@@ -339,17 +337,16 @@ export default function ImportResumeModal({
               {/* TAB 2: TEMPEL TEKS MANUAL */}
               <TabsContent value="text" className="space-y-4">
                 <p className="text-xs text-gray-600">
-                  Tempelkan draf teks CV, ringkasan LinkedIn, atau salinan isi PDF resume Anda. AI akan
-                  mengorganisasi ke dalam form bidang terstruktur.
+                  {t("import_modal.text_box_desc", "Tempelkan draf teks CV, ringkasan LinkedIn, atau salinan isi PDF resume Anda. AI akan mengorganisasi ke dalam form bidang terstruktur.")}
                 </p>
 
                 <div className="space-y-2">
                   <Label htmlFor="rawResume" className="font-semibold text-gray-800">
-                    Teks Resume / CV
+                    {t("import_modal.raw_text_label", "Teks Resume / CV")}
                   </Label>
                   <Textarea
                     id="rawResume"
-                    placeholder="Salin dan tempel isi teks resume, pengalaman kerja, pendidikan, dsb..."
+                    placeholder={t("import_modal.raw_text_ph", "Salin dan tempel isi teks resume, pengalaman kerja, pendidikan, dsb...")}
                     rows={10}
                     value={rawText}
                     onChange={e => setRawText(e.target.value)}
@@ -357,13 +354,13 @@ export default function ImportResumeModal({
                     disabled={isParsing}
                   />
                   <div className="text-[11px] text-gray-400 text-right">
-                    {rawText.length} karakter (minimal 30)
+                    {rawText.length} {t("import_modal.chars_min", "karakter (minimal 30)")}
                   </div>
                 </div>
 
                 <div className="flex justify-end gap-2 pt-2 border-t">
                   <Button variant="outline" onClick={handleModalClose} disabled={isParsing}>
-                    Batal
+                    {t("actions.cancel", "Batal")}
                   </Button>
                   <Button
                     onClick={handleParseText}
@@ -372,11 +369,11 @@ export default function ImportResumeModal({
                   >
                     {parseTextMutation.isPending ? (
                       <>
-                        <Spinner className="w-4 h-4" /> Memproses dengan AI...
+                        <Spinner className="w-4 h-4" /> {t("import_modal.processing_ai", "Memproses dengan AI...")}
                       </>
                     ) : (
                       <>
-                        <Upload className="w-4 h-4" /> Parse & Ekstrak CV
+                        <Upload className="w-4 h-4" /> {t("import_modal.parse_text_btn", "Parse & Ekstrak CV")}
                       </>
                     )}
                   </Button>
@@ -389,19 +386,19 @@ export default function ImportResumeModal({
           <div className="space-y-4 pt-1">
             <div className="space-y-1.5">
               <Label htmlFor="cvTitle" className="font-semibold text-gray-900">
-                Judul CV Baru
+                {t("import_modal.new_title_label", "Judul CV Baru")}
               </Label>
               <Input
                 id="cvTitle"
                 value={cvTitle}
                 onChange={e => setCvTitle(e.target.value)}
-                placeholder="Contoh: CV Irma Iryani - S1 Pendidikan Kimia"
+                placeholder={t("import_modal.new_title_ph", "Contoh: CV Irma Iryani - S1 Pendidikan Kimia")}
               />
             </div>
 
             <div className="p-4 border rounded-xl bg-slate-50/80 space-y-3.5 text-xs">
               <div className="flex items-center gap-2 text-emerald-700 font-bold text-sm">
-                <CheckCircle2 className="w-4 h-4" /> Data Berhasil Diekstrak & Siap Digunakan
+                <CheckCircle2 className="w-4 h-4" /> {t("import_modal.success_banner", "Data Berhasil Diekstrak & Siap Digunakan")}
               </div>
 
               {parsedResult.personalInfo && (
@@ -433,7 +430,7 @@ export default function ImportResumeModal({
                 <div className="p-3 bg-white border rounded-lg">
                   <div className="flex items-center gap-1.5 font-semibold text-gray-800 mb-2">
                     <Briefcase className="w-3.5 h-3.5 text-indigo-600" />
-                    Pengalaman ({parsedResult.workExperiences?.length ?? 0})
+                    {t("tabs.experience", "Pengalaman")} ({parsedResult.workExperiences?.length ?? 0})
                   </div>
                   {parsedResult.workExperiences?.length > 0 ? (
                     <ul className="space-y-1.5 text-gray-600">
@@ -445,12 +442,12 @@ export default function ImportResumeModal({
                       ))}
                       {parsedResult.workExperiences.length > 3 && (
                         <li className="text-gray-400 italic">
-                          +{parsedResult.workExperiences.length - 3} lainnya
+                          +{parsedResult.workExperiences.length - 3} {t("common.others", "lainnya")}
                         </li>
                       )}
                     </ul>
                   ) : (
-                    <span className="text-gray-400 italic">Tidak ada</span>
+                    <span className="text-gray-400 italic">{t("common.none", "Tidak ada")}</span>
                   )}
                 </div>
 
@@ -458,7 +455,7 @@ export default function ImportResumeModal({
                 <div className="p-3 bg-white border rounded-lg">
                   <div className="flex items-center gap-1.5 font-semibold text-gray-800 mb-2">
                     <GraduationCap className="w-3.5 h-3.5 text-indigo-600" />
-                    Pendidikan ({parsedResult.educations?.length ?? 0})
+                    {t("tabs.education", "Pendidikan")} ({parsedResult.educations?.length ?? 0})
                   </div>
                   {parsedResult.educations?.length > 0 ? (
                     <ul className="space-y-1.5 text-gray-600">
@@ -470,7 +467,7 @@ export default function ImportResumeModal({
                       ))}
                     </ul>
                   ) : (
-                    <span className="text-gray-400 italic">Tidak ada</span>
+                    <span className="text-gray-400 italic">{t("common.none", "Tidak ada")}</span>
                   )}
                 </div>
               </div>
@@ -480,7 +477,7 @@ export default function ImportResumeModal({
                 <div className="p-3 bg-white border rounded-lg">
                   <div className="flex items-center gap-1.5 font-semibold text-gray-800 mb-1.5">
                     <FolderKanban className="w-3.5 h-3.5 text-blue-600" />
-                    Proyek & Portofolio ({parsedResult.projects.length})
+                    {t("tabs.projects", "Proyek & Portofolio")} ({parsedResult.projects.length})
                   </div>
                   <div className="space-y-1.5">
                     {parsedResult.projects.map((p: any, i: number) => (
@@ -503,7 +500,7 @@ export default function ImportResumeModal({
                 <div className="p-3 bg-white border rounded-lg">
                   <div className="flex items-center gap-1.5 font-semibold text-gray-800 mb-1.5">
                     <Layers className="w-3.5 h-3.5 text-indigo-600" />
-                    Keahlian ({parsedResult.skills.length})
+                    {t("tabs.skills", "Keahlian")} ({parsedResult.skills.length})
                   </div>
                   <div className="flex flex-wrap gap-1">
                     {parsedResult.skills.slice(0, 16).map((s: any, i: number) => (
@@ -516,7 +513,7 @@ export default function ImportResumeModal({
                     ))}
                     {parsedResult.skills.length > 16 && (
                       <span className="text-[11px] text-gray-400 self-center pl-1">
-                        +{parsedResult.skills.length - 16} lainnya
+                        +{parsedResult.skills.length - 16} {t("common.others", "lainnya")}
                       </span>
                     )}
                   </div>
@@ -528,7 +525,7 @@ export default function ImportResumeModal({
                 <div className="p-3 bg-white border rounded-lg">
                   <div className="flex items-center gap-1.5 font-semibold text-gray-800 mb-1.5">
                     <Award className="w-3.5 h-3.5 text-amber-600" />
-                    Sertifikasi ({parsedResult.certifications.length})
+                    {t("tabs.certs", "Sertifikasi")} ({parsedResult.certifications.length})
                   </div>
                   <div className="flex flex-wrap gap-1.5">
                     {parsedResult.certifications.slice(0, 4).map((c: any, i: number) => (
@@ -542,7 +539,7 @@ export default function ImportResumeModal({
                     ))}
                     {parsedResult.certifications.length > 4 && (
                       <span className="text-[11px] text-gray-500 self-center">
-                        +{parsedResult.certifications.length - 4} sertifikat lainnya
+                        +{parsedResult.certifications.length - 4} {t("import_modal.more_certs", "sertifikat lainnya")}
                       </span>
                     )}
                   </div>
@@ -557,7 +554,7 @@ export default function ImportResumeModal({
                 onClick={() => setParsedResult(null)}
                 disabled={createMutation.isPending}
               >
-                ← Ubah Sumber / Input Ulang
+                ← {t("import_modal.reinput_btn", "Ubah Sumber / Input Ulang")}
               </Button>
               <Button
                 onClick={handleSave}
@@ -566,11 +563,11 @@ export default function ImportResumeModal({
               >
                 {createMutation.isPending ? (
                   <>
-                    <Spinner className="w-4 h-4" /> Menyimpan & Menyiapkan CV...
+                    <Spinner className="w-4 h-4" /> {t("import_modal.saving_cv", "Menyimpan & Menyiapkan CV...")}
                   </>
                 ) : (
                   <>
-                    Buat & Edit CV di Editor <ArrowRight className="w-4 h-4" />
+                    {t("import_modal.create_and_edit_btn", "Buat & Edit CV di Editor")} <ArrowRight className="w-4 h-4" />
                   </>
                 )}
               </Button>

@@ -607,7 +607,7 @@ export default function CVEditor() {
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-64 rounded-xl shadow-lg border-neutral-200 p-1.5">
                   <div className="px-2 py-1.5 text-[11px] font-bold uppercase tracking-wider text-neutral-400">
-                    AI Career Suite
+                    {t("topbar.ai_suite", "AI Career Suite")}
                   </div>
                   <DropdownMenuItem
                     onClick={() => setShowATSModal(true)}
@@ -617,8 +617,8 @@ export default function CVEditor() {
                       <Target className="w-4 h-4" />
                     </div>
                     <div>
-                      <p className="text-xs font-semibold text-neutral-900">ATS Match Score</p>
-                      <p className="text-[10px] text-neutral-500">Benchmark against job vacancy</p>
+                      <p className="text-xs font-semibold text-neutral-900">{t("topbar.ats_match", "ATS Match Score")}</p>
+                      <p className="text-[10px] text-neutral-500">{t("topbar.ats_desc", "Benchmark against job vacancy")}</p>
                     </div>
                   </DropdownMenuItem>
 
@@ -630,8 +630,8 @@ export default function CVEditor() {
                       <Sparkles className="w-4 h-4" />
                     </div>
                     <div>
-                      <p className="text-xs font-semibold text-neutral-900">Job Description Matcher</p>
-                      <p className="text-[10px] text-neutral-500">Pindai kata kunci yang cocok & hilang</p>
+                      <p className="text-xs font-semibold text-neutral-900">{t("topbar.jd_matcher", "Job Description Matcher")}</p>
+                      <p className="text-[10px] text-neutral-500">{t("topbar.jd_desc", "Pindai kata kunci yang cocok & hilang")}</p>
                     </div>
                   </DropdownMenuItem>
 
@@ -643,8 +643,8 @@ export default function CVEditor() {
                       <FileText className="w-4 h-4" />
                     </div>
                     <div>
-                      <p className="text-xs font-semibold text-neutral-900">Studio Surat Lamaran</p>
-                      <p className="text-[10px] text-neutral-500">25 format surat lamaran siap kirim</p>
+                      <p className="text-xs font-semibold text-neutral-900">{t("topbar.cl_studio", "Studio Surat Lamaran")}</p>
+                      <p className="text-[10px] text-neutral-500">{t("topbar.cl_desc", "25 format surat lamaran siap kirim")}</p>
                     </div>
                   </DropdownMenuItem>
 
@@ -656,8 +656,8 @@ export default function CVEditor() {
                       <Mail className="w-4 h-4" />
                     </div>
                     <div>
-                      <p className="text-xs font-semibold text-neutral-900">Draf Email & WA HRD</p>
-                      <p className="text-[10px] text-neutral-500">Teks pengantar lamaran profesional</p>
+                      <p className="text-xs font-semibold text-neutral-900">{t("topbar.email_draft", "Draf Email & WA HRD")}</p>
+                      <p className="text-[10px] text-neutral-500">{t("topbar.email_desc", "Teks pengantar lamaran profesional")}</p>
                     </div>
                   </DropdownMenuItem>
 
@@ -669,8 +669,8 @@ export default function CVEditor() {
                       <HelpCircle className="w-4 h-4" />
                     </div>
                     <div>
-                      <p className="text-xs font-semibold text-neutral-900">Interview Prep Coach</p>
-                      <p className="text-[10px] text-neutral-500">STAR questions & role hints</p>
+                      <p className="text-xs font-semibold text-neutral-900">{t("topbar.interview_coach", "Interview Prep Coach")}</p>
+                      <p className="text-[10px] text-neutral-500">{t("topbar.interview_desc", "STAR questions & role hints")}</p>
                     </div>
                   </DropdownMenuItem>
 
@@ -682,8 +682,8 @@ export default function CVEditor() {
                       <LanguagesIcon className="w-4 h-4" />
                     </div>
                     <div>
-                      <p className="text-xs font-semibold text-neutral-900">Translate Resume</p>
-                      <p className="text-[10px] text-neutral-500">EN ↔ ID Professional localized copy</p>
+                      <p className="text-xs font-semibold text-neutral-900">{t("topbar.translate_resume", "Translate Resume")}</p>
+                      <p className="text-[10px] text-neutral-500">{t("topbar.translate_desc", "EN ↔ ID Professional localized copy")}</p>
                     </div>
                   </DropdownMenuItem>
 
@@ -695,8 +695,8 @@ export default function CVEditor() {
                       <SpellCheck className="w-4 h-4" />
                     </div>
                     <div>
-                      <p className="text-xs font-semibold text-neutral-900">Periksa Ejaan & EYD Baku</p>
-                      <p className="text-[10px] text-neutral-500">Koreksi typo & tata bahasa formal</p>
+                      <p className="text-xs font-semibold text-neutral-900">{t("topbar.grammar_check", "Periksa Ejaan & EYD Baku")}</p>
+                      <p className="text-[10px] text-neutral-500">{t("topbar.grammar_desc", "Koreksi typo & tata bahasa formal")}</p>
                     </div>
                   </DropdownMenuItem>
 
@@ -708,8 +708,8 @@ export default function CVEditor() {
                       <Briefcase className="w-4 h-4" />
                     </div>
                     <div>
-                      <p className="text-xs font-semibold text-neutral-900">Pelacak Lamaran Kerja</p>
-                      <p className="text-[10px] text-neutral-500">Papan Kanban status & catatan wawancara</p>
+                      <p className="text-xs font-semibold text-neutral-900">{t("topbar.job_tracker", "Pelacak Lamaran Kerja")}</p>
+                      <p className="text-[10px] text-neutral-500">{t("topbar.job_tracker_desc", "Papan Kanban status & catatan wawancara")}</p>
                     </div>
                   </DropdownMenuItem>
 
@@ -721,8 +721,8 @@ export default function CVEditor() {
                       <FileCheck2 className="w-4 h-4" />
                     </div>
                     <div>
-                      <p className="text-xs font-semibold text-neutral-900">Checklist Berkas Lamaran</p>
-                      <p className="text-[10px] text-neutral-500">Kesiapan ijazah, SKCK & backup CV</p>
+                      <p className="text-xs font-semibold text-neutral-900">{t("topbar.checklist", "Checklist Berkas Lamaran")}</p>
+                      <p className="text-[10px] text-neutral-500">{t("topbar.checklist_desc", "Kesiapan ijazah, SKCK & backup CV")}</p>
                     </div>
                   </DropdownMenuItem>
 
@@ -734,8 +734,8 @@ export default function CVEditor() {
                       <DollarSign className="w-4 h-4" />
                     </div>
                     <div>
-                      <p className="text-xs font-semibold text-neutral-900">Benchmark Gaji Pasar</p>
-                      <p className="text-[10px] text-neutral-500">Estimasi gaji IDR & USD</p>
+                      <p className="text-xs font-semibold text-neutral-900">{t("topbar.salary_benchmark", "Benchmark Gaji Pasar")}</p>
+                      <p className="text-[10px] text-neutral-500">{t("topbar.salary_desc", "Estimasi gaji IDR & USD")}</p>
                     </div>
                   </DropdownMenuItem>
 
@@ -747,8 +747,8 @@ export default function CVEditor() {
                       <Mic className="w-4 h-4" />
                     </div>
                     <div>
-                      <p className="text-xs font-semibold text-neutral-900">Elevator Pitch 30 Detik</p>
-                      <p className="text-[10px] text-neutral-500">Naskah lisan wawancara & LinkedIn</p>
+                      <p className="text-xs font-semibold text-neutral-900">{t("topbar.elevator_pitch", "Elevator Pitch 30 Detik")}</p>
+                      <p className="text-[10px] text-neutral-500">{t("topbar.pitch_desc", "Naskah lisan wawancara & LinkedIn")}</p>
                     </div>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
@@ -761,7 +761,7 @@ export default function CVEditor() {
                     variant="outline"
                     size="sm"
                     className="hidden md:inline-flex gap-1.5 border-neutral-200 text-neutral-700 hover:bg-neutral-100 h-8 sm:h-9 px-2.5 sm:px-3 rounded-xl"
-                    title="Pilih Desain & Kustomisasi CV"
+                    title={t("topbar.choose_design_tooltip", "Pilih Desain & Kustomisasi CV")}
                   >
                     <Layout className="w-3.5 h-3.5 text-neutral-600 shrink-0" />
                     <span className="truncate text-xs font-semibold">
@@ -783,8 +783,8 @@ export default function CVEditor() {
                       <Sparkles className="w-3.5 h-3.5" />
                     </div>
                     <div>
-                      <p className="font-bold text-xs text-red-950">Galeri 29 Template</p>
-                      <p className="text-[10px] text-red-700/80 font-normal">Lihat kartu preview warna & rekomendasi</p>
+                      <p className="font-bold text-xs text-red-950">{t("topbar.gallery_btn", "Galeri 29 Template")}</p>
+                      <p className="text-[10px] text-red-700/80 font-normal">{t("topbar.gallery_desc", "Lihat kartu preview warna & rekomendasi")}</p>
                     </div>
                   </DropdownMenuItem>
 
@@ -797,15 +797,15 @@ export default function CVEditor() {
                       <Palette className="w-3.5 h-3.5" />
                     </div>
                     <div>
-                      <p className="font-bold text-xs">Ubah Tema & Font</p>
-                      <p className="text-[10px] text-neutral-500 font-normal">Warna aksen, tipografi, dan spasi</p>
+                      <p className="font-bold text-xs">{t("topbar.style_btn", "Ubah Tema & Font")}</p>
+                      <p className="text-[10px] text-neutral-500 font-normal">{t("topbar.style_desc", "Warna aksen, tipografi, dan spasi")}</p>
                     </div>
                   </DropdownMenuItem>
 
                   <DropdownMenuSeparator />
 
                   <div className="px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-neutral-400">
-                    Ganti Cepat Template ({ALL_TEMPLATES.length} Format)
+                    {t("topbar.quick_switch_template", "Ganti Cepat Template ({n} Format)").replace("{n}", String(ALL_TEMPLATES.length))}
                   </div>
 
                   {["Classic", "Professional", "Stylish", "Creative", "Unique"].map(cat => {
@@ -851,7 +851,7 @@ export default function CVEditor() {
                   >
                     <Download className="w-3.5 h-3.5" />
                     <span className="font-semibold text-xs">
-                      {isExporting ? "Mengunduh..." : "Unduh"}
+                      {isExporting ? t("topbar.downloading", "Mengunduh...") : t("topbar.download_btn", "Unduh")}
                     </span>
                     <ChevronDown className="w-3 h-3 opacity-60" />
                   </Button>
@@ -866,11 +866,11 @@ export default function CVEditor() {
                           `${cvData.cv.title || "resume"}.pdf`,
                           paperSize
                         );
-                        toast.info("Pilih 'Save as PDF' pada dialog cetak untuk mengunduh PDF.", {
+                        toast.info(t("topbar.pdf_dialog_info", "Pilih 'Save as PDF' pada dialog cetak untuk mengunduh PDF."), {
                           duration: 5000,
                         });
                       } catch (err: any) {
-                        toast.error(`Export PDF gagal: ${err.message || String(err)}`);
+                        toast.error(`${t("topbar.pdf_failed", "Export PDF gagal:")} ${err.message || String(err)}`);
                       } finally {
                         setIsExporting(false);
                       }
@@ -881,8 +881,10 @@ export default function CVEditor() {
                       <FileText className="w-4 h-4" />
                     </div>
                     <div>
-                      <p className="font-bold text-neutral-900">Format PDF ({paperSize.toUpperCase()})</p>
-                      <p className="text-[10px] text-neutral-500">Tajam, vektor, standar cetak</p>
+                      <p className="font-bold text-neutral-900">
+                        {t("topbar.pdf_format", "Format PDF ({paper})").replace("{paper}", paperSize.toUpperCase())}
+                      </p>
+                      <p className="text-[10px] text-neutral-500">{t("topbar.pdf_desc", "Tajam, vektor, standar cetak")}</p>
                     </div>
                   </DropdownMenuItem>
 
@@ -894,9 +896,9 @@ export default function CVEditor() {
                           cvData,
                           `${cvData.cv.title || "CV"}.docx`
                         );
-                        toast.success("Dokumen Microsoft Word (.docx) berhasil diunduh!");
+                        toast.success(t("topbar.docx_success", "Dokumen Microsoft Word (.docx) berhasil diunduh!"));
                       } catch (err: any) {
-                        toast.error(`Export Word gagal: ${err.message || String(err)}`);
+                        toast.error(`${t("topbar.docx_failed", "Export Word gagal:")} ${err.message || String(err)}`);
                       } finally {
                         setIsExporting(false);
                       }
@@ -907,8 +909,8 @@ export default function CVEditor() {
                       <FileCode2 className="w-4 h-4" />
                     </div>
                     <div>
-                      <p className="font-bold text-neutral-900">Format Word (.docx)</p>
-                      <p className="text-[10px] text-neutral-500">Bisa diedit di Word / WPS</p>
+                      <p className="font-bold text-neutral-900">{t("topbar.word_format", "Format Word (.docx)")}</p>
+                      <p className="text-[10px] text-neutral-500">{t("topbar.word_desc", "Bisa diedit di Word / WPS")}</p>
                     </div>
                   </DropdownMenuItem>
 
@@ -922,8 +924,8 @@ export default function CVEditor() {
                       <Download className="w-4 h-4" />
                     </div>
                     <div>
-                      <p className="font-bold text-neutral-900">Backup Data (JSON)</p>
-                      <p className="text-[10px] text-neutral-500">Simpan arsip data untuk restore</p>
+                      <p className="font-bold text-neutral-900">{t("topbar.backup_data", "Backup Data (JSON)")}</p>
+                      <p className="text-[10px] text-neutral-500">{t("topbar.backup_desc", "Simpan arsip data untuk restore")}</p>
                     </div>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
@@ -936,7 +938,7 @@ export default function CVEditor() {
                     variant="outline"
                     size="sm"
                     className="h-8 sm:h-9 w-8 sm:w-9 p-0 text-neutral-600 border-neutral-200 hover:bg-neutral-100 rounded-xl"
-                    title="Menu Alat & Opsi Tambahan"
+                    title={t("topbar.more_tools_tooltip", "Menu Alat & Opsi Tambahan")}
                   >
                     <MoreHorizontal className="w-4 h-4" />
                   </Button>
@@ -953,9 +955,9 @@ export default function CVEditor() {
                     <Bot className="w-4 h-4 text-indigo-600 shrink-0" />
                     <div className="flex-1">
                       <p className="font-semibold text-neutral-900">
-                        {showAIChat ? "Tutup Obrolan AI" : "Buka Obrolan AI"}
+                        {showAIChat ? t("topbar.close_ai_chat", "Tutup Obrolan AI") : t("topbar.open_ai_chat", "Buka Obrolan AI")}
                       </p>
-                      <p className="text-[10px] text-neutral-500">Asisten pembuat konten karir</p>
+                      <p className="text-[10px] text-neutral-500">{t("topbar.ai_chat_desc", "Asisten pembuat konten karir")}</p>
                     </div>
                   </DropdownMenuItem>
 
@@ -966,8 +968,8 @@ export default function CVEditor() {
                   >
                     <Share2 className="w-4 h-4 text-blue-600 shrink-0" />
                     <div>
-                      <p className="font-semibold text-neutral-900">Bagikan Tautan Online & QR</p>
-                      <p className="text-[10px] text-neutral-500">Link CV publik untuk HRD</p>
+                      <p className="font-semibold text-neutral-900">{t("topbar.share_public", "Bagikan Tautan Online & QR")}</p>
+                      <p className="text-[10px] text-neutral-500">{t("topbar.share_desc", "Link CV publik untuk HRD")}</p>
                     </div>
                   </DropdownMenuItem>
 
@@ -978,50 +980,50 @@ export default function CVEditor() {
                   >
                     <Copy className="w-4 h-4 text-amber-600 shrink-0" />
                     <div>
-                      <p className="font-semibold text-neutral-900">Duplikasi CV (Varian)</p>
-                      <p className="text-[10px] text-neutral-500">Targetkan ke posisi lowongan lain</p>
+                      <p className="font-semibold text-neutral-900">{t("topbar.duplicate_cv", "Duplikasi CV (Varian)")}</p>
+                      <p className="text-[10px] text-neutral-500">{t("topbar.duplicate_desc", "Targetkan ke posisi lowongan lain")}</p>
                     </div>
                   </DropdownMenuItem>
 
                   {/* Mobile-only tools shortcut */}
                   <div className="lg:hidden border-t border-neutral-100 my-1 pt-1">
                     <div className="px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-neutral-400">
-                      Menu Mobile Tambahan
+                      {t("topbar.mobile_menu", "Menu Mobile Tambahan")}
                     </div>
                     <DropdownMenuItem
                       onClick={() => setShowGalleryModal(true)}
                       className="gap-2.5 py-1.5 px-2.5 rounded-lg cursor-pointer text-xs"
                     >
                       <Layout className="w-3.5 h-3.5 text-neutral-600" />
-                      <span>Galeri 29 Template</span>
+                      <span>{t("topbar.gallery_btn", "Galeri 29 Template")}</span>
                     </DropdownMenuItem>
                     <DropdownMenuItem
                       onClick={() => setShowStyleModal(true)}
                       className="gap-2.5 py-1.5 px-2.5 rounded-lg cursor-pointer text-xs"
                     >
                       <Palette className="w-3.5 h-3.5 text-amber-600" />
-                      <span>Ubah Tema & Font</span>
+                      <span>{t("topbar.style_btn", "Ubah Tema & Font")}</span>
                     </DropdownMenuItem>
                     <DropdownMenuItem
                       onClick={() => setShowCoverLetterModal(true)}
                       className="gap-2.5 py-1.5 px-2.5 rounded-lg cursor-pointer text-xs"
                     >
                       <FileCode2 className="w-3.5 h-3.5 text-purple-600" />
-                      <span>Surat Lamaran Kerja</span>
+                      <span>{t("doc_switcher.cover_letter", "Surat Lamaran Kerja")}</span>
                     </DropdownMenuItem>
                     <DropdownMenuItem
                       onClick={() => setShowEmailDraftModal(true)}
                       className="gap-2.5 py-1.5 px-2.5 rounded-lg cursor-pointer text-xs"
                     >
                       <Mail className="w-3.5 h-3.5 text-emerald-600" />
-                      <span>Draf Email & WA HRD</span>
+                      <span>{t("topbar.email_draft", "Draf Email & WA HRD")}</span>
                     </DropdownMenuItem>
                     <DropdownMenuItem
                       onClick={() => setShowATSModal(true)}
                       className="gap-2.5 py-1.5 px-2.5 rounded-lg cursor-pointer text-xs"
                     >
                       <Target className="w-3.5 h-3.5 text-indigo-600" />
-                      <span>Evaluasi Skor ATS</span>
+                      <span>{t("topbar.ats_match", "Evaluasi Skor ATS")}</span>
                     </DropdownMenuItem>
                   </div>
 
@@ -1033,14 +1035,14 @@ export default function CVEditor() {
                   >
                     <Download className="w-4 h-4 text-emerald-600 shrink-0" />
                     <div>
-                      <p className="font-semibold text-neutral-900">Backup Data (JSON)</p>
-                      <p className="text-[10px] text-neutral-500">Ekspor file arsip data</p>
+                      <p className="font-semibold text-neutral-900">{t("topbar.backup_data", "Backup Data (JSON)")}</p>
+                      <p className="text-[10px] text-neutral-500">{t("topbar.backup_desc", "Ekspor file arsip data")}</p>
                     </div>
                   </DropdownMenuItem>
 
                   {/* Language Switcher */}
                   <div className="p-2 border-t border-neutral-100 flex items-center justify-between">
-                    <span className="text-[11px] font-semibold text-neutral-500">Bahasa Dokumen</span>
+                    <span className="text-[11px] font-semibold text-neutral-500">{t("topbar.doc_lang", "Bahasa Dokumen")}</span>
                     <LanguageSwitcher />
                   </div>
                 </DropdownMenuContent>
@@ -1338,12 +1340,13 @@ export default function CVEditor() {
                   onSendMessage={handleSendChatMessage}
                   isLoading={chatMutation.isPending}
                   height="calc(100vh - 250px)"
-                  emptyStateMessage="Ask me anything about tailoring or improving your CV"
+                  placeholder={t("ai_chat.input_placeholder", "Ketik pertanyaan atau permintaan perbaikan CV...")}
+                  emptyStateMessage={t("ai_chat.empty_state", "Tanyakan apa saja untuk meningkatkan CV Anda...")}
                   suggestedPrompts={[
-                    "Review my professional summary",
-                    "Suggest high-impact action verbs",
-                    "How can I improve my skills section?",
-                    "Make my job descriptions quantifiable",
+                    t("ai_chat.prompt_summary", "Review ringkasan profesional saya"),
+                    t("ai_chat.prompt_verbs", "Rekomendasikan action verbs yang kuat"),
+                    t("ai_chat.prompt_skills", "Bagaimana meningkatkan bagian keahlian saya?"),
+                    t("ai_chat.prompt_metrics", "Ubah deskripsi kerja menjadi terukur dengan metrik"),
                   ]}
                 />
               </Card>

@@ -377,17 +377,17 @@ export default function CoverLetterWorkspace({
         fullLetterText:
           typeof data.coverLetter === "string" ? data.coverLetter : prev.fullLetterText,
       }));
-      toast.success("Surat lamaran kerja berhasil dibuat dengan AI!");
+      toast.success(t("cover_letter.toast_ai_success", "Surat lamaran kerja berhasil dibuat dengan AI!"));
       setActiveTab("edit");
     },
     onError: err => {
-      toast.error(`Gagal membuat surat: ${err.message}`);
+      toast.error(`${t("cover_letter.toast_ai_failed", "Gagal membuat surat:")} ${err.message}`);
     },
   });
 
   const handleGenerateAI = () => {
     if (!companyName.trim() || !targetJob.trim()) {
-      toast.error("Mohon isi Nama Perusahaan dan Posisi yang Dilamar.");
+      toast.error(t("cover_letter.toast_company_role_required", "Mohon isi Nama Perusahaan dan Posisi yang Dilamar."));
       return;
     }
     generateMutation.mutate({
@@ -422,7 +422,7 @@ ${letterData.fullName}`;
 
     navigator.clipboard.writeText(text);
     setCopied(true);
-    toast.success("Teks surat lamaran berhasil disalin ke clipboard!");
+    toast.success(t("cover_letter.toast_copied", "Teks surat lamaran berhasil disalin ke clipboard!"));
     setTimeout(() => setCopied(false), 2000);
   };
 
@@ -444,13 +444,13 @@ Hormat saya,
 *${letterData.fullName}*`;
 
     navigator.clipboard.writeText(waText);
-    toast.success("Format WhatsApp HRD berhasil disalin! Siap langsung ditempel di chat WA.");
+    toast.success(t("cover_letter.toast_wa_copied", "Format WhatsApp HRD berhasil disalin! Siap langsung ditempel di chat WA."));
   };
 
   const handleCopySubject = () => {
     navigator.clipboard.writeText(letterData.subject);
     setCopiedSubject(true);
-    toast.success("Subjek email disalin!");
+    toast.success(t("cover_letter.toast_subject_copied", "Subjek email disalin!"));
     setTimeout(() => setCopiedSubject(false), 2000);
   };
 
@@ -463,9 +463,9 @@ Hormat saya,
         `Surat_Lamaran_${letterData.fullName.replace(/\s+/g, "_")}_${letterData.companyName.replace(/\s+/g, "_")}.pdf`,
         currentPaperSize
       );
-      toast.info("Jendela cetak dibuka. Pilih 'Save as PDF' untuk menyimpan file PDF.");
+      toast.info(t("cover_letter.toast_pdf_opened", "Jendela cetak dibuka. Pilih 'Save as PDF' untuk menyimpan file PDF."));
     } catch (err: any) {
-      toast.error(err.message || "Gagal mencetak dokumen");
+      toast.error(err.message || t("cover_letter.toast_pdf_failed", "Gagal mencetak dokumen"));
     }
   };
 
@@ -477,9 +477,9 @@ Hormat saya,
         `Paket_Lamaran_${letterData.fullName.replace(/\s+/g, "_")}.pdf`,
         currentPaperSize
       );
-      toast.info("Jendela cetak dibuka. Pilih 'Save as PDF' untuk menyimpan paket Surat Lamaran + CV (1 file PDF).");
+      toast.info(t("cover_letter.toast_bundle_opened", "Jendela cetak dibuka. Pilih 'Save as PDF' untuk menyimpan paket Surat Lamaran + CV (1 file PDF)."));
     } catch (err: any) {
-      toast.error(err.message || "Gagal mencetak dokumen paket");
+      toast.error(err.message || t("cover_letter.toast_bundle_failed", "Gagal mencetak dokumen paket"));
     }
   };
 
@@ -489,9 +489,9 @@ Hormat saya,
         letterData,
         `Surat_Lamaran_${letterData.fullName.replace(/\s+/g, "_")}_${letterData.companyName.replace(/\s+/g, "_")}.docx`
       );
-      toast.success("Surat lamaran kerja (.docx) berhasil diunduh!");
+      toast.success(t("cover_letter.toast_word_downloaded", "Surat lamaran kerja (.docx) berhasil diunduh!"));
     } catch (err: any) {
-      toast.error(err.message || "Gagal mengunduh dokumen Word");
+      toast.error(err.message || t("cover_letter.toast_word_failed", "Gagal mengunduh dokumen Word"));
     }
   };
 
@@ -499,7 +499,7 @@ Hormat saya,
 
   const handleSyncFromCV = () => {
     if (!cvData) {
-      toast.error("Data CV belum termuat");
+      toast.error(t("cover_letter.toast_cv_not_loaded", "Data CV belum termuat"));
       return;
     }
     const fullName = cvData.personalInfo?.fullName || letterData.fullName;
@@ -526,7 +526,7 @@ Hormat saya,
       educationSchool,
       educationGpa,
     }));
-    toast.success("Biodata & profil surat berhasil disinkronkan dengan CV terkini!");
+    toast.success(t("cover_letter.toast_synced", "Biodata & profil surat berhasil disinkronkan dengan CV terkini!"));
   };
 
   // Render the selected template component
@@ -642,7 +642,7 @@ Hormat saya,
                 </div>
                 <div>
                   <p className="font-semibold text-slate-900">{t("cover_letter.btn_eyd", "Periksa EYD")}</p>
-                  <p className="text-[10px] text-slate-500">Perbaiki typo & kesopanan baku</p>
+                  <p className="text-[10px] text-slate-500">{t("cover_letter.eyd_desc", "Perbaiki typo & kesopanan baku")}</p>
                 </div>
               </DropdownMenuItem>
 
@@ -655,7 +655,7 @@ Hormat saya,
                 </div>
                 <div>
                   <p className="font-semibold text-slate-900">{t("cover_letter.btn_sync", "Sinkronkan dari CV")}</p>
-                  <p className="text-[10px] text-slate-500">Ambil profil & kontak terbaru</p>
+                  <p className="text-[10px] text-slate-500">{t("cover_letter.sync_desc", "Ambil profil & kontak terbaru")}</p>
                 </div>
               </DropdownMenuItem>
 
@@ -670,7 +670,7 @@ Hormat saya,
                   <p className="font-semibold text-slate-900">
                     {copied ? t("actions.copied", "Tersalin!") : t("cover_letter.btn_copy", "Salin Teks Surat")}
                   </p>
-                  <p className="text-[10px] text-slate-500">Salin naskah lengkap ke clipboard</p>
+                  <p className="text-[10px] text-slate-500">{t("cover_letter.copy_desc", "Salin naskah lengkap ke clipboard")}</p>
                 </div>
               </DropdownMenuItem>
 
@@ -682,8 +682,8 @@ Hormat saya,
                   WA
                 </div>
                 <div>
-                  <p className="font-semibold text-emerald-950">Salin Format WhatsApp HRD</p>
-                  <p className="text-[10px] text-emerald-700">Teks pengantar ramah & terstruktur untuk WA</p>
+                  <p className="font-semibold text-emerald-950">{t("cover_letter.copy_wa", "Salin Format WhatsApp HRD")}</p>
+                  <p className="text-[10px] text-emerald-700">{t("cover_letter.copy_wa_desc", "Teks pengantar ramah & terstruktur untuk WA")}</p>
                 </div>
               </DropdownMenuItem>
 
@@ -695,7 +695,7 @@ Hormat saya,
                   <FileText className="w-3.5 h-3.5" />
                 </div>
                 <div>
-                  <p className="font-semibold text-slate-900">Salin Subjek Email</p>
+                  <p className="font-semibold text-slate-900">{t("cover_letter.copy_subject", "Salin Subjek Email")}</p>
                   <p className="text-[10px] text-slate-500">{letterData.subject}</p>
                 </div>
               </DropdownMenuItem>
@@ -708,7 +708,7 @@ Hormat saya,
                   setSelectedTemplate("standard-indonesian");
                   setLetterData(fresh);
                   setAttachmentsText((fresh.attachments || []).join("\n"));
-                  toast.success("Format surat lamaran di-reset ke template standar baku.");
+                  toast.success(t("cover_letter.toast_reset", "Format surat lamaran di-reset ke template standar baku."));
                 }}
                 className="gap-2.5 py-2 px-2.5 rounded-lg cursor-pointer text-xs text-rose-600 hover:text-rose-700 hover:bg-rose-50"
               >
@@ -717,7 +717,7 @@ Hormat saya,
                 </div>
                 <div>
                   <p className="font-semibold">{t("cover_letter.btn_reset", "Reset ke Format Standar")}</p>
-                  <p className="text-[10px] text-rose-400">Kembalikan ke naskah baku awal</p>
+                  <p className="text-[10px] text-rose-400">{t("cover_letter.reset_desc", "Kembalikan ke naskah baku awal")}</p>
                 </div>
               </DropdownMenuItem>
             </DropdownMenuContent>
@@ -745,7 +745,7 @@ Hormat saya,
                 </div>
                 <div>
                   <p className="text-xs font-bold text-slate-900">{t("cover_letter.download_single", "Format PDF (Surat Saja)")}</p>
-                  <p className="text-[10px] text-slate-500">A4 standar siap cetak atau lampirkan</p>
+                  <p className="text-[10px] text-slate-500">{t("cover_letter.download_single_desc", "A4 standar siap cetak atau lampirkan")}</p>
                 </div>
               </DropdownMenuItem>
 
@@ -758,7 +758,7 @@ Hormat saya,
                 </div>
                 <div>
                   <p className="text-xs font-bold text-slate-900">{t("cover_letter.download_bundle", "Paket Komplit (Surat + CV 1 PDF)")}</p>
-                  <p className="text-[10px] text-slate-500">Hal 1 Surat + Hal 2 CV dalam 1 file</p>
+                  <p className="text-[10px] text-slate-500">{t("cover_letter.download_bundle_desc", "Hal 1 Surat + Hal 2 CV dalam 1 file")}</p>
                 </div>
               </DropdownMenuItem>
 
@@ -771,7 +771,7 @@ Hormat saya,
                 </div>
                 <div>
                   <p className="text-xs font-bold text-slate-900">{t("cover_letter.download_word", "Format Microsoft Word (.docx)")}</p>
-                  <p className="text-[10px] text-slate-500">Bisa diedit di MS Word / WPS Office</p>
+                  <p className="text-[10px] text-slate-500">{t("cover_letter.download_word_desc", "Bisa diedit di MS Word / WPS Office")}</p>
                 </div>
               </DropdownMenuItem>
             </DropdownMenuContent>
@@ -877,9 +877,9 @@ Hormat saya,
             {activeTab === "templates" && (
               <div className="space-y-3">
                 <div>
-                  <h3 className="font-bold text-slate-900 text-sm">Pilih Format Surat Lamaran</h3>
+                  <h3 className="font-bold text-slate-900 text-sm">{t("cover_letter.choose_format", "Pilih Format Surat Lamaran")}</h3>
                   <p className="text-slate-500 text-[11px] mt-0.5">
-                    Tersedia 25 format baku profesional sesuai industri, instansi, dan tingkat pengalaman Anda.
+                    {t("cover_letter.choose_format_desc", "Tersedia 26 format baku profesional sesuai industri, instansi, dan tingkat pengalaman Anda.")}
                   </p>
                 </div>
 
@@ -888,7 +888,7 @@ Hormat saya,
                   <div className="relative">
                     <Search className="w-3.5 h-3.5 absolute left-2.5 top-2.5 text-slate-400" />
                     <Input
-                      placeholder="Cari format (BUMN, Medis, Tech, Legal, dll)..."
+                      placeholder={t("cover_letter.search_format_placeholder", "Cari format (BUMN, Medis, Tech, Legal, dll)...")}
                       value={templateSearch}
                       onChange={e => setTemplateSearch(e.target.value)}
                       className="pl-8 text-xs border-slate-200 h-8 rounded-lg"
@@ -897,16 +897,22 @@ Hormat saya,
 
                   {/* Category Pills */}
                   <div className="flex flex-wrap gap-1 text-[11px]">
-                    {["Semua", "Resmi / Nasional", "Tech & Startup", "Industri Spesifik", "Internasional"].map(cat => (
+                    {[
+                      { id: "Semua", label: t("cover_letter.cat_all", "Semua") },
+                      { id: "Resmi / Nasional", label: t("cover_letter.cat_national", "Resmi / Nasional") },
+                      { id: "Tech & Startup", label: t("cover_letter.cat_tech", "Tech & Startup") },
+                      { id: "Industri Spesifik", label: t("cover_letter.cat_industry", "Industri Spesifik") },
+                      { id: "Internasional", label: t("cover_letter.cat_intl", "Internasional") },
+                    ].map(cat => (
                       <button
-                        key={cat}
-                        onClick={() => setTemplateCategory(cat)}
-                        className={`px-2.5 py-1 rounded-md font-semibold transition-all ${templateCategory === cat
+                        key={cat.id}
+                        onClick={() => setTemplateCategory(cat.id)}
+                        className={`px-2.5 py-1 rounded-md font-semibold transition-all ${templateCategory === cat.id
                             ? "bg-slate-900 text-white shadow-2xs"
                             : "bg-slate-100 text-slate-600 hover:bg-slate-200/80"
                           }`}
                       >
-                        {cat}
+                        {cat.label}
                       </button>
                     ))}
                   </div>
@@ -959,7 +965,7 @@ Hormat saya,
                   })}
                   {filteredTemplates.length === 0 && (
                     <div className="text-center py-8 text-slate-400 text-xs">
-                      Tidak ditemukan template yang cocok dengan pencarian.
+                      {t("cover_letter.no_templates", "Tidak ditemukan template yang cocok dengan pencarian.")}
                     </div>
                   )}
                 </div>
@@ -972,90 +978,90 @@ Hormat saya,
                 <div className="p-3 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100 rounded-xl">
                   <div className="flex items-center gap-2 font-bold text-blue-900 text-xs">
                     <Sparkles className="w-4 h-4 text-blue-600" />
-                    <span>AI Career Matchmaker</span>
+                    <span>{t("cover_letter.ai_career_matchmaker", "AI Career Matchmaker")}</span>
                   </div>
                   <p className="text-[11px] text-blue-800/80 mt-1 leading-relaxed">
-                    AI akan membaca pengalaman & keahlian dari CV Anda untuk menulis surat lamaran yang sangat persuasif dan relevan dengan lowongan target.
+                    {t("cover_letter.ai_desc", "AI akan membaca pengalaman & keahlian dari CV Anda untuk menulis surat lamaran yang sangat persuasif dan relevan dengan lowongan target.")}
                   </p>
                 </div>
 
                 <div>
-                  <Label className="text-xs font-semibold text-slate-700">Perusahaan yang Dituju *</Label>
+                  <Label className="text-xs font-semibold text-slate-700">{t("cover_letter.target_company_label", "Perusahaan yang Dituju *")}</Label>
                   <Input
                     value={companyName}
                     onChange={e => setCompanyName(e.target.value)}
-                    placeholder="Contoh: PT Bank Central Asia, Tokopedia, Google"
+                    placeholder={t("cover_letter.target_company_placeholder", "Contoh: PT Bank Central Asia, Tokopedia, Google")}
                     className="mt-1 border-slate-200 rounded-lg text-xs"
                   />
                 </div>
 
                 <div>
-                  <Label className="text-xs font-semibold text-slate-700">Posisi / Role yang Dilamar *</Label>
+                  <Label className="text-xs font-semibold text-slate-700">{t("cover_letter.target_job_label", "Posisi / Role yang Dilamar *")}</Label>
                   <Input
                     value={targetJob}
                     onChange={e => setTargetJob(e.target.value)}
-                    placeholder="Contoh: Full-Stack Developer, Data Analyst"
+                    placeholder={t("cover_letter.target_job_placeholder", "Contoh: Full-Stack Developer, Data Analyst")}
                     className="mt-1 border-slate-200 rounded-lg text-xs"
                   />
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <Label className="text-xs font-semibold text-slate-700">Nama Penerima</Label>
+                    <Label className="text-xs font-semibold text-slate-700">{t("cover_letter.recipient_name_label", "Nama Penerima")}</Label>
                     <Input
                       value={recipientName}
                       onChange={e => setRecipientName(e.target.value)}
-                      placeholder="Bapak/Ibu HRD"
+                      placeholder={t("cover_letter.recipient_name_placeholder", "Bapak/Ibu HRD")}
                       className="mt-1 border-slate-200 rounded-lg text-xs"
                     />
                   </div>
                   <div>
-                    <Label className="text-xs font-semibold text-slate-700">Jabatan Penerima</Label>
+                    <Label className="text-xs font-semibold text-slate-700">{t("cover_letter.recipient_title_label", "Jabatan Penerima")}</Label>
                     <Input
                       value={recipientTitle}
                       onChange={e => setRecipientTitle(e.target.value)}
-                      placeholder="HR Manager / Lead"
+                      placeholder={t("cover_letter.recipient_title_placeholder", "HR Manager / Lead")}
                       className="mt-1 border-slate-200 rounded-lg text-xs"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <Label className="text-xs font-semibold text-slate-700">Alamat Perusahaan (Opsional)</Label>
+                  <Label className="text-xs font-semibold text-slate-700">{t("cover_letter.company_address_label", "Alamat Perusahaan (Opsional)")}</Label>
                   <Input
                     value={companyAddress}
                     onChange={e => setCompanyAddress(e.target.value)}
-                    placeholder="Gedung / Kota Perusahaan"
+                    placeholder={t("cover_letter.company_address_placeholder", "Gedung / Kota Perusahaan")}
                     className="mt-1 border-slate-200 rounded-lg text-xs"
                   />
                 </div>
 
                 <div>
-                  <Label className="text-xs font-semibold text-slate-700">Gaya Bahasa & Nada (Tone of Voice)</Label>
+                  <Label className="text-xs font-semibold text-slate-700">{t("cover_letter.tone_label", "Gaya Bahasa & Nada (Tone of Voice)")}</Label>
                   <Select value={tone} onValueChange={(val: any) => setTone(val)}>
                     <SelectTrigger className="mt-1 border-slate-200 rounded-lg text-xs">
-                      <SelectValue placeholder="Pilih nada" />
+                      <SelectValue placeholder={t("cover_letter.select_tone", "Pilih nada")} />
                     </SelectTrigger>
                     <SelectContent className="rounded-xl border-slate-200">
-                      <SelectItem value="professional" className="text-xs">Formal & Profesional (Standar HRD)</SelectItem>
-                      <SelectItem value="formal_bumn" className="text-xs">🏛️ Sangat Formal & Baku (BUMN / PNS / Lembaga Negara)</SelectItem>
-                      <SelectItem value="modern_startup" className="text-xs">🚀 Modern & Enerjik (Startup / Tech Company)</SelectItem>
-                      <SelectItem value="creative_agency" className="text-xs">🎨 Kreatif & Storytelling (Agensi / Media)</SelectItem>
-                      <SelectItem value="confident" className="text-xs">💪 Percaya Diri & Berorientasi Metrik</SelectItem>
-                      <SelectItem value="enthusiastic" className="text-xs">✨ Antusias & Berenergi Tinggi</SelectItem>
-                      <SelectItem value="concise" className="text-xs">⚡ Ringkas & To the Point (&lt; 200 kata)</SelectItem>
+                      <SelectItem value="professional" className="text-xs">{t("cover_letter.tone_prof", "Formal & Profesional (Standar HRD)")}</SelectItem>
+                      <SelectItem value="formal_bumn" className="text-xs">{t("cover_letter.tone_bumn", "🏛️ Sangat Formal & Baku (BUMN / PNS / Lembaga Negara)")}</SelectItem>
+                      <SelectItem value="modern_startup" className="text-xs">{t("cover_letter.tone_startup", "🚀 Modern & Enerjik (Startup / Tech Company)")}</SelectItem>
+                      <SelectItem value="creative_agency" className="text-xs">{t("cover_letter.tone_agency", "🎨 Kreatif & Storytelling (Agensi / Media)")}</SelectItem>
+                      <SelectItem value="confident" className="text-xs">{t("cover_letter.tone_confident", "💪 Percaya Diri & Berorientasi Metrik")}</SelectItem>
+                      <SelectItem value="enthusiastic" className="text-xs">{t("cover_letter.tone_enthusiastic", "✨ Antusias & Berenergi Tinggi")}</SelectItem>
+                      <SelectItem value="concise" className="text-xs">{t("cover_letter.tone_concise", "⚡ Ringkas & To the Point (< 200 kata)")}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
 
                 <div>
                   <Label className="text-xs font-semibold text-slate-700">
-                    Syarat Lowongan / Job Description (Opsional)
+                    {t("cover_letter.jd_label", "Syarat Lowongan / Job Description (Opsional)")}
                   </Label>
                   <Textarea
                     value={jobDescription}
                     onChange={e => setJobDescription(e.target.value)}
-                    placeholder="Tempelkan persyaratan pekerjaan dari LinkedIn / Jobstreet agar surat lebih spesifik..."
+                    placeholder={t("cover_letter.jd_placeholder", "Tempelkan persyaratan pekerjaan dari LinkedIn / Jobstreet agar surat lebih spesifik...")}
                     rows={4}
                     className="mt-1 border-slate-200 rounded-lg text-xs leading-relaxed"
                   />
@@ -1069,12 +1075,12 @@ Hormat saya,
                   {generateMutation.isPending ? (
                     <>
                       <Spinner className="w-4 h-4" />
-                      <span>Meracik Surat Lamaran...</span>
+                      <span>{t("cover_letter.generating_btn", "Meracik Surat Lamaran...")}</span>
                     </>
                   ) : (
                     <>
                       <Sparkles className="w-4 h-4" />
-                      <span>Generate Surat dengan AI</span>
+                      <span>{t("cover_letter.generate_btn", "Generate Surat dengan AI")}</span>
                     </>
                   )}
                 </Button>
@@ -1093,12 +1099,12 @@ Hormat saya,
 
                 <div>
                   <div className="flex justify-between items-center mb-1">
-                    <Label className="text-xs font-semibold text-slate-700">Subjek Surat / Email</Label>
+                    <Label className="text-xs font-semibold text-slate-700">{t("cover_letter.subject_label", "Subjek Surat / Email")}</Label>
                     <button
                       onClick={handleCopySubject}
                       className="text-[10px] text-blue-600 hover:underline font-semibold"
                     >
-                      {copiedSubject ? "Tersalin!" : "Salin Subjek"}
+                      {copiedSubject ? t("cover_letter.copied", "Tersalin!") : t("cover_letter.copy_subject", "Salin Subjek")}
                     </button>
                   </div>
                   <Input
@@ -1110,16 +1116,16 @@ Hormat saya,
 
                 <div className="grid grid-cols-2 gap-2">
                   <div>
-                    <Label className="text-xs font-semibold text-slate-700">Perusahaan / Instansi Tujuan</Label>
+                    <Label className="text-xs font-semibold text-slate-700">{t("cover_letter.company_name_label", "Perusahaan / Instansi Tujuan")}</Label>
                     <Input
                       value={letterData.companyName}
                       onChange={e => setLetterData({ ...letterData, companyName: e.target.value })}
-                      placeholder="Contoh: PT Bank Mandiri / Kemnaker RI"
+                      placeholder={t("cover_letter.company_name_placeholder", "Contoh: PT Bank Mandiri / Kemnaker RI")}
                       className="mt-1 border-slate-200 rounded-lg text-xs"
                     />
                   </div>
                   <div>
-                    <Label className="text-xs font-semibold text-slate-700">Kota Surat</Label>
+                    <Label className="text-xs font-semibold text-slate-700">{t("cover_letter.city_label", "Kota Surat")}</Label>
                     <Input
                       value={letterData.city}
                       onChange={e => setLetterData({ ...letterData, city: e.target.value })}
@@ -1130,20 +1136,20 @@ Hormat saya,
 
                 <div className="grid grid-cols-2 gap-2">
                   <div>
-                    <Label className="text-xs font-semibold text-slate-700">Penerima Surat (Kepada Yth)</Label>
+                    <Label className="text-xs font-semibold text-slate-700">{t("cover_letter.recipient_header_label", "Penerima Surat (Kepada Yth)")}</Label>
                     <Input
                       value={letterData.recipientTitle || ""}
                       onChange={e => setLetterData({ ...letterData, recipientTitle: e.target.value })}
-                      placeholder="Contoh: HRD Manager / Tim Rekrutmen"
+                      placeholder={t("cover_letter.recipient_header_placeholder", "Contoh: HRD Manager / Tim Rekrutmen")}
                       className="mt-1 border-slate-200 rounded-lg text-xs"
                     />
                   </div>
                   <div>
-                    <Label className="text-xs font-semibold text-slate-700">Alamat / Lokasi Tujuan</Label>
+                    <Label className="text-xs font-semibold text-slate-700">{t("cover_letter.recipient_loc_label", "Alamat / Lokasi Tujuan")}</Label>
                     <Input
                       value={letterData.companyAddress || ""}
                       onChange={e => setLetterData({ ...letterData, companyAddress: e.target.value })}
-                      placeholder="Di Tempat"
+                      placeholder={t("cover_letter.recipient_loc_placeholder", "Di Tempat")}
                       className="mt-1 border-slate-200 rounded-lg text-xs"
                     />
                   </div>
@@ -1151,27 +1157,27 @@ Hormat saya,
 
                 <div className="grid grid-cols-2 gap-2">
                   <div>
-                    <Label className="text-xs font-semibold text-slate-700">Sumber Info Lowongan</Label>
+                    <Label className="text-xs font-semibold text-slate-700">{t("cover_letter.job_source_label", "Sumber Info Lowongan")}</Label>
                     <Input
                       value={letterData.jobSource || ""}
                       onChange={e => setLetterData({ ...letterData, jobSource: e.target.value })}
-                      placeholder="Instagram, LinkedIn, dll"
+                      placeholder={t("cover_letter.job_source_placeholder", "Instagram, LinkedIn, dll")}
                       className="mt-1 border-slate-200 rounded-lg text-xs"
                     />
                   </div>
                   <div>
-                    <Label className="text-xs font-semibold text-slate-700">IPK / Nilai Akademik</Label>
+                    <Label className="text-xs font-semibold text-slate-700">{t("cover_letter.gpa_label", "IPK / Nilai Akademik")}</Label>
                     <Input
                       value={letterData.educationGpa || ""}
                       onChange={e => setLetterData({ ...letterData, educationGpa: e.target.value })}
-                      placeholder="Contoh: 3.93 atau 3.54"
+                      placeholder={t("cover_letter.gpa_placeholder", "Contoh: 3.93 atau 3.54")}
                       className="mt-1 border-slate-200 rounded-lg text-xs"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <Label className="text-xs font-semibold text-slate-700">Salam Pembuka</Label>
+                  <Label className="text-xs font-semibold text-slate-700">{t("cover_letter.salutation_label", "Salam Pembuka")}</Label>
                   <Input
                     value={letterData.salutation}
                     onChange={e => setLetterData({ ...letterData, salutation: e.target.value })}
@@ -1180,7 +1186,7 @@ Hormat saya,
                 </div>
 
                 <div>
-                  <Label className="text-xs font-semibold text-slate-700">Paragraf Pembuka</Label>
+                  <Label className="text-xs font-semibold text-slate-700">{t("cover_letter.opening_label", "Paragraf Pembuka")}</Label>
                   <Textarea
                     value={letterData.opening}
                     onChange={e => setLetterData({ ...letterData, opening: e.target.value })}
@@ -1190,7 +1196,7 @@ Hormat saya,
                 </div>
 
                 <div>
-                  <Label className="text-xs font-semibold text-slate-700">Paragraf Inti / Kualifikasi & Pendidikan</Label>
+                  <Label className="text-xs font-semibold text-slate-700">{t("cover_letter.body_label", "Paragraf Inti / Kualifikasi & Pendidikan")}</Label>
                   <Textarea
                     value={letterData.body}
                     onChange={e => setLetterData({ ...letterData, body: e.target.value })}
@@ -1201,12 +1207,12 @@ Hormat saya,
 
                 <div>
                   <Label className="text-xs font-semibold text-slate-700">
-                    Pengalaman Kerja / Magang Nyata (Paragraf Tambahan)
+                    {t("cover_letter.exp_label", "Pengalaman Kerja / Magang Nyata (Paragraf Tambahan)")}
                   </Label>
                   <Textarea
                     value={letterData.previousField || ""}
                     onChange={e => setLetterData({ ...letterData, previousField: e.target.value })}
-                    placeholder="Contoh: Selain itu saya juga memiliki pengalaman di PT Pertamina... atau magang di PT PLN..."
+                    placeholder={t("cover_letter.exp_placeholder", "Contoh: Selain itu saya juga memiliki pengalaman di PT Pertamina... atau magang di PT PLN...")}
                     rows={3}
                     className="mt-1 border-slate-200 rounded-lg text-xs leading-relaxed"
                   />
@@ -1214,7 +1220,7 @@ Hormat saya,
 
                 <div>
                     <div className="flex items-center justify-between mb-1">
-                      <Label className="text-xs font-semibold text-slate-700">Daftar Berkas Lampiran</Label>
+                      <Label className="text-xs font-semibold text-slate-700">{t("cover_letter.attachments_label", "Daftar Berkas Lampiran")}</Label>
                       <button
                         type="button"
                         onClick={() => {
@@ -1232,7 +1238,7 @@ Hormat saya,
                         }}
                         className="text-[11px] text-blue-600 hover:text-blue-700 font-semibold flex items-center gap-1 hover:underline"
                       >
-                        + Tambah Poin Baru
+                        {t("cover_letter.add_attachment_point", "+ Tambah Poin Baru")}
                       </button>
                     </div>
                     <Textarea
@@ -1249,16 +1255,16 @@ Hormat saya,
                         }));
                       }}
                       rows={5}
-                      placeholder="Curriculum Vitae (CV) Terbaru&#10;Salinan Ijazah dan Transkrip Nilai&#10;Tekan Enter untuk menambah poin ke bawah"
+                      placeholder={t("cover_letter.attachments_placeholder", "Curriculum Vitae (CV) Terbaru\nSalinan Ijazah dan Transkrip Nilai\nTekan Enter untuk menambah poin ke bawah")}
                       className="mt-1 border-slate-200 rounded-lg text-xs leading-relaxed"
                     />
                     <p className="text-[10px] text-slate-400 mt-1">
-                      * Tekan <b>Enter</b> di keyboard atau klik tombol <b>+ Tambah Poin Baru</b> di atas untuk menambah baris lampiran.
+                      {t("cover_letter.attachments_hint", "* Tekan Enter di keyboard atau klik tombol + Tambah Poin Baru di atas untuk menambah baris lampiran.")}
                     </p>
                   </div>
 
                   <div>
-                    <Label className="text-xs font-semibold text-slate-700">Paragraf Penutup</Label>
+                    <Label className="text-xs font-semibold text-slate-700">{t("cover_letter.closing_label", "Paragraf Penutup")}</Label>
                     <Textarea
                       value={letterData.closing}
                       onChange={e => setLetterData({ ...letterData, closing: e.target.value })}
@@ -1268,7 +1274,7 @@ Hormat saya,
                   </div>
 
                   <div>
-                    <Label className="text-xs font-semibold text-slate-700">Salam Penutup</Label>
+                    <Label className="text-xs font-semibold text-slate-700">{t("cover_letter.signoff_label", "Salam Penutup")}</Label>
                     <Input
                       value={letterData.signOff}
                       onChange={e => setLetterData({ ...letterData, signOff: e.target.value })}
@@ -1282,16 +1288,16 @@ Hormat saya,
                 {activeTab === "style" && (
                   <div className="space-y-4">
                     <div>
-                      <h3 className="font-bold text-slate-900 text-sm">Kustomisasi Dokumen & Desain</h3>
+                      <h3 className="font-bold text-slate-900 text-sm">{t("cover_letter.style_title", "Kustomisasi Dokumen & Desain")}</h3>
                       <p className="text-slate-500 text-[11px] mt-0.5">
-                        Sesuaikan elemen surat (judul, nomor dinas, tabel), tipografi, dan warna.
+                        {t("cover_letter.style_desc", "Sesuaikan elemen surat (judul, nomor dinas, tabel), tipografi, dan warna.")}
                       </p>
                     </div>
 
                     {/* Struktur Khusus Surat (Custom Header & Element Toggles) */}
                     <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl space-y-3">
                       <span className="text-xs font-bold text-slate-800 uppercase tracking-wider block">
-                        Elemen & Tata Letak Surat
+                        {t("cover_letter.layout_heading", "Elemen & Tata Letak Surat")}
                       </span>
 
                       {/* Toggle Judul SURAT LAMARAN KERJA */}
@@ -1306,7 +1312,7 @@ Hormat saya,
                             className="w-4 h-4 rounded text-blue-600 focus:ring-blue-500 border-slate-300 cursor-pointer"
                           />
                           <span className="text-xs font-semibold text-slate-800">
-                            Judul Dokumen di Tengah Atas
+                            {t("cover_letter.toggle_title", "Judul Dokumen di Tengah Atas")}
                           </span>
                         </label>
                         {letterData.includeLetterTitle !== false && (
@@ -1334,10 +1340,10 @@ Hormat saya,
                           />
                           <div>
                             <span className="text-xs font-semibold text-slate-800 block">
-                              Tampilkan Nomor Surat Kedinasan (Nomor : ...)
+                              {t("cover_letter.toggle_ref", "Tampilkan Nomor Surat Kedinasan (Nomor : ...)")}
                             </span>
                             <span className="text-[10px] text-slate-500 leading-tight block">
-                              Nonaktifkan (OFF) untuk pelamar umum perseorangan. Hanya aktifkan bila instansi memerlukan penomoran arsip.
+                              {t("cover_letter.toggle_ref_desc", "Nonaktifkan (OFF) untuk pelamar umum perseorangan. Hanya aktifkan bila instansi memerlukan penomoran arsip.")}
                             </span>
                           </div>
                         </label>
@@ -1366,10 +1372,10 @@ Hormat saya,
                           />
                           <div>
                             <span className="text-xs font-semibold text-slate-800 block">
-                              Tampilkan Baris "Lampiran" di Header Atas
+                              {t("cover_letter.toggle_attachments", 'Tampilkan Baris "Lampiran" di Header Atas')}
                             </span>
                             <span className="text-[10px] text-slate-500 leading-tight block">
-                              Menambahkan "Lampiran : 1 (Satu) Berkas Lengkap" tepat di bawah Perihal.
+                              {t("cover_letter.toggle_attachments_desc", 'Menambahkan "Lampiran : 1 (Satu) Berkas Lengkap" tepat di bawah Perihal.')}
                             </span>
                           </div>
                         </label>
@@ -1388,10 +1394,10 @@ Hormat saya,
                           />
                           <div>
                             <span className="text-xs font-semibold text-slate-800 block">
-                              Tampilkan Tabel Biodata Ringkas
+                              {t("cover_letter.toggle_biodata", "Tampilkan Tabel Biodata Ringkas")}
                             </span>
                             <span className="text-[10px] text-slate-500 leading-tight block">
-                              Menampilkan tabel Nama, Pendidikan, Domisili, dan No. HP di tengah surat.
+                              {t("cover_letter.toggle_biodata_desc", "Menampilkan tabel Nama, Pendidikan, Domisili, dan No. HP di tengah surat.")}
                             </span>
                           </div>
                         </label>
@@ -1399,7 +1405,7 @@ Hormat saya,
                     </div>
 
                     <div>
-                      <Label className="text-xs font-semibold text-slate-700 mb-2 block">Warna Aksen</Label>
+                      <Label className="text-xs font-semibold text-slate-700 mb-2 block">{t("cover_letter.accent_color_label", "Warna Aksen")}</Label>
                       <div className="flex flex-wrap gap-2.5">
                         {ACCENT_COLORS.map(c => {
                           const isSelected = letterData.accentColor === c.value;
@@ -1422,7 +1428,7 @@ Hormat saya,
                     </div>
 
                     <div>
-                      <Label className="text-xs font-semibold text-slate-700 mb-1.5 block">Keluarga Font (Tipografi)</Label>
+                      <Label className="text-xs font-semibold text-slate-700 mb-1.5 block">{t("cover_letter.font_family_label", "Keluarga Font (Tipografi)")}</Label>
                       <Select
                         value={letterData.fontFamily}
                         onValueChange={val => setLetterData({ ...letterData, fontFamily: val })}
@@ -1453,8 +1459,8 @@ Hormat saya,
                     <div className="pt-2 border-t border-slate-100 space-y-2">
                       <div className="flex items-center justify-between">
                         <div>
-                          <p className="font-semibold text-slate-900 text-xs">Tanda Tangan Digital</p>
-                          <p className="text-[11px] text-slate-500">Tampilkan tanda tangan di atas nama</p>
+                          <p className="font-semibold text-slate-900 text-xs">{t("cover_letter.sig_title", "Tanda Tangan Digital")}</p>
+                          <p className="text-[11px] text-slate-500">{t("cover_letter.sig_subtitle", "Tampilkan tanda tangan di atas nama")}</p>
                         </div>
                         <input
                           type="checkbox"
@@ -1478,10 +1484,10 @@ Hormat saya,
                                 </div>
                                 <div className="min-w-0">
                                   <p className="text-xs font-semibold text-slate-800 truncate">
-                                    Tanda Tangan Khusus
+                                    {t("cover_letter.sig_custom", "Tanda Tangan Khusus")}
                                   </p>
                                   <span className="inline-flex items-center text-[10px] text-emerald-600 font-medium">
-                                    ● Terpasang di Dokumen
+                                    {t("cover_letter.sig_installed", "● Terpasang di Dokumen")}
                                   </span>
                                 </div>
                               </div>
@@ -1518,10 +1524,10 @@ Hormat saya,
                                 className="w-full py-2 px-3 bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200/80 rounded-xl text-xs font-semibold flex items-center justify-center gap-2 transition-colors shadow-2xs cursor-pointer"
                               >
                                 <PenTool className="w-3.5 h-3.5" />
-                                Gambar / Upload Tanda Tangan
+                                {t("cover_letter.sig_draw_upload", "Gambar / Upload Tanda Tangan")}
                               </button>
                               <p className="text-[10px] text-slate-400 text-center">
-                                Bisa gambar dengan jari/mouse, upload file PNG, atau pilih kaligrafi
+                                {t("cover_letter.sig_hint", "Bisa gambar dengan jari/mouse, upload file PNG, atau pilih kaligrafi")}
                               </p>
                             </div>
                           )}
@@ -1543,7 +1549,7 @@ Hormat saya,
           <div className="w-full max-w-[820px] mb-3 flex items-center justify-between text-xs text-slate-500 shrink-0 gap-2">
             <div className="flex items-center gap-1.5 font-medium truncate">
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
-              <span className="truncate">Pratinjau Kertas {currentPaperSize.toUpperCase()}</span>
+              <span className="truncate">{t("cover_letter.paper_preview", "Pratinjau Kertas {paper}").replace("{paper}", currentPaperSize.toUpperCase())}</span>
             </div>
 
             <div className="flex items-center gap-1 bg-white border border-slate-200/80 rounded-lg p-0.5 shadow-2xs shrink-0">
@@ -1589,10 +1595,11 @@ Hormat saya,
             }}
           >
             <div
-              className="origin-top-left transition-transform duration-200 ease-out"
+              className="transition-transform duration-200 ease-out"
               style={{
                 width: "794px",
                 transform: `scale(${zoomLevel / 100})`,
+                transformOrigin: "top left",
               }}
             >
               <div

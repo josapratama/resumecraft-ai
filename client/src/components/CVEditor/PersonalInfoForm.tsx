@@ -76,7 +76,7 @@ export default function PersonalInfoForm({
       }
     },
     onError: () => {
-      toast.error("Failed to save personal information");
+      toast.error(t("personal.save_failed", "Failed to save personal information"));
     },
   });
 
@@ -294,11 +294,11 @@ export default function PersonalInfoForm({
               setTargetRole(val);
               onTargetRoleChange?.(val);
             }}
-            placeholder="Contoh: Guru Kimia / Tenaga Pendidik / Data Analyst"
+            placeholder={t("personal.target_role_placeholder", "Contoh: Guru Kimia / Tenaga Pendidik / Data Analyst")}
             className="mt-1.5 border-neutral-200 focus:border-neutral-900 rounded-xl"
           />
           <p className="text-[11px] text-neutral-400 mt-1">
-            Teks ini muncul tepat di bawah nama pada CV. Kosongkan jika ingin disembunyikan.
+            {t("personal.target_role_hint", "Teks ini muncul tepat di bawah nama pada CV. Kosongkan jika ingin disembunyikan.")}
           </p>
         </div>
 
@@ -350,10 +350,10 @@ export default function PersonalInfoForm({
           <Label className="text-xs font-semibold text-neutral-600 uppercase tracking-wider flex items-center justify-between">
             <span className="flex items-center gap-1.5">
               <Globe className="w-3.5 h-3.5 text-neutral-400" />
-              Tautan Portofolio / LinkedIn / Web Pribadi
+              {t("personal.portfolio_label", "Tautan Portofolio / LinkedIn / Web Pribadi")}
             </span>
             <span className="text-[11px] text-neutral-400 font-normal lowercase tracking-normal">
-              opsional
+              {t("personal.optional", "opsional")}
             </span>
           </Label>
           <Input
@@ -363,11 +363,11 @@ export default function PersonalInfoForm({
               setPortfolioUrl(val);
               onPortfolioUrlChange?.(val);
             }}
-            placeholder="Contoh: https://linkedin.com/in/nama atau https://irma-iryani.josapratama.com"
+            placeholder={t("personal.portfolio_placeholder", "Contoh: https://linkedin.com/in/nama atau https://irma-iryani.josapratama.com")}
             className="mt-1.5 border-neutral-200 focus:border-neutral-900 rounded-xl"
           />
           <div className="flex flex-wrap gap-1.5 mt-2">
-            <span className="text-[10px] text-neutral-400 font-medium self-center">Preset Cepat:</span>
+            <span className="text-[10px] text-neutral-400 font-medium self-center">{t("personal.quick_preset", "Preset Cepat:")}</span>
             <button
               type="button"
               onClick={() => {
@@ -377,7 +377,7 @@ export default function PersonalInfoForm({
               }}
               className="text-[10px] px-2 py-0.5 rounded-md bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200 transition-colors cursor-pointer"
             >
-              💼 LinkedIn
+              {t("personal.preset_linkedin", "💼 LinkedIn")}
             </button>
             <button
               type="button"
@@ -389,7 +389,7 @@ export default function PersonalInfoForm({
               }}
               className="text-[10px] px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200 transition-colors cursor-pointer"
             >
-              🌐 Portofolio Web Pribadi
+              {t("personal.preset_web", "🌐 Portofolio Web Pribadi")}
             </button>
             <button
               type="button"
@@ -398,9 +398,9 @@ export default function PersonalInfoForm({
                 onPortfolioUrlChange?.("");
               }}
               className="text-[10px] px-2 py-0.5 rounded-md bg-neutral-100 text-neutral-600 hover:bg-neutral-200 border border-neutral-200 transition-colors cursor-pointer"
-              title="Jika dikosongkan, QR code otomatis mengarah ke Link Publik CV ini"
+              title={t("personal.preset_public_title", "Jika dikosongkan, QR code otomatis mengarah ke Link Publik CV ini")}
             >
-              🔗 Link Publik CV
+              {t("personal.preset_public", "🔗 Link Publik CV")}
             </button>
           </div>
         </div>
@@ -452,10 +452,10 @@ export default function PersonalInfoForm({
               </div>
               <div>
                 <Label htmlFor="toggle-qr" className="text-xs font-semibold text-neutral-800 cursor-pointer block">
-                  Tampilkan QR Code Portofolio di CV
+                  {t("personal.qr_label", "Tampilkan QR Code Portofolio di CV")}
                 </Label>
                 <p className="text-[11px] text-neutral-500">
-                  Scan kamera HP langsung membuka tautan portofolio / LinkedIn yang diisi di atas
+                  {t("personal.qr_desc", "Scan kamera HP langsung membuka tautan portofolio / LinkedIn yang diisi di atas")}
                 </p>
               </div>
             </div>

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { trpc } from "@/lib/trpc";
+import { useI18n } from "@/lib/i18n";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
@@ -57,6 +58,7 @@ export default function ATSScoreModal({
   onClose,
   defaultRole = "",
 }: ATSScoreModalProps) {
+  const { t } = useI18n();
   const [targetRole, setTargetRole] = useState(defaultRole);
   const [jobDescription, setJobDescription] = useState("");
   const [result, setResult] = useState<ATSResult | null>(null);
@@ -231,15 +233,14 @@ export default function ATSScoreModal({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-base font-bold text-neutral-900">
             <Target className="w-5 h-5 text-indigo-600" />
-            <span>AI ATS Compatibility & Benchmark</span>
+            <span>{t("ats.title", "AI ATS Compatibility & Benchmark")}</span>
           </DialogTitle>
         </DialogHeader>
 
         {!result ? (
           <div className="space-y-4 pt-1">
             <p className="text-xs text-neutral-600 leading-relaxed">
-              Paste the vacancy or Job Description (JD) you want to target.
-              The AI parses required qualifications, measures keyword overlap, and computes your screening pass rate.
+              {t("ats.desc", "Tempel kualifikasi atau Job Description (JD) lowongan yang ingin Anda lamar. AI akan mengukur kepadatan kata kunci, kesesuaian profil, dan memprediksi peluang lolos skrining ATS.")}
             </p>
 
             {/* Poster / Screenshot OCR Vision Scan */}
@@ -255,19 +256,19 @@ export default function ATSScoreModal({
                   </div>
                   <div>
                     <p className="text-xs font-bold text-neutral-900 leading-tight">
-                      Punya Foto / Poster Lowongan Kerja?
+                      {t("ats.ocr_title", "Punya Foto / Poster Lowongan Kerja?")}
                     </p>
                     <p className="text-[11px] text-neutral-500">
                       {isExtractingImage
-                        ? "AI sedang membaca seluruh teks poster loker..."
-                        : "Unggah gambar poster loker, AI langsung mengekstrak kualifikasi otomatis."}
+                        ? t("ats.ocr_scanning", "AI sedang membaca seluruh teks poster loker...")
+                        : t("ats.ocr_desc", "Unggah gambar poster loker, AI langsung mengekstrak kualifikasi otomatis.")}
                     </p>
                   </div>
                 </div>
 
                 <label className="cursor-pointer inline-flex items-center justify-center gap-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold px-3 py-1.5 rounded-lg shadow-xs transition-colors shrink-0">
                   <UploadCloud className="w-3.5 h-3.5" />
-                  <span>{isExtractingImage ? "Memindai..." : "Scan Poster Loker"}</span>
+                  <span>{isExtractingImage ? t("ats.scanning_btn", "Memindai...") : t("ats.scan_btn", "Scan Poster Loker")}</span>
                   <input
                     type="file"
                     accept="image/*"
@@ -284,11 +285,11 @@ export default function ATSScoreModal({
 
             <div>
               <Label htmlFor="targetRole" className="text-xs font-semibold text-neutral-600 uppercase tracking-wider">
-                Target Role / Title (Optional)
+                {t("ats.target_role", "Posisi yang Ditargetkan (Opsional)")}
               </Label>
               <Input
                 id="targetRole"
-                placeholder="e.g. Senior Frontend Engineer or Product Lead"
+                placeholder={t("ats.target_role_ph", "Contoh: Senior Frontend Engineer atau Product Lead")}
                 value={targetRole}
                 onChange={e => setTargetRole(e.target.value)}
                 className="mt-1.5 border-neutral-200 focus:border-neutral-900 rounded-xl"
@@ -297,11 +298,11 @@ export default function ATSScoreModal({
 
             <div>
               <Label htmlFor="jd" className="text-xs font-semibold text-neutral-600 uppercase tracking-wider">
-                Job Description & Key Requirements *
+                {t("ats.jd_label", "Job Description & Kualifikasi Lowongan *")}
               </Label>
               <Textarea
                 id="jd"
-                placeholder="Paste the job requirements, responsibilities, and required qualifications..."
+                placeholder={t("ats.jd_ph", "Tempel deskripsi pekerjaan, tanggung jawab, dan kualifikasi yang dicari perusahaan...")}
                 rows={7}
                 value={jobDescription}
                 onChange={e => setJobDescription(e.target.value)}
@@ -311,7 +312,7 @@ export default function ATSScoreModal({
 
             <div className="flex justify-end gap-2 pt-2 border-t border-neutral-100">
               <Button variant="outline" onClick={onClose} className="border-neutral-200 text-xs rounded-xl">
-                Cancel
+                {t("actions.cancel", "Batal")}
               </Button>
               <Button
                 onClick={handleAnalyze}
@@ -320,11 +321,11 @@ export default function ATSScoreModal({
               >
                 {analyzeMutation.isPending ? (
                   <>
-                    <Spinner className="w-4 h-4" /> Analyzing CV vs Job...
+                    <Spinner className="w-4 h-4" /> {t("ats.evaluating", "Mengevaluasi Kecocokan ATS...")}
                   </>
                 ) : (
                   <>
-                    <Sparkles className="w-4 h-4" /> Run ATS Screening
+                    <Sparkles className="w-4 h-4" /> {t("ats.run_btn", "Jalankan Skrining ATS")}
                   </>
                 )}
               </Button>
@@ -468,7 +469,7 @@ export default function ATSScoreModal({
                 onClick={() => setResult(null)}
                 className="text-xs rounded-xl"
               >
-                ← Test Another Vacancy
+                {t("ats.test_another", "← Uji Lowongan Lain")}
               </Button>
               <div className="flex items-center gap-2">
                 <Button
@@ -478,10 +479,10 @@ export default function ATSScoreModal({
                   className="gap-1.5 text-xs rounded-xl border-neutral-200 text-neutral-700 hover:bg-neutral-100 font-medium"
                 >
                   <Printer className="w-3.5 h-3.5 text-indigo-600" />
-                  <span>Unduh Laporan ATS (PDF)</span>
+                  <span>{t("ats.download_report", "Unduh Laporan ATS (PDF)")}</span>
                 </Button>
                 <Button onClick={onClose} size="sm" className="bg-neutral-900 text-white hover:bg-neutral-800 rounded-xl text-xs font-semibold px-4">
-                  Done
+                  {t("actions.close", "Selesai")}
                 </Button>
               </div>
             </div>

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { trpc } from "@/lib/trpc";
+import { useI18n } from "@/lib/i18n";
 import {
   Dialog,
   DialogContent,
@@ -36,6 +37,7 @@ export default function JobMatcherModal({
   onClose,
   defaultRole = "",
 }: JobMatcherModalProps) {
+  const { t } = useI18n();
   const [jobDescription, setJobDescription] = useState("");
   const [copiedSummary, setCopiedSummary] = useState(false);
   const utils = trpc.useUtils();
@@ -43,20 +45,20 @@ export default function JobMatcherModal({
   const applySummaryMutation = trpc.cv.personalInfo.update.useMutation({
     onSuccess: () => {
       utils.cv.loadFull.invalidate({ cvId });
-      toast.success("Ringkasan profil berhasil diperbarui langsung ke CV Anda!");
+      toast.success(t("job_matcher.summary_applied", "Ringkasan profil berhasil diperbarui langsung ke CV Anda!"));
     },
     onError: err => {
-      toast.error(err.message || "Gagal memperbarui ringkasan CV");
+      toast.error(err.message || t("job_matcher.summary_apply_failed", "Gagal memperbarui ringkasan CV"));
     },
   });
 
   const addSkillMutation = trpc.cv.skill.create.useMutation({
     onSuccess: (_: any, vars: any) => {
       utils.cv.loadFull.invalidate({ cvId });
-      toast.success(`Keahlian "${vars.skillName}" berhasil disisipkan ke CV!`);
+      toast.success(t("job_matcher.skill_added", `Keahlian "${vars.skillName}" berhasil disisipkan ke CV!`));
     },
     onError: (err: any) => {
-      toast.error(err.message || "Gagal menyisipkan keahlian");
+      toast.error(err.message || t("job_matcher.skill_add_failed", "Gagal menyisipkan keahlian"));
     },
   });
 
@@ -71,16 +73,16 @@ export default function JobMatcherModal({
 
   const matchMutation = trpc.cvAI.matchJobDescription.useMutation({
     onSuccess: () => {
-      toast.success("Analisis kecocokan lowongan berhasil!");
+      toast.success(t("job_matcher.analysis_success", "Analisis kecocokan lowongan berhasil!"));
     },
     onError: err => {
-      toast.error(err.message || "Gagal menganalisis lowongan kerja");
+      toast.error(err.message || t("job_matcher.analysis_failed", "Gagal menganalisis lowongan kerja"));
     },
   });
 
   const handleAnalyze = () => {
     if (jobDescription.trim().length < 20) {
-      toast.error("Mohon tempelkan deskripsi lowongan kerja minimal 20 karakter.");
+      toast.error(t("job_matcher.min_chars_error", "Mohon tempelkan deskripsi lowongan kerja minimal 20 karakter."));
       return;
     }
     matchMutation.mutate({
@@ -108,10 +110,10 @@ export default function JobMatcherModal({
             </div>
             <div>
               <DialogTitle className="text-base font-bold text-neutral-900 flex items-center gap-2">
-                ATS Job Description Matcher & Keyword Scanner
+                {t("job_matcher.modal_title", "ATS Job Description Matcher & Keyword Scanner")}
               </DialogTitle>
               <p className="text-xs text-neutral-500">
-                Pindai kecocokan profil CV Anda dengan kualifikasi lowongan kerja target
+                {t("job_matcher.modal_desc", "Pindai kecocokan profil CV Anda dengan kualifikasi lowongan kerja target")}
               </p>
             </div>
           </div>
@@ -124,17 +126,17 @@ export default function JobMatcherModal({
             <div className="flex items-center justify-between">
               <label className="text-xs font-bold text-neutral-800 flex items-center gap-1.5">
                 <FileSearch className="w-4 h-4 text-blue-600" />
-                Tempel Deskripsi Lowongan Kerja (Job Vacancy / Job Desc)
+                {t("job_matcher.input_label", "Tempel Deskripsi Lowongan Kerja (Job Vacancy / Job Desc)")}
               </label>
               {defaultRole && (
                 <span className="text-[11px] text-neutral-500">
-                  Target Posisi: <strong>{defaultRole}</strong>
+                  {t("job_matcher.target_role", "Target Posisi:")} <strong>{defaultRole}</strong>
                 </span>
               )}
             </div>
 
             <Textarea
-              placeholder="Contoh: We are looking for a Senior Frontend Engineer with 3+ years experience in React, TypeScript, Tailwind CSS, REST APIs, state management, and CI/CD pipelines..."
+              placeholder={t("job_matcher.placeholder", "Contoh: We are looking for a Senior Frontend Engineer with 3+ years experience in React, TypeScript, Tailwind CSS, REST APIs, state management, and CI/CD pipelines...")}
               value={jobDescription}
               onChange={e => setJobDescription(e.target.value)}
               rows={4}
@@ -148,7 +150,11 @@ export default function JobMatcherModal({
                 className="gap-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-lg h-8 px-4"
               >
                 <Sparkles className="w-3.5 h-3.5" />
-                <span>{matchMutation.isPending ? "Menganalisis dengan AI..." : "Pindai Kecocokan ATS"}</span>
+                <span>
+                  {matchMutation.isPending
+                    ? t("job_matcher.analyzing", "Menganalisis dengan AI...")
+                    : t("job_matcher.scan_btn", "Pindai Kecocokan ATS")}
+                </span>
               </Button>
             </div>
           </div>
@@ -166,7 +172,7 @@ export default function JobMatcherModal({
                   <div className="flex items-center gap-2">
                     <span className="text-2xl font-black">{result.matchScore}%</span>
                     <span className="text-xs font-bold uppercase tracking-wider">
-                      Tingkat Kecocokan ATS
+                      {t("job_matcher.match_rate", "Tingkat Kecocokan ATS")}
                     </span>
                   </div>
                   <p className="text-xs mt-1 leading-relaxed">{result.verdict}</p>
@@ -179,7 +185,9 @@ export default function JobMatcherModal({
                 <div className="bg-white p-4 rounded-xl border border-neutral-200/90 shadow-2xs space-y-2.5">
                   <div className="flex items-center gap-2 text-xs font-bold text-emerald-800">
                     <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                    <span>Kata Kunci Cocok ({result.matchedKeywords?.length || 0})</span>
+                    <span>
+                      {t("job_matcher.matched_keywords", "Kata Kunci Cocok")} ({result.matchedKeywords?.length || 0})
+                    </span>
                   </div>
                   <div className="flex flex-wrap gap-1.5">
                     {result.matchedKeywords?.map((kw: string, i: number) => (
@@ -191,7 +199,9 @@ export default function JobMatcherModal({
                       </Badge>
                     ))}
                     {(!result.matchedKeywords || result.matchedKeywords.length === 0) && (
-                      <p className="text-xs text-neutral-400">Tidak ada kata kunci yang cocok secara spesifik.</p>
+                      <p className="text-xs text-neutral-400">
+                        {t("job_matcher.no_matched", "Tidak ada kata kunci yang cocok secara spesifik.")}
+                      </p>
                     )}
                   </div>
                 </div>
@@ -201,10 +211,12 @@ export default function JobMatcherModal({
                   <div className="flex items-center justify-between text-xs font-bold text-rose-800">
                     <div className="flex items-center gap-2">
                       <XCircle className="w-4 h-4 text-rose-600" />
-                      <span>Kata Kunci Hilang ({result.missingKeywords?.length || 0})</span>
+                      <span>
+                        {t("job_matcher.missing_keywords", "Kata Kunci Hilang")} ({result.missingKeywords?.length || 0})
+                      </span>
                     </div>
                     <span className="text-[10px] text-neutral-400 font-normal">
-                      💡 Klik kata kunci untuk sisipkan ke CV
+                      {t("job_matcher.click_insert_hint", "💡 Klik kata kunci untuk sisipkan ke CV")}
                     </span>
                   </div>
                   <div className="flex flex-wrap gap-1.5">
@@ -215,14 +227,16 @@ export default function JobMatcherModal({
                         onClick={() => handleAddMissingKeyword(kw)}
                         disabled={addSkillMutation.isPending}
                         className="text-xs px-2.5 py-1 rounded-lg bg-rose-50 text-rose-800 hover:bg-rose-100 hover:border-rose-300 border border-rose-200 font-medium inline-flex items-center gap-1 transition-all shadow-2xs hover:scale-105 active:scale-95 cursor-pointer"
-                        title="Klik untuk langsung sisipkan ke daftar keahlian CV"
+                        title={t("job_matcher.insert_tooltip", "Klik untuk langsung sisipkan ke daftar keahlian CV")}
                       >
                         <Plus className="w-3 h-3 text-rose-600" />
                         <span>{kw}</span>
                       </button>
                     ))}
                     {(!result.missingKeywords || result.missingKeywords.length === 0) && (
-                      <p className="text-xs text-emerald-600 font-medium">Luar biasa! Semua kata kunci penting telah tercakup.</p>
+                      <p className="text-xs text-emerald-600 font-medium">
+                        {t("job_matcher.all_covered", "Luar biasa! Semua kata kunci penting telah tercakup.")}
+                      </p>
                     )}
                   </div>
                 </div>
@@ -234,7 +248,7 @@ export default function JobMatcherModal({
                   <div className="bg-white p-4 rounded-xl border border-neutral-200/90 shadow-2xs space-y-2">
                     <p className="text-xs font-bold text-neutral-800 flex items-center gap-1.5">
                       <Sparkles className="w-3.5 h-3.5 text-blue-600" />
-                      Kekuatan Profil Anda
+                      {t("job_matcher.strengths", "Kekuatan Profil Anda")}
                     </p>
                     <ul className="space-y-1.5 text-xs text-neutral-600">
                       {result.keyStrengths.map((str: string, i: number) => (
@@ -251,7 +265,7 @@ export default function JobMatcherModal({
                   <div className="bg-white p-4 rounded-xl border border-neutral-200/90 shadow-2xs space-y-2">
                     <p className="text-xs font-bold text-neutral-800 flex items-center gap-1.5">
                       <AlertTriangle className="w-3.5 h-3.5 text-amber-500" />
-                      Kesenjangan / Hal yang Perlu Diperhatikan
+                      {t("job_matcher.gaps", "Kesenjangan / Hal yang Perlu Diperhatikan")}
                     </p>
                     <ul className="space-y-1.5 text-xs text-neutral-600">
                       {result.atsGaps.map((gap: string, i: number) => (
@@ -270,7 +284,7 @@ export default function JobMatcherModal({
                 <div className="bg-white p-4 rounded-xl border border-neutral-200/90 shadow-2xs space-y-2.5">
                   <p className="text-xs font-bold text-neutral-900 flex items-center gap-1.5">
                     <Lightbulb className="w-4 h-4 text-amber-500" />
-                    Langkah Konkret Perbaikan CV untuk Lowongan Ini
+                    {t("job_matcher.recommendations", "Langkah Konkret Perbaikan CV untuk Lowongan Ini")}
                   </p>
                   <div className="space-y-2">
                     {result.actionableRecommendations.map((rec: string, i: number) => (
@@ -291,7 +305,7 @@ export default function JobMatcherModal({
                   <div className="flex items-center justify-between flex-wrap gap-2">
                     <p className="text-xs font-bold text-blue-950 flex items-center gap-1.5">
                       <Sparkles className="w-3.5 h-3.5 text-blue-600" />
-                      Usulan Ringkasan Profil (About Me) yang Disesuaikan
+                      {t("job_matcher.tailored_summary_title", "Usulan Ringkasan Profil (About Me) yang Disesuaikan")}
                     </p>
                     <div className="flex items-center gap-1.5">
                       <Button
@@ -300,13 +314,13 @@ export default function JobMatcherModal({
                         onClick={() => {
                           navigator.clipboard.writeText(result.tailoredSummarySuggestion);
                           setCopiedSummary(true);
-                          toast.success("Ringkasan profil berhasil disalin!");
+                          toast.success(t("job_matcher.summary_copied", "Ringkasan profil berhasil disalin!"));
                           setTimeout(() => setCopiedSummary(false), 2000);
                         }}
                         className="h-6 text-[10px] gap-1 rounded-md bg-white border-blue-300 text-blue-700"
                       >
                         {copiedSummary ? <Check className="w-3 h-3 text-emerald-600" /> : <Copy className="w-3 h-3" />}
-                        <span>{copiedSummary ? "Tersalin" : "Salin"}</span>
+                        <span>{copiedSummary ? t("actions.copied", "Tersalin") : t("actions.copy", "Salin")}</span>
                       </Button>
 
                       <Button
@@ -321,7 +335,11 @@ export default function JobMatcherModal({
                         className="h-6 text-[10px] gap-1 rounded-md bg-blue-600 hover:bg-blue-700 text-white shadow-2xs"
                       >
                         <CheckCircle2 className="w-3 h-3" />
-                        <span>{applySummaryMutation.isPending ? "Menerapkan..." : "Terapkan ke CV"}</span>
+                        <span>
+                          {applySummaryMutation.isPending
+                            ? t("job_matcher.applying", "Menerapkan...")
+                            : t("job_matcher.apply_btn", "Terapkan ke CV")}
+                        </span>
                       </Button>
                     </div>
                   </div>

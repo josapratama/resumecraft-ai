@@ -99,9 +99,9 @@ export default function SkillsForm({
       onDataChange?.(updated);
       resetForm();
       setIsDialogOpen(false);
-      toast.success("Skill added");
+      toast.success(t("skills_section.added", "Skill added"));
     },
-    onError: () => toast.error("Failed to add skill"),
+    onError: () => toast.error(t("skills_section.add_failed", "Failed to add skill")),
   });
 
   const updateMutation = trpc.cv.skill.update.useMutation({
@@ -113,9 +113,9 @@ export default function SkillsForm({
       onDataChange?.(updated);
       resetForm();
       setIsDialogOpen(false);
-      toast.success("Skill updated");
+      toast.success(t("skills_section.updated", "Skill updated"));
     },
-    onError: () => toast.error("Failed to update skill"),
+    onError: () => toast.error(t("skills_section.update_failed", "Failed to update skill")),
   });
 
   const deleteMutation = trpc.cv.skill.delete.useMutation({
@@ -125,15 +125,15 @@ export default function SkillsForm({
       onDataChange?.(updated);
       resetForm();
       setIsDialogOpen(false);
-      toast.success("Skill deleted");
+      toast.success(t("skills_section.deleted", "Skill deleted"));
     },
-    onError: () => toast.error("Failed to delete skill"),
+    onError: () => toast.error(t("skills_section.delete_failed", "Failed to delete skill")),
   });
 
   const reorderMutation = trpc.cv.skill.reorder.useMutation({
     onSuccess: () => {},
     onError: () => {
-      toast.error("Failed to update order");
+      toast.error(t("skills_section.order_failed", "Failed to update order"));
       utils.cv.loadFull.invalidate();
     },
   });
@@ -152,7 +152,7 @@ export default function SkillsForm({
 
   const handleSave = () => {
     if (!formData.skillName.trim() || !formData.category.trim()) {
-      toast.error("Skill name and category are required");
+      toast.error(t("skills_section.required", "Skill name and category are required"));
       return;
     }
     const payload = {
@@ -315,21 +315,21 @@ export default function SkillsForm({
                           disabled={deleteMutation.isPending}
                         >
                           <Trash2 className="w-3.5 h-3.5 mr-1" />
-                          Delete
+                          {t("skills_section.delete_btn", "Delete")}
                         </Button>
                       </AlertDialogTrigger>
                       <AlertDialogContent className="border border-neutral-200 rounded-2xl">
                         <AlertDialogHeader>
                           <AlertDialogTitle className="text-base font-bold text-neutral-900">
-                            Delete "{formData.skillName}"?
+                            {t("skills_section.delete_title", 'Delete "{name}"?').replace("{name}", formData.skillName)}
                           </AlertDialogTitle>
                           <AlertDialogDescription className="text-xs text-neutral-600">
-                            This skill will be removed from your resume.
+                            {t("skills_section.delete_desc", "This skill will be removed from your resume.")}
                           </AlertDialogDescription>
                         </AlertDialogHeader>
                         <div className="flex justify-end gap-2 pt-2">
                           <AlertDialogCancel className="border-neutral-200 text-xs font-semibold">
-                            Cancel
+                            {t("skills_section.cancel_btn", "Cancel")}
                           </AlertDialogCancel>
                           <AlertDialogAction
                             onClick={() =>
@@ -337,7 +337,7 @@ export default function SkillsForm({
                             }
                             className="bg-red-600 hover:bg-red-700 text-white text-xs font-semibold"
                           >
-                            Delete
+                            {t("skills_section.delete_btn", "Delete")}
                           </AlertDialogAction>
                         </div>
                       </AlertDialogContent>

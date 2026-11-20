@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { trpc } from "@/lib/trpc";
+import { useI18n } from "@/lib/i18n";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -41,23 +42,24 @@ interface JobTrackerModalProps {
   defaultCvId?: number;
 }
 
-const STATUS_COLUMNS = [
-  { id: "applied", label: "Terkirim", color: "bg-blue-50 text-blue-700 border-blue-200" },
-  { id: "screening", label: "Skrining / Tes", color: "bg-amber-50 text-amber-700 border-amber-200" },
-  { id: "interview", label: "Wawancara", color: "bg-purple-50 text-purple-700 border-purple-200" },
-  { id: "offer", label: "Tawaran Kerja (Offer)", color: "bg-emerald-50 text-emerald-700 border-emerald-200" },
-  { id: "rejected", label: "Belum Berhasil", color: "bg-slate-100 text-slate-600 border-slate-200" },
-];
-
 export default function JobTrackerModal({
   isOpen,
   onClose,
   defaultCvId,
 }: JobTrackerModalProps) {
+  const { t } = useI18n();
   const utils = trpc.useUtils();
   const { data: applications = [], isLoading } = trpc.jobTracker.list.useQuery(undefined, {
     enabled: isOpen,
   });
+
+  const STATUS_COLUMNS = [
+    { id: "applied", label: t("job_tracker.status_applied", "Terkirim"), color: "bg-blue-50 text-blue-700 border-blue-200" },
+    { id: "screening", label: t("job_tracker.status_screening", "Skrining / Tes"), color: "bg-amber-50 text-amber-700 border-amber-200" },
+    { id: "interview", label: t("job_tracker.status_interview", "Wawancara"), color: "bg-purple-50 text-purple-700 border-purple-200" },
+    { id: "offer", label: t("job_tracker.status_offer", "Tawaran Kerja (Offer)"), color: "bg-emerald-50 text-emerald-700 border-emerald-200" },
+    { id: "rejected", label: t("job_tracker.status_rejected", "Belum Berhasil"), color: "bg-slate-100 text-slate-600 border-slate-200" },
+  ];
 
   const [isAdding, setIsAdding] = useState(false);
   const [companyName, setCompanyName] = useState("");
@@ -78,34 +80,34 @@ export default function JobTrackerModal({
       setJobUrl("");
       setSalaryExpectation("");
       setNotes("");
-      toast.success("Lamaran berhasil ditambahkan ke pelacak!");
+      toast.success(t("job_tracker.created_toast", "Lamaran berhasil ditambahkan ke pelacak!"));
     },
     onError: err => {
-      toast.error(err.message || "Gagal menyimpan lamaran");
+      toast.error(err.message || t("job_tracker.create_error_toast", "Gagal menyimpan lamaran"));
     },
   });
 
   const updateMutation = trpc.jobTracker.update.useMutation({
     onSuccess: () => {
       utils.jobTracker.list.invalidate();
-      toast.success("Status lamaran diperbarui");
+      toast.success(t("job_tracker.updated_toast", "Status lamaran diperbarui"));
     },
     onError: err => {
-      toast.error(err.message || "Gagal memperbarui");
+      toast.error(err.message || t("job_tracker.update_error_toast", "Gagal memperbarui"));
     },
   });
 
   const deleteMutation = trpc.jobTracker.delete.useMutation({
     onSuccess: () => {
       utils.jobTracker.list.invalidate();
-      toast.info("Lamaran dihapus");
+      toast.info(t("job_tracker.deleted_toast", "Lamaran dihapus"));
     },
   });
 
   const handleCreate = (e: React.FormEvent) => {
     e.preventDefault();
     if (!companyName.trim() || !jobTitle.trim()) {
-      toast.error("Nama perusahaan dan posisi wajib diisi");
+      toast.error(t("job_tracker.required_error", "Nama perusahaan dan posisi wajib diisi"));
       return;
     }
     createMutation.mutate({
@@ -132,10 +134,10 @@ export default function JobTrackerModal({
               </div>
               <div>
                 <DialogTitle className="text-base font-bold text-neutral-900">
-                  Pelacak Lamaran Kerja (Job Application Tracker)
+                  {t("job_tracker.modal_title", "Pelacak Lamaran Kerja (Job Application Tracker)")}
                 </DialogTitle>
                 <p className="text-xs text-neutral-500 mt-0.5">
-                  Pantau dan kelola seluruh status lowongan yang sudah Anda lamar dalam satu tempat.
+                  {t("job_tracker.modal_desc", "Pantau dan kelola seluruh status lowongan yang sudah Anda lamar dalam satu tempat.")}
                 </p>
               </div>
             </div>
@@ -146,7 +148,7 @@ export default function JobTrackerModal({
               className="gap-1.5 text-xs h-8 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold shadow-xs"
             >
               <Plus className="w-3.5 h-3.5" />
-              <span>{isAdding ? "Batal" : "Tambah Lamaran Baru"}</span>
+              <span>{isAdding ? t("actions.cancel", "Batal") : t("job_tracker.add_btn", "Tambah Lamaran Baru")}</span>
             </Button>
           </div>
         </DialogHeader>
@@ -159,39 +161,39 @@ export default function JobTrackerModal({
           >
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <div>
-                <Label className="text-[11px] font-semibold text-neutral-700">Nama Perusahaan / Sekolah *</Label>
+                <Label className="text-[11px] font-semibold text-neutral-700">{t("job_tracker.company_label", "Nama Perusahaan / Sekolah *")}</Label>
                 <Input
                   required
                   value={companyName}
                   onChange={e => setCompanyName(e.target.value)}
-                  placeholder="cth: SMP Angelly Prabumulih"
+                  placeholder={t("job_tracker.company_ph", "cth: SMP Angelly Prabumulih")}
                   className="h-8 text-xs bg-white mt-1 border-neutral-200 rounded-lg"
                 />
               </div>
 
               <div>
-                <Label className="text-[11px] font-semibold text-neutral-700">Posisi Pekerjaan *</Label>
+                <Label className="text-[11px] font-semibold text-neutral-700">{t("job_tracker.job_title_label", "Posisi Pekerjaan *")}</Label>
                 <Input
                   required
                   value={jobTitle}
                   onChange={e => setJobTitle(e.target.value)}
-                  placeholder="cth: Guru Kimia / IPA"
+                  placeholder={t("job_tracker.job_title_ph", "cth: Guru Kimia / IPA")}
                   className="h-8 text-xs bg-white mt-1 border-neutral-200 rounded-lg"
                 />
               </div>
 
               <div>
-                <Label className="text-[11px] font-semibold text-neutral-700">Status Saat Ini</Label>
+                <Label className="text-[11px] font-semibold text-neutral-700">{t("job_tracker.status_label", "Status Saat Ini")}</Label>
                 <Select value={status} onValueChange={(val: any) => setStatus(val)}>
                   <SelectTrigger className="h-8 text-xs bg-white mt-1 border-neutral-200 rounded-lg">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="applied">Terkirim</SelectItem>
-                    <SelectItem value="screening">Skrining / Tes</SelectItem>
-                    <SelectItem value="interview">Wawancara</SelectItem>
-                    <SelectItem value="offer">Tawaran Kerja (Offer)</SelectItem>
-                    <SelectItem value="rejected">Belum Berhasil</SelectItem>
+                    <SelectItem value="applied">{t("job_tracker.status_applied", "Terkirim")}</SelectItem>
+                    <SelectItem value="screening">{t("job_tracker.status_screening", "Skrining / Tes")}</SelectItem>
+                    <SelectItem value="interview">{t("job_tracker.status_interview", "Wawancara")}</SelectItem>
+                    <SelectItem value="offer">{t("job_tracker.status_offer", "Tawaran Kerja (Offer)")}</SelectItem>
+                    <SelectItem value="rejected">{t("job_tracker.status_rejected", "Belum Berhasil")}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -199,17 +201,17 @@ export default function JobTrackerModal({
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <div>
-                <Label className="text-[11px] font-semibold text-neutral-700">Lokasi / Domisili</Label>
+                <Label className="text-[11px] font-semibold text-neutral-700">{t("job_tracker.location_label", "Lokasi / Domisili")}</Label>
                 <Input
                   value={location}
                   onChange={e => setLocation(e.target.value)}
-                  placeholder="cth: Prabumulih / Palembang"
+                  placeholder={t("job_tracker.location_ph", "cth: Prabumulih / Palembang")}
                   className="h-8 text-xs bg-white mt-1 border-neutral-200 rounded-lg"
                 />
               </div>
 
               <div>
-                <Label className="text-[11px] font-semibold text-neutral-700">Link Lowongan (URL)</Label>
+                <Label className="text-[11px] font-semibold text-neutral-700">{t("job_tracker.job_url_label", "Link Lowongan (URL)")}</Label>
                 <Input
                   value={jobUrl}
                   onChange={e => setJobUrl(e.target.value)}
@@ -219,22 +221,22 @@ export default function JobTrackerModal({
               </div>
 
               <div>
-                <Label className="text-[11px] font-semibold text-neutral-700">Ekspektasi Gaji (Opsional)</Label>
+                <Label className="text-[11px] font-semibold text-neutral-700">{t("job_tracker.salary_label", "Ekspektasi Gaji (Opsional)")}</Label>
                 <Input
                   value={salaryExpectation}
                   onChange={e => setSalaryExpectation(e.target.value)}
-                  placeholder="cth: Rp 4.500.000 / bln"
+                  placeholder={t("job_tracker.salary_ph", "cth: Rp 4.500.000 / bln")}
                   className="h-8 text-xs bg-white mt-1 border-neutral-200 rounded-lg"
                 />
               </div>
             </div>
 
             <div>
-              <Label className="text-[11px] font-semibold text-neutral-700">Catatan Tambahan (Kontak HRD, Jadwal Wawancara, dll)</Label>
+              <Label className="text-[11px] font-semibold text-neutral-700">{t("job_tracker.notes_label", "Catatan Tambahan (Kontak HRD, Jadwal Wawancara, dll)")}</Label>
               <Input
                 value={notes}
                 onChange={e => setNotes(e.target.value)}
-                placeholder="cth: Interview tanggal 25 Nov via Zoom dengan Bu Rina"
+                placeholder={t("job_tracker.notes_ph", "cth: Interview tanggal 25 Nov via Zoom dengan Bu Rina")}
                 className="h-8 text-xs bg-white mt-1 border-neutral-200 rounded-lg"
               />
             </div>
@@ -247,7 +249,7 @@ export default function JobTrackerModal({
                 onClick={() => setIsAdding(false)}
                 className="text-xs h-8"
               >
-                Batal
+                {t("actions.cancel", "Batal")}
               </Button>
               <Button
                 type="submit"
@@ -255,7 +257,7 @@ export default function JobTrackerModal({
                 disabled={createMutation.isPending}
                 className="text-xs h-8 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg px-4"
               >
-                {createMutation.isPending ? <Spinner className="w-3.5 h-3.5" /> : "Simpan Lamaran"}
+                {createMutation.isPending ? <Spinner className="w-3.5 h-3.5" /> : t("job_tracker.save_btn", "Simpan Lamaran")}
               </Button>
             </div>
           </form>
@@ -266,23 +268,23 @@ export default function JobTrackerModal({
           {isLoading ? (
             <div className="py-16 text-center space-y-2">
               <Spinner className="w-8 h-8 text-indigo-600 mx-auto" />
-              <p className="text-xs text-neutral-500">Memuat daftar lamaran...</p>
+              <p className="text-xs text-neutral-500">{t("job_tracker.loading", "Memuat daftar lamaran...")}</p>
             </div>
           ) : applications.length === 0 && !isAdding ? (
             <div className="py-16 text-center space-y-3 max-w-sm mx-auto">
               <div className="w-14 h-14 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center mx-auto border border-indigo-100">
                 <Briefcase className="w-7 h-7" />
               </div>
-              <h4 className="text-sm font-bold text-neutral-800">Belum Ada Lamaran yang Dicatat</h4>
+              <h4 className="text-sm font-bold text-neutral-800">{t("job_tracker.empty_title", "Belum Ada Lamaran yang Dicatat")}</h4>
               <p className="text-xs text-neutral-500 leading-relaxed">
-                Mulai catat setiap lamaran yang Anda kirim ke perusahaan atau sekolah agar proses rekrutmen terorganisir rapi.
+                {t("job_tracker.empty_desc", "Mulai catat setiap lamaran yang Anda kirim ke perusahaan atau sekolah agar proses rekrutmen terorganisir rapi.")}
               </p>
               <Button
                 onClick={() => setIsAdding(true)}
                 className="text-xs gap-1.5 h-8 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl"
               >
                 <Plus className="w-3.5 h-3.5" />
-                Catat Lamaran Pertama
+                {t("job_tracker.first_app_btn", "Catat Lamaran Pertama")}
               </Button>
             </div>
           ) : (
@@ -341,16 +343,16 @@ export default function JobTrackerModal({
                               const followUpMsg = `Selamat pagi/siang Bapak/Ibu Tim Rekrutmen ${app.companyName}.\n\nPerkenalkan saya pelamar untuk posisi ${app.jobTitle} yang telah mengirimkan berkas lamaran pada tanggal ${app.appliedDate}.\n\nMelalui pesan ini, saya bermaksud menanyakan apakah ada perkembangan informasi terkait proses seleksi untuk posisi tersebut. Saya sangat tertarik untuk dapat bergabung dan berkontribusi di ${app.companyName}.\n\nTerima kasih banyak atas waktu dan perhatian Bapak/Ibu. 🙏`;
                               return (
                                 <div className="p-1.5 rounded-md bg-amber-50 border border-amber-200 flex items-center justify-between text-[10px] text-amber-900">
-                                  <span>⚡ Waktunya follow-up ({days} hari)</span>
+                                  <span>⚡ {t("job_tracker.follow_up_alert", "Waktunya follow-up ({n} hari)").replace("{n}", String(days))}</span>
                                   <button
                                     type="button"
                                     onClick={() => {
                                       navigator.clipboard.writeText(followUpMsg);
-                                      toast.success("Draf pesan follow-up disalin!");
+                                      toast.success(t("job_tracker.follow_up_copied", "Draf pesan follow-up disalin!"));
                                     }}
                                     className="font-bold underline text-amber-800 hover:text-amber-950"
                                   >
-                                    Salin Teks
+                                    {t("actions.copy", "Salin Teks")}
                                   </button>
                                 </div>
                               );
@@ -370,11 +372,11 @@ export default function JobTrackerModal({
                               }
                               className="text-[10px] font-semibold bg-neutral-100 border border-neutral-200 rounded px-1 py-0.5 text-neutral-700 cursor-pointer"
                             >
-                              <option value="applied">Terkirim</option>
-                              <option value="screening">Skrining</option>
-                              <option value="interview">Wawancara</option>
-                              <option value="offer">Offering</option>
-                              <option value="rejected">Ditolak</option>
+                              <option value="applied">{t("job_tracker.status_applied", "Terkirim")}</option>
+                              <option value="screening">{t("job_tracker.status_screening", "Skrining")}</option>
+                              <option value="interview">{t("job_tracker.status_interview", "Wawancara")}</option>
+                              <option value="offer">{t("job_tracker.status_offer", "Offering")}</option>
+                              <option value="rejected">{t("job_tracker.status_rejected", "Ditolak")}</option>
                             </select>
 
                             <div className="flex items-center gap-1">
@@ -384,7 +386,7 @@ export default function JobTrackerModal({
                                   target="_blank"
                                   rel="noreferrer"
                                   className="w-5 h-5 flex items-center justify-center rounded hover:bg-neutral-100 text-neutral-400 hover:text-neutral-700"
-                                  title="Buka Link Lowongan"
+                                  title={t("job_tracker.open_link_tooltip", "Buka Link Lowongan")}
                                 >
                                   <ExternalLink className="w-3 h-3" />
                                 </a>
@@ -392,7 +394,7 @@ export default function JobTrackerModal({
                               <button
                                 onClick={() => deleteMutation.mutate({ id: app.id })}
                                 className="w-5 h-5 flex items-center justify-center rounded hover:bg-red-50 text-neutral-400 hover:text-red-600"
-                                title="Hapus Lamaran"
+                                title={t("actions.delete", "Hapus")}
                               >
                                 <Trash2 className="w-3 h-3" />
                               </button>
@@ -411,7 +413,7 @@ export default function JobTrackerModal({
         {/* Footer */}
         <div className="p-3 bg-neutral-50 border-t border-neutral-100 flex items-center justify-between px-5">
           <span className="text-xs text-neutral-500">
-            Total Lamaran Aktif: <strong>{applications.length}</strong>
+            {t("job_tracker.total_active", "Total Lamaran Aktif:")} <strong>{applications.length}</strong>
           </span>
           <Button
             variant="outline"
@@ -419,7 +421,7 @@ export default function JobTrackerModal({
             onClick={onClose}
             className="text-xs h-8 border-neutral-200 rounded-lg"
           >
-            Tutup
+            {t("actions.close", "Tutup")}
           </Button>
         </div>
       </DialogContent>

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { trpc } from "@/lib/trpc";
+import { useI18n } from "@/lib/i18n";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -70,6 +71,7 @@ export default function InterviewPrepModal({
   onClose,
   defaultRole = "",
 }: InterviewPrepModalProps) {
+  const { t } = useI18n();
   const [targetRole, setTargetRole] = useState(defaultRole);
   const [jobDescription, setJobDescription] = useState("");
   const [result, setResult] = useState<InterviewResult | null>(null);
@@ -193,31 +195,31 @@ export default function InterviewPrepModal({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-xl font-bold">
             <HelpCircle className="w-5 h-5 text-purple-600" />
-            AI Interview Coach & Question Simulator
+            {t("interview.title", "AI Interview Coach & Question Simulator")}
           </DialogTitle>
         </DialogHeader>
 
         {!result ? (
           <div className="space-y-4 pt-2">
             <p className="text-sm text-gray-600">
-              Anticipate questions recruiters and engineering managers will ask based directly on the achievements, projects, and technologies in your CV.
+              {t("interview.desc", "Antisipasi pertanyaan yang akan diajukan HRD dan user berdasarkan pencapaian, proyek, dan keahlian di CV Anda.")}
             </p>
 
             <div className="space-y-2">
-              <Label htmlFor="targetRoleInt">Target Role / Interviewing For (Optional)</Label>
+              <Label htmlFor="targetRoleInt">{t("interview.target_role", "Posisi yang Dilamar / Target Role (Opsional)")}</Label>
               <Input
                 id="targetRoleInt"
-                placeholder="e.g. Senior Frontend Engineer, Engineering Lead"
+                placeholder={t("interview.target_role_ph", "Contoh: Senior Frontend Engineer, Staff Administrasi")}
                 value={targetRole}
                 onChange={e => setTargetRole(e.target.value)}
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="jdInt">Target Job Posting / Requirements (Optional)</Label>
+              <Label htmlFor="jdInt">{t("interview.jd_label", "Kualifikasi / Job Description Lowongan (Opsional)")}</Label>
               <Textarea
                 id="jdInt"
-                placeholder="Paste the job description if you want questions tailored to a specific company/role..."
+                placeholder={t("interview.jd_ph", "Tempel deskripsi lowongan kerja untuk mendapatkan pertanyaan yang lebih spesifik...")}
                 rows={5}
                 value={jobDescription}
                 onChange={e => setJobDescription(e.target.value)}
@@ -226,7 +228,7 @@ export default function InterviewPrepModal({
 
             <div className="flex justify-end gap-2 pt-2">
               <Button variant="outline" onClick={onClose}>
-                Cancel
+                {t("actions.cancel", "Batal")}
               </Button>
               <Button
                 onClick={handleGenerate}
@@ -235,11 +237,11 @@ export default function InterviewPrepModal({
               >
                 {generateMutation.isPending ? (
                   <>
-                    <Spinner className="w-4 h-4" /> Generating Questions...
+                    <Spinner className="w-4 h-4" /> {t("interview.generating", "Membuat Pertanyaan Wawancara...")}
                   </>
                 ) : (
                   <>
-                    <Sparkles className="w-4 h-4" /> Generate Interview Prep
+                    <Sparkles className="w-4 h-4" /> {t("interview.generate_btn", "Mulai Simulasi Wawancara")}
                   </>
                 )}
               </Button>
@@ -250,16 +252,16 @@ export default function InterviewPrepModal({
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
               <TabsList className="grid grid-cols-4 w-full">
                 <TabsTrigger value="behavioral" className="gap-1.5 text-xs">
-                  <MessageCircle className="w-3.5 h-3.5" /> Behavioral (STAR)
+                  <MessageCircle className="w-3.5 h-3.5" /> {t("interview.tab_behavioral", "Behavioral (STAR)")}
                 </TabsTrigger>
                 <TabsTrigger value="technical" className="gap-1.5 text-xs">
-                  <Code className="w-3.5 h-3.5" /> Technical
+                  <Code className="w-3.5 h-3.5" /> {t("interview.tab_technical", "Teknis")}
                 </TabsTrigger>
                 <TabsTrigger value="situational" className="gap-1.5 text-xs">
-                  <Briefcase className="w-3.5 h-3.5" /> Situational
+                  <Briefcase className="w-3.5 h-3.5" /> {t("interview.tab_situational", "Situasional")}
                 </TabsTrigger>
                 <TabsTrigger value="practice" className="gap-1.5 text-xs font-semibold text-purple-700 bg-purple-50/70 data-[state=active]:bg-purple-600 data-[state=active]:text-white">
-                  <PenLine className="w-3.5 h-3.5" /> Simulasi Latihan
+                  <PenLine className="w-3.5 h-3.5" /> {t("interview.tab_practice", "Simulasi Latihan")}
                 </TabsTrigger>
               </TabsList>
 
@@ -542,10 +544,10 @@ export default function InterviewPrepModal({
                 size="sm"
                 onClick={() => setResult(null)}
               >
-                ← Prepare for Another Role
+                {t("interview.prepare_another", "← Siapkan Posisi Lain")}
               </Button>
               <Button onClick={onClose} size="sm" className="bg-black text-white hover:bg-gray-800">
-                Done
+                {t("actions.close", "Selesai")}
               </Button>
             </div>
           </div>

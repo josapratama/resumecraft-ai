@@ -148,8 +148,9 @@ export default function CVPreview({
     const updateFit = () => {
       if (!containerRef.current) return;
       const containerWidth = containerRef.current.clientWidth;
+      if (containerWidth <= 0) return;
       const padding = containerWidth < 500 ? 16 : 32;
-      const availableWidth = Math.max(260, containerWidth - padding);
+      const availableWidth = Math.max(220, containerWidth - padding);
       if (availableWidth < targetWidthPx) {
         const calculated = Math.max(30, Math.floor((availableWidth / targetWidthPx) * 100));
         setZoom(calculated);
@@ -159,8 +160,17 @@ export default function CVPreview({
     };
 
     updateFit();
+    const observer = new ResizeObserver(() => {
+      updateFit();
+    });
+    if (containerRef.current) {
+      observer.observe(containerRef.current);
+    }
     window.addEventListener("resize", updateFit);
-    return () => window.removeEventListener("resize", updateFit);
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("resize", updateFit);
+    };
   }, [isAutoFit, targetWidthPx]);
 
   const handleZoomIn = () => {
@@ -238,7 +248,7 @@ export default function CVPreview({
             <button
               onClick={() => setIsOnePageMode(true)}
               className="text-[10px] py-0.5 px-2 rounded-full bg-amber-950/90 text-amber-300 border border-amber-600/80 font-semibold inline-flex items-center gap-1.5 hover:bg-amber-900 transition-all cursor-pointer shadow-2xs shrink-0 whitespace-nowrap"
-              title="Konten tumpah sedikit. Klik untuk padatkan otomatis ke 1 halaman!"
+              title={t("preview_bar.spill_tooltip", "Konten tumpah sedikit. Klik untuk padatkan otomatis ke 1 halaman!")}
             >
               <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-ping" />
               <span>
@@ -265,7 +275,7 @@ export default function CVPreview({
                 ? "bg-emerald-600 text-white hover:bg-emerald-700 shadow-xs"
                 : "text-slate-300 hover:text-white hover:bg-slate-800 border border-slate-700"
             }`}
-            title={`Padatkan konten CV agar pas di 1 lembar ${paperSize.toUpperCase()}`}
+            title={t("preview_bar.compact_tooltip", `Padatkan konten CV agar pas di 1 lembar ${paperSize.toUpperCase()}`)}
           >
             <FileCheck className="w-3 h-3 text-emerald-400" />
             <span>
@@ -281,15 +291,15 @@ export default function CVPreview({
               <button
                 type="button"
                 className="h-6 px-2 text-[10px] gap-1.5 rounded-full font-semibold transition-all inline-flex items-center text-slate-300 hover:text-white bg-slate-800 border border-slate-700 shrink-0 cursor-pointer shadow-2xs"
-                title="Ganti warna tema CV"
+                title={t("preview_bar.theme_color_tooltip", "Ganti warna tema CV")}
               >
                 <span className="w-2.5 h-2.5 rounded-full border border-white/50" style={{ backgroundColor: accentColor }} />
-                <span className="hidden sm:inline">Warna</span>
+                <span className="hidden sm:inline">{t("preview_bar.color", "Warna")}</span>
               </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start" className="w-48 p-2 rounded-xl bg-slate-900 border-slate-700 text-white shadow-xl">
               <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1.5 px-1">
-                Warna Aksen CV
+                {t("preview_bar.accent_color_title", "Warna Aksen CV")}
               </div>
               <div className="grid grid-cols-4 gap-1.5 p-1">
                 {[
@@ -326,17 +336,17 @@ export default function CVPreview({
               <button
                 type="button"
                 className="h-6 px-2 text-[10px] gap-1 rounded-full font-semibold transition-all inline-flex items-center text-slate-300 hover:text-white bg-slate-800 border border-slate-700 shrink-0 cursor-pointer shadow-2xs"
-                title="Atur Kerapatan Huruf & Spasi Baris agar Pas 1 Lembar"
+                title={t("preview_bar.density_tooltip", "Atur Kerapatan Huruf & Spasi Baris agar Pas 1 Lembar")}
               >
                 <SlidersHorizontal className="w-3 h-3 text-cyan-400" />
-                <span className="hidden sm:inline">Kerapatan</span>
+                <span className="hidden sm:inline">{t("preview_bar.density", "Kerapatan")}</span>
                 {fontSizePercent !== 100 && <span className="text-[9px] text-cyan-300">({fontSizePercent}%)</span>}
               </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start" className="w-56 p-2.5 rounded-xl bg-slate-900 border-slate-700 text-white shadow-xl space-y-2">
               <div>
                 <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">
-                  Ukuran Font ({fontSizePercent}%)
+                  {t("preview_bar.font_size", "Ukuran Font")} ({fontSizePercent}%)
                 </div>
                 <div className="grid grid-cols-4 gap-1">
                   {[90, 95, 100, 105].map(sz => (
@@ -355,13 +365,13 @@ export default function CVPreview({
               </div>
               <div className="border-t border-slate-800 pt-2">
                 <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">
-                  Jarak Spasi Baris
+                  {t("preview_bar.line_spacing", "Jarak Spasi Baris")}
                 </div>
                 <div className="grid grid-cols-3 gap-1">
                   {[
-                    { id: "compact", label: "Ketat" },
-                    { id: "normal", label: "Normal" },
-                    { id: "relaxed", label: "Renggang" },
+                    { id: "compact", label: t("preview_bar.spacing_compact", "Ketat") },
+                    { id: "normal", label: t("preview_bar.spacing_normal", "Normal") },
+                    { id: "relaxed", label: t("preview_bar.spacing_relaxed", "Renggang") },
                   ].map(sp => (
                     <button
                       key={sp.id}
@@ -441,10 +451,10 @@ export default function CVPreview({
                 ? "bg-blue-600 text-white font-bold"
                 : "text-slate-300 hover:text-white hover:bg-slate-800"
             }`}
-            title="Fit to Screen (Paskan ke Layar)"
+            title={t("preview_bar.fit_tooltip", "Fit to Screen (Paskan ke Layar)")}
           >
             <Maximize2 className="w-3 h-3" />
-            <span>Fit</span>
+            <span>{t("preview_bar.fit", "Fit")}</span>
           </Button>
         </div>
       </div>
@@ -452,27 +462,28 @@ export default function CVPreview({
       {/* Document Preview Container with Content-Aware Scaling */}
       <div
         ref={containerRef}
-        className="bg-neutral-200/60 cv-scroll-wrapper overflow-auto flex items-start justify-center p-1 sm:p-4 min-h-[440px] max-h-none lg:max-h-[calc(100vh-140px)]"
+        className="bg-neutral-200/60 cv-scroll-wrapper overflow-auto p-1.5 sm:p-4 min-h-[440px] max-h-none lg:max-h-[calc(100vh-140px)]"
       >
         {/* Layout boundary matches visual scaled size so NO horizontal overflow happens on mobile */}
         <div
-          className="relative transition-all duration-150 block shrink-0"
+          className="relative transition-all duration-150 block shrink-0 mx-auto"
           style={{
             width: `${Math.ceil(targetWidthPx * (zoom / 100))}px`,
             height: `${Math.ceil(docHeight * (zoom / 100))}px`,
           }}
         >
           <div
-            className="transition-transform duration-150 origin-top-left"
+            className="transition-transform duration-150"
             style={{
               transform: `scale(${zoom / 100})`,
+              transformOrigin: "top left",
               width: `${targetWidthPx}px`,
             }}
           >
             {/* Document Root with Paper Size */}
             <div
               ref={templateRef}
-              className={`cv-template-root relative bg-white shadow-2xl mx-auto rounded-xs overflow-hidden ${
+              className={`cv-template-root relative bg-white shadow-2xl rounded-xs overflow-hidden ${
                 isOnePageMode ? "cv-one-page-compact" : ""
               }`}
               style={{

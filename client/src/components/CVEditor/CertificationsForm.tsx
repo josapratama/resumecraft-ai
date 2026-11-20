@@ -71,9 +71,9 @@ export default function CertificationsForm({
       onDataChange?.(updated);
       resetForm();
       setIsDialogOpen(false);
-      toast.success("Certification added");
+      toast.success(t("certifications_section.added", "Certification added"));
     },
-    onError: () => toast.error("Failed to add certification"),
+    onError: () => toast.error(t("certifications_section.add_failed", "Failed to add certification")),
   });
 
   const updateMutation = trpc.cv.certification.update.useMutation({
@@ -85,9 +85,9 @@ export default function CertificationsForm({
       onDataChange?.(updated);
       resetForm();
       setIsDialogOpen(false);
-      toast.success("Certification updated");
+      toast.success(t("certifications_section.updated", "Certification updated"));
     },
-    onError: () => toast.error("Failed to update certification"),
+    onError: () => toast.error(t("certifications_section.update_failed", "Failed to update certification")),
   });
 
   const deleteMutation = trpc.cv.certification.delete.useMutation({
@@ -97,15 +97,15 @@ export default function CertificationsForm({
       onDataChange?.(updated);
       resetForm();
       setIsDialogOpen(false);
-      toast.success("Certification deleted");
+      toast.success(t("certifications_section.deleted", "Certification deleted"));
     },
-    onError: () => toast.error("Failed to delete certification"),
+    onError: () => toast.error(t("certifications_section.delete_failed", "Failed to delete certification")),
   });
 
   const reorderMutation = trpc.cv.certification.reorder.useMutation({
     onSuccess: () => {},
     onError: () => {
-      toast.error("Failed to update order");
+      toast.error(t("certifications_section.order_failed", "Failed to update order"));
       utils.cv.loadFull.invalidate();
     },
   });
@@ -130,7 +130,7 @@ export default function CertificationsForm({
 
   const handleSave = () => {
     if (!formData.certificationName.trim() || !formData.issuer.trim()) {
-      toast.error("Certification name and issuer are required");
+      toast.error(t("certifications_section.required", "Certification name and issuer are required"));
       return;
     }
     if (editingId) updateMutation.mutate({ id: editingId, ...formData });
@@ -237,7 +237,7 @@ export default function CertificationsForm({
                   </div>
                   <div>
                     <Label className="text-xs font-semibold text-neutral-600 uppercase tracking-wider">
-                      Expiry Date (Optional)
+                      {t("certifications_section.expiry_date", "Expiry Date (Optional)")}
                     </Label>
                     <Input
                       type="month"
@@ -252,7 +252,7 @@ export default function CertificationsForm({
 
                 <div>
                   <Label className="text-xs font-semibold text-neutral-600 uppercase tracking-wider">
-                    Credential Link / Verification URL
+                    {t("certifications_section.link_label", "Credential Link / Verification URL")}
                   </Label>
                   <Input
                     value={formData.link}
@@ -273,10 +273,10 @@ export default function CertificationsForm({
                     {isSaving ? (
                       <>
                         <Spinner className="w-4 h-4 mr-2" />
-                        Saving...
+                        {t("certifications_section.saving_btn", "Saving...")}
                       </>
                     ) : (
-                      "Save Certification"
+                      t("certifications_section.save_cert", "Save Certification")
                     )}
                   </Button>
 
@@ -290,21 +290,21 @@ export default function CertificationsForm({
                           disabled={deleteMutation.isPending}
                         >
                           <Trash2 className="w-3.5 h-3.5 mr-1" />
-                          Delete
+                          {t("certifications_section.delete_btn", "Delete")}
                         </Button>
                       </AlertDialogTrigger>
                       <AlertDialogContent className="border border-neutral-200 rounded-2xl">
                         <AlertDialogHeader>
                           <AlertDialogTitle className="text-base font-bold text-neutral-900">
-                            Delete "{formData.certificationName}"?
+                            {t("certifications_section.delete_title", 'Delete "{name}"?').replace("{name}", formData.certificationName)}
                           </AlertDialogTitle>
                           <AlertDialogDescription className="text-xs text-neutral-600">
-                            This certification will be permanently removed.
+                            {t("certifications_section.delete_desc", "This certification will be permanently removed.")}
                           </AlertDialogDescription>
                         </AlertDialogHeader>
                         <div className="flex justify-end gap-2 pt-2">
                           <AlertDialogCancel className="border-neutral-200 text-xs font-semibold">
-                            Cancel
+                            {t("certifications_section.cancel_btn", "Cancel")}
                           </AlertDialogCancel>
                           <AlertDialogAction
                             onClick={() =>
@@ -312,7 +312,7 @@ export default function CertificationsForm({
                             }
                             className="bg-red-600 hover:bg-red-700 text-white text-xs font-semibold"
                           >
-                            Delete
+                            {t("certifications_section.delete_btn", "Delete")}
                           </AlertDialogAction>
                         </div>
                       </AlertDialogContent>

@@ -842,9 +842,9 @@ export default function Home() {
                 <h1 className="text-sm sm:text-lg font-bold text-neutral-900 leading-tight truncate">
                   ResumeCraft <span className="text-red-600">AI</span>
                 </h1>
-                <p className="text-[10px] sm:text-[11px] text-neutral-500 truncate hidden sm:block">
-                  Selamat datang kembali,{" "}
-                  <span className="font-semibold text-neutral-700">{user?.name || user?.username || "Pengguna"}</span>
+                <p className="text-[10px] sm:text-[11px] text-neutral-500 truncate block">
+                  {t("dashboard.welcome_back", "Selamat datang kembali,")}{" "}
+                  <span className="font-semibold text-neutral-700">{user?.name || user?.username || t("dashboard.user", "Pengguna")}</span>
                 </p>
               </div>
             </div>

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { trpc } from "@/lib/trpc";
+import { useI18n } from "@/lib/i18n";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import {
@@ -47,6 +48,7 @@ export default function StyleCustomizerModal({
   currentFont = "font-sans",
   onStyleChange,
 }: StyleCustomizerModalProps) {
+  const { t } = useI18n();
   const utils = trpc.useUtils();
   const [accent, setAccent] = useState(currentAccent || "#ef4444");
   const [font, setFont] = useState(currentFont || "font-sans");
@@ -54,11 +56,11 @@ export default function StyleCustomizerModal({
   const updateMutation = trpc.cv.updateDesign.useMutation({
     onSuccess: () => {
       utils.cv.loadFull.invalidate({ cvId });
-      toast.success("Theme and styling updated!");
+      toast.success(t("style_modal.saved_toast", "Tema dan gaya CV berhasil disimpan!"));
       onClose();
     },
     onError: err => {
-      toast.error(`Failed to save styling: ${err.message}`);
+      toast.error(`${t("style_modal.error_toast", "Gagal menyimpan styling:")} ${err.message}`);
     },
   });
 
@@ -86,14 +88,14 @@ export default function StyleCustomizerModal({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-xl font-bold">
             <Palette className="w-5 h-5 text-indigo-600" />
-            Theme Colors & Typography
+            {t("style_modal.modal_title", "Theme Colors & Typography")}
           </DialogTitle>
         </DialogHeader>
 
         <div className="space-y-6 pt-2">
           {/* Accent Color */}
           <div className="space-y-3">
-            <Label className="text-sm font-semibold">Primary Accent Color</Label>
+            <Label className="text-sm font-semibold">{t("style_modal.accent_label", "Warna Aksen Utama")}</Label>
             <div className="grid grid-cols-3 gap-2.5">
               {ACCENT_COLORS.map(c => (
                 <button
@@ -122,7 +124,7 @@ export default function StyleCustomizerModal({
 
           {/* Typography */}
           <div className="space-y-3">
-            <Label className="text-sm font-semibold">Document Typography</Label>
+            <Label className="text-sm font-semibold">{t("style_modal.font_label", "Tipografi & Font Dokumen")}</Label>
             <div className="space-y-2">
               {FONT_OPTIONS.map(f => (
                 <button
@@ -146,14 +148,14 @@ export default function StyleCustomizerModal({
 
           <div className="flex justify-end gap-2 pt-2 border-t">
             <Button variant="outline" onClick={onClose}>
-              Cancel
+              {t("actions.cancel", "Batal")}
             </Button>
             <Button
               onClick={handleSave}
               disabled={updateMutation.isPending}
               className="bg-black text-white hover:bg-gray-800"
             >
-              Apply & Save
+              {t("actions.save", "Terapkan & Simpan")}
             </Button>
           </div>
         </div>

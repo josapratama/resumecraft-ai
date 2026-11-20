@@ -73,10 +73,10 @@ export default function EducationForm({
       onDataChange?.(updated);
       resetForm();
       setIsDialogOpen(false);
-      toast.success("Education added");
+      toast.success(t("education.added", "Education added"));
     },
     onError: () => {
-      toast.error("Failed to add education");
+      toast.error(t("education.add_failed", "Failed to add education"));
     },
   });
 
@@ -90,10 +90,10 @@ export default function EducationForm({
       onDataChange?.(updated);
       resetForm();
       setIsDialogOpen(false);
-      toast.success("Education updated");
+      toast.success(t("education.updated", "Education updated"));
     },
     onError: () => {
-      toast.error("Failed to update education");
+      toast.error(t("education.update_failed", "Failed to update education"));
     },
   });
 
@@ -104,17 +104,17 @@ export default function EducationForm({
       onDataChange?.(updated);
       resetForm();
       setIsDialogOpen(false);
-      toast.success("Education deleted");
+      toast.success(t("education.deleted", "Education deleted"));
     },
     onError: () => {
-      toast.error("Failed to delete education");
+      toast.error(t("education.delete_failed", "Failed to delete education"));
     },
   });
 
   const reorderMutation = trpc.cv.education.reorder.useMutation({
     onSuccess: () => {},
     onError: () => {
-      toast.error("Failed to update order");
+      toast.error(t("education.order_failed", "Failed to update order"));
       utils.cv.loadFull.invalidate();
     },
   });
@@ -140,7 +140,7 @@ export default function EducationForm({
 
   const handleSave = () => {
     if (!formData.school.trim() || !formData.degree.trim()) {
-      toast.error("School and degree are required");
+      toast.error(t("education.required", "School and degree are required"));
       return;
     }
     if (editingId) {
@@ -302,10 +302,10 @@ export default function EducationForm({
                     {isSaving ? (
                       <>
                         <Spinner className="w-4 h-4 mr-2" />
-                        Saving...
+                        {t("education.saving_btn", "Saving...")}
                       </>
                     ) : (
-                      "Save Education"
+                      t("education.save_btn", "Save Education")
                     )}
                   </Button>
 
@@ -319,21 +319,21 @@ export default function EducationForm({
                           disabled={deleteMutation.isPending}
                         >
                           <Trash2 className="w-3.5 h-3.5 mr-1" />
-                          Delete
+                          {t("education.delete_btn", "Delete")}
                         </Button>
                       </AlertDialogTrigger>
                       <AlertDialogContent className="border border-neutral-200 rounded-2xl">
                         <AlertDialogHeader>
                           <AlertDialogTitle className="text-base font-bold text-neutral-900">
-                            Delete this education entry?
+                            {t("education.delete_title", "Delete this education entry?")}
                           </AlertDialogTitle>
                           <AlertDialogDescription className="text-xs text-neutral-600">
-                            "{formData.degree}" at {formData.school} will be permanently removed.
+                            "{formData.degree}" at {formData.school} {t("education.delete_desc", "will be permanently removed.")}
                           </AlertDialogDescription>
                         </AlertDialogHeader>
                         <div className="flex justify-end gap-2 pt-2">
                           <AlertDialogCancel className="border-neutral-200 text-xs font-semibold">
-                            Cancel
+                            {t("education.cancel_btn", "Cancel")}
                           </AlertDialogCancel>
                           <AlertDialogAction
                             onClick={() =>
@@ -341,7 +341,7 @@ export default function EducationForm({
                             }
                             className="bg-red-600 hover:bg-red-700 text-white text-xs font-semibold"
                           >
-                            Delete
+                            {t("education.delete_btn", "Delete")}
                           </AlertDialogAction>
                         </div>
                       </AlertDialogContent>
@@ -390,9 +390,9 @@ export default function EducationForm({
         ) : (
           <div className="text-center py-8 border border-dashed border-neutral-200 rounded-xl bg-neutral-50/50">
             <GraduationCap className="w-8 h-8 text-neutral-300 mx-auto mb-2" />
-            <p className="text-xs font-bold text-neutral-700">No education entries yet</p>
+            <p className="text-xs font-bold text-neutral-700">{t("education.empty_title", "No education entries yet")}</p>
             <p className="text-[11px] text-neutral-400 mt-0.5">
-              Add your university degrees, diplomas, or certifications.
+              {t("education.empty_desc", "Add your university degrees, diplomas, or certifications.")}
             </p>
           </div>
         )}

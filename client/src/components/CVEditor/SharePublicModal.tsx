@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { trpc } from "@/lib/trpc";
+import { useI18n } from "@/lib/i18n";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -30,6 +31,7 @@ export default function SharePublicModal({
   shareSlug = "",
   viewsCount = 0,
 }: SharePublicModalProps) {
+  const { t } = useI18n();
   const utils = trpc.useUtils();
   const [enabled, setEnabled] = useState(Boolean(isPublic));
   const [slug, setSlug] = useState(shareSlug || "");
@@ -42,12 +44,12 @@ export default function SharePublicModal({
       utils.cv.loadFull.invalidate({ cvId });
       toast.success(
         data.isPublic
-          ? "Public sharing enabled!"
-          : "CV is now private."
+          ? t("share_modal.enabled_toast", "Public sharing diaktifkan!")
+          : t("share_modal.disabled_toast", "CV kini bersifat privat.")
       );
     },
     onError: err => {
-      toast.error(`Failed to update sharing: ${err.message}`);
+      toast.error(`${t("share_modal.error_toast", "Gagal memperbarui sharing:")} ${err.message}`);
     },
   });
 
@@ -75,7 +77,7 @@ export default function SharePublicModal({
   const handleCopy = () => {
     navigator.clipboard.writeText(publicUrl);
     setCopied(true);
-    toast.success("Public link copied to clipboard!");
+    toast.success(t("share_modal.copied_toast", "Tautan publik berhasil disalin ke clipboard!"));
     setTimeout(() => setCopied(false), 2000);
   };
 
@@ -85,22 +87,22 @@ export default function SharePublicModal({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-xl font-bold">
             <Share2 className="w-5 h-5 text-blue-600" />
-            Public Web CV & Recruiter Portfolio
+            {t("share_modal.modal_title", "Public Web CV & Recruiter Portfolio")}
           </DialogTitle>
         </DialogHeader>
 
         <div className="space-y-6 pt-2">
           <p className="text-sm text-gray-600">
-            Publish an interactive, responsive online web version of your CV that HR recruiters or clients can view anytime from any phone or browser.
+            {t("share_modal.modal_desc", "Publikasikan versi online interaktif dari CV Anda yang dapat dibuka oleh HRD maupun klien kapan pun melalui browser ponsel atau laptop.")}
           </p>
 
           <div className="flex items-center justify-between p-4 border rounded-xl bg-gray-50/50">
             <div className="space-y-0.5">
               <span className="font-semibold text-sm text-gray-900 flex items-center gap-2">
-                <Globe2 className="w-4 h-4 text-blue-600" /> Enable Public Web Link
+                <Globe2 className="w-4 h-4 text-blue-600" /> {t("share_modal.enable_toggle", "Aktifkan Tautan Web Publik")}
               </span>
               <p className="text-xs text-gray-500">
-                Anyone with this link can view and download your CV
+                {t("share_modal.toggle_desc", "Siapa pun yang memiliki tautan ini dapat melihat dan mengunduh CV Anda")}
               </p>
             </div>
             <Switch
@@ -113,7 +115,7 @@ export default function SharePublicModal({
           {enabled && (
             <div className="space-y-4 animate-in fade-in-50 duration-200">
               <div className="space-y-2">
-                <Label htmlFor="slugInput">Custom URL Slug</Label>
+                <Label htmlFor="slugInput">{t("share_modal.custom_slug_label", "Custom URL Slug")}</Label>
                 <div className="flex gap-2">
                   <Input
                     id="slugInput"
@@ -132,13 +134,13 @@ export default function SharePublicModal({
                     onClick={handleSaveSlug}
                     disabled={toggleMutation.isPending || !slug.trim()}
                   >
-                    Save Slug
+                    {t("share_modal.save_slug", "Simpan Slug")}
                   </Button>
                 </div>
               </div>
 
               <div className="space-y-2">
-                <Label>Your Public Shareable Link</Label>
+                <Label>{t("share_modal.public_link_label", "Tautan Publik Anda")}</Label>
                 <div className="flex items-center gap-2 p-2 bg-gray-100 border rounded-lg">
                   <input
                     readOnly
@@ -150,7 +152,7 @@ export default function SharePublicModal({
                     variant="ghost"
                     onClick={handleCopy}
                     className="h-8 w-8 p-0"
-                    title="Copy Link"
+                    title={t("actions.copy", "Salin")}
                   >
                     {copied ? (
                       <Check className="w-4 h-4 text-emerald-600" />
@@ -163,7 +165,7 @@ export default function SharePublicModal({
                     variant="ghost"
                     onClick={() => window.open(publicUrl, "_blank")}
                     className="h-8 w-8 p-0"
-                    title="Open Link"
+                    title={t("actions.open", "Buka Tautan")}
                   >
                     <ExternalLink className="w-4 h-4 text-gray-600" />
                   </Button>
@@ -175,29 +177,30 @@ export default function SharePublicModal({
                 <div className="flex items-center justify-between gap-2">
                   <div className="flex items-center gap-2">
                     <span className="w-2 h-2 rounded-full bg-blue-600 animate-pulse" />
-                    <span className="text-xs font-bold text-blue-950">Gunakan untuk Website Portofolio</span>
+                    <span className="text-xs font-bold text-blue-950">{t("share_modal.portfolio_heading", "Gunakan untuk Website Portofolio")}</span>
                   </div>
                   <Button
                     size="sm"
                     variant="default"
                     onClick={() => {
                       navigator.clipboard.writeText(publicUrl);
-                      toast.success("Tautan CV berhasil disalin untuk Web Portofolio!");
+                      toast.success(t("share_modal.portfolio_copied", "Tautan CV berhasil disalin untuk Web Portofolio!"));
                     }}
                     className="h-6 px-2.5 text-[10px] bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-md gap-1"
                   >
-                    <Copy className="w-3 h-3" /> Salin Link Portofolio
+                    <Copy className="w-3 h-3" /> {t("share_modal.copy_portfolio_link", "Salin Link Portofolio")}
                   </Button>
                 </div>
                 <p className="text-[11px] text-blue-800/90 leading-relaxed">
-                  Tempelkan link ini di <strong>Admin Portofolio &gt; Resume / CV</strong>. Tombol "Download CV" di landing page portofolio Anda akan langsung terhubung ke resume ini.
+                  {t("share_modal.portfolio_instruction", 'Tempelkan link ini di Admin Portofolio > Resume / CV. Tombol "Download CV" di landing page portofolio Anda akan langsung terhubung ke resume ini.')}
                 </p>
               </div>
 
               <div className="flex items-center gap-2 p-3 bg-blue-50/60 border border-blue-200 rounded-lg text-xs text-blue-900">
                 <Eye className="w-4 h-4 text-blue-600 flex-shrink-0" />
                 <span>
-                  This public CV has been viewed <strong>{viewsCount}</strong> times by visitors/recruiters.
+                  {t("share_modal.views_counter", "CV publik ini telah dilihat {count} kali oleh pengunjung/rekruter.")
+                    .replace("{count}", String(viewsCount))}
                 </span>
               </div>
             </div>
@@ -205,7 +208,7 @@ export default function SharePublicModal({
 
           <div className="flex justify-end pt-2 border-t">
             <Button onClick={onClose} size="sm" className="bg-black text-white hover:bg-gray-800">
-              Done
+              {t("actions.close", "Selesai")}
             </Button>
           </div>
         </div>

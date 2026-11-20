@@ -84,10 +84,10 @@ export default function LanguagesForm({
       setLanguages(updated);
       onDataChange?.(updated);
       utils.cv.loadFull.invalidate({ cvId });
-      toast.success("Language added!");
+      toast.success(t("languages_section.added", "Language added!"));
       resetForm();
     },
-    onError: () => toast.error("Failed to add language"),
+    onError: () => toast.error(t("languages_section.add_failed", "Failed to add language")),
   });
 
   const updateMutation = trpc.cv.languages.update.useMutation({
@@ -98,10 +98,10 @@ export default function LanguagesForm({
       setLanguages(updated);
       onDataChange?.(updated);
       utils.cv.loadFull.invalidate({ cvId });
-      toast.success("Language updated!");
+      toast.success(t("languages_section.updated", "Language updated!"));
       resetForm();
     },
-    onError: () => toast.error("Failed to update language"),
+    onError: () => toast.error(t("languages_section.update_failed", "Failed to update language")),
   });
 
   const deleteMutation = trpc.cv.languages.delete.useMutation({
@@ -110,14 +110,14 @@ export default function LanguagesForm({
       setLanguages(updated);
       onDataChange?.(updated);
       utils.cv.loadFull.invalidate({ cvId });
-      toast.success("Language removed!");
+      toast.success(t("languages_section.deleted", "Language removed!"));
     },
-    onError: () => toast.error("Failed to remove language"),
+    onError: () => toast.error(t("languages_section.delete_failed", "Failed to remove language")),
   });
 
   const reorderMutation = trpc.cv.languages.reorder.useMutation({
     onError: () => {
-      toast.error("Failed to save language order");
+      toast.error(t("languages_section.order_failed", "Failed to save language order"));
       utils.cv.loadFull.invalidate({ cvId });
     },
   });
@@ -144,7 +144,7 @@ export default function LanguagesForm({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.language.trim()) {
-      toast.error("Language name is required");
+      toast.error(t("languages_section.required", "Language name is required"));
       return;
     }
 
@@ -268,7 +268,7 @@ export default function LanguagesForm({
                     disabled={isSaving}
                     className="border-neutral-200 text-xs rounded-xl"
                   >
-                    Cancel
+                    {t("actions.cancel", "Cancel")}
                   </Button>
                   <Button
                     type="submit"
@@ -330,21 +330,21 @@ export default function LanguagesForm({
                     <AlertDialogContent className="border border-neutral-200 rounded-2xl">
                       <AlertDialogHeader>
                         <AlertDialogTitle className="text-base font-bold text-neutral-900">
-                          Delete Language?
+                          {t("languages_section.delete_title", "Delete Language?")}
                         </AlertDialogTitle>
                         <AlertDialogDescription className="text-xs text-neutral-600">
-                          Are you sure you want to remove {lang.language}?
+                          {t("languages_section.delete_desc", "Are you sure you want to remove {name}?").replace("{name}", lang.language)}
                         </AlertDialogDescription>
                       </AlertDialogHeader>
                       <div className="flex justify-end gap-2 pt-2">
                         <AlertDialogCancel className="border-neutral-200 text-xs font-semibold">
-                          Cancel
+                          {t("actions.cancel", "Cancel")}
                         </AlertDialogCancel>
                         <AlertDialogAction
                           onClick={() => deleteMutation.mutate({ id: lang.id })}
                           className="bg-red-600 hover:bg-red-700 text-white text-xs font-semibold"
                         >
-                          Delete
+                          {t("actions.delete", "Delete")}
                         </AlertDialogAction>
                       </div>
                     </AlertDialogContent>

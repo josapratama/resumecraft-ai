@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { trpc } from "@/lib/trpc";
+import { useI18n } from "@/lib/i18n";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -25,6 +26,7 @@ export default function TranslateCVModal({
   onClose,
   currentTitle,
 }: TranslateCVModalProps) {
+  const { t } = useI18n();
   const [, navigate] = useLocation();
   const utils = trpc.useUtils();
   const [targetLang, setTargetLang] = useState<"en" | "id">("en");
@@ -33,22 +35,22 @@ export default function TranslateCVModal({
   const translateMutation = trpc.cvAI.translateCV.useMutation({
     onSuccess: data => {
       setTranslatedData(data);
-      toast.success("CV translated and localized successfully!");
+      toast.success(t("translate_modal.success_toast", "CV berhasil diterjemahkan dan disesuaikan secara profesional!"));
     },
     onError: err => {
-      toast.error(`Translation failed: ${err.message}`);
+      toast.error(`${t("translate_modal.error_toast", "Penerjemahan gagal:")} ${err.message}`);
     },
   });
 
   const saveAsNewMutation = trpc.cvAI.createFromParsed.useMutation({
     onSuccess: newCV => {
       utils.cv.list.invalidate();
-      toast.success("New translated CV created!");
+      toast.success(t("translate_modal.created_toast", "Dokumen CV hasil terjemahan baru berhasil dibuat!"));
       onClose();
       navigate(`/cv/${newCV.id}`);
     },
     onError: err => {
-      toast.error(`Failed to save new CV: ${err.message}`);
+      toast.error(`${t("translate_modal.save_error_toast", "Gagal menyimpan CV baru:")} ${err.message}`);
     },
   });
 
@@ -76,20 +78,19 @@ export default function TranslateCVModal({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-xl font-bold">
             <Languages className="w-5 h-5 text-emerald-600" />
-            AI Multi-Language CV Localization
+            {t("translate_modal.modal_title", "AI Multi-Language CV Localization")}
           </DialogTitle>
         </DialogHeader>
 
         {!translatedData ? (
           <div className="space-y-4 pt-2">
             <p className="text-sm text-gray-600">
-              Translate and professionally adapt your entire CV between English and Bahasa Indonesia.
-              The AI uses strong industry action verbs and natural corporate idioms rather than direct translation.
+              {t("translate_modal.modal_desc", "Terjemahkan dan adaptasikan seluruh CV Anda antara Bahasa Indonesia dan Bahasa Inggris secara profesional dengan kata kerja aktif industri.")}
             </p>
 
             <div className="space-y-2">
               <label className="text-sm font-semibold text-gray-800">
-                Choose Target Language:
+                {t("translate_modal.choose_lang", "Pilih Bahasa Sasaran:")}
               </label>
               <div className="grid grid-cols-2 gap-4">
                 <button
@@ -106,7 +107,7 @@ export default function TranslateCVModal({
                     English (US / UK)
                   </strong>
                   <span className="text-xs text-gray-500">
-                    Standard action verbs for global & multinational job applications
+                    {t("translate_modal.en_desc", "Standard action verbs for global & multinational job applications")}
                   </span>
                 </button>
 
@@ -124,7 +125,7 @@ export default function TranslateCVModal({
                     Bahasa Indonesia
                   </strong>
                   <span className="text-xs text-gray-500">
-                    Bahasa baku profesional untuk BUMN, instansi, dan korporasi lokal
+                    {t("translate_modal.id_desc", "Bahasa baku profesional untuk BUMN, instansi, dan korporasi lokal")}
                   </span>
                 </button>
               </div>
@@ -132,7 +133,7 @@ export default function TranslateCVModal({
 
             <div className="flex justify-end gap-2 pt-2">
               <Button variant="outline" onClick={onClose}>
-                Cancel
+                {t("actions.cancel", "Batal")}
               </Button>
               <Button
                 onClick={handleTranslate}
@@ -141,11 +142,11 @@ export default function TranslateCVModal({
               >
                 {translateMutation.isPending ? (
                   <>
-                    <Spinner className="w-4 h-4" /> Translating & Adapting...
+                    <Spinner className="w-4 h-4" /> {t("translate_modal.translating", "Menerjemahkan & Mengadaptasi...")}
                   </>
                 ) : (
                   <>
-                    <Sparkles className="w-4 h-4" /> Translate CV
+                    <Sparkles className="w-4 h-4" /> {t("translate_modal.translate_btn", "Terjemahkan CV")}
                   </>
                 )}
               </Button>
@@ -155,10 +156,10 @@ export default function TranslateCVModal({
           <div className="space-y-4 pt-2">
             <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-lg text-xs space-y-1">
               <p className="font-semibold text-emerald-900">
-                ✓ Localization Preview ({targetLang === "en" ? "English" : "Bahasa Indonesia"})
+                ✓ {t("translate_modal.preview_title", "Pratinjau Hasil Terjemahan")} ({targetLang === "en" ? "English" : "Bahasa Indonesia"})
               </p>
               <p className="text-gray-700">
-                Title: <strong>{translatedData.title || currentTitle}</strong>
+                {t("translate_modal.cv_title_label", "Judul:")} <strong>{translatedData.title || currentTitle}</strong>
               </p>
               {translatedData.personalInfo?.professionalSummary && (
                 <p className="italic text-gray-600 mt-1 line-clamp-3">
@@ -169,7 +170,7 @@ export default function TranslateCVModal({
 
             <div className="max-h-[300px] overflow-y-auto space-y-3 p-3 border rounded-lg bg-gray-50 text-xs">
               <div>
-                <h5 className="font-bold text-gray-900 mb-1">Work Experiences:</h5>
+                <h5 className="font-bold text-gray-900 mb-1">{t("translate_modal.work_exp_heading", "Pengalaman Kerja:")}</h5>
                 <ul className="space-y-2 list-disc pl-4 text-gray-700">
                   {translatedData.workExperiences?.map((exp: any, i: number) => (
                     <li key={i}>
@@ -186,7 +187,7 @@ export default function TranslateCVModal({
 
               {translatedData.skills && (
                 <div>
-                  <h5 className="font-bold text-gray-900 mb-1">Skills:</h5>
+                  <h5 className="font-bold text-gray-900 mb-1">{t("translate_modal.skills_heading", "Keahlian:")}</h5>
                   <div className="flex flex-wrap gap-1">
                     {translatedData.skills.map((s: any, i: number) => (
                       <span key={i} className="px-2 py-0.5 bg-white border rounded text-[11px]">
@@ -204,7 +205,7 @@ export default function TranslateCVModal({
                 size="sm"
                 onClick={() => setTranslatedData(null)}
               >
-                ← Back
+                ← {t("actions.back", "Kembali")}
               </Button>
 
               <Button
@@ -214,11 +215,11 @@ export default function TranslateCVModal({
               >
                 {saveAsNewMutation.isPending ? (
                   <>
-                    <Spinner className="w-4 h-4" /> Creating Translated CV...
+                    <Spinner className="w-4 h-4" /> {t("translate_modal.saving_new", "Membuat CV Terjemahan Baru...")}
                   </>
                 ) : (
                   <>
-                    <CopyPlus className="w-4 h-4" /> Save as New Translated CV
+                    <CopyPlus className="w-4 h-4" /> {t("translate_modal.save_as_new_btn", "Simpan Sebagai CV Baru")}
                   </>
                 )}
               </Button>

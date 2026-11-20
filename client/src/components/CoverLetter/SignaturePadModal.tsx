@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
+import { useI18n } from "@/lib/i18n";
 import {
   PenTool,
   Upload,
@@ -67,6 +68,7 @@ export const SignaturePadModal: React.FC<SignaturePadModalProps> = ({
   initialSignature,
   fullName,
 }) => {
+  const { t } = useI18n();
   const [activeTab, setActiveTab] = useState<"draw" | "upload" | "font">("draw");
 
   // Draw Tab State
@@ -401,9 +403,9 @@ export const SignaturePadModal: React.FC<SignaturePadModalProps> = ({
               <PenTool className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="font-bold text-slate-900 text-base">Tanda Tangan Digital</h3>
+              <h3 className="font-bold text-slate-900 text-base">{t("signature.modal_title", "Tanda Tangan Digital")}</h3>
               <p className="text-xs text-slate-500">
-                Gunakan coretan tangan asli, upload foto, atau gaya kaligrafi
+                {t("signature.modal_subtitle", "Gunakan coretan tangan asli, upload foto, atau gaya kaligrafi")}
               </p>
             </div>
           </div>
@@ -427,7 +429,7 @@ export const SignaturePadModal: React.FC<SignaturePadModalProps> = ({
             }`}
           >
             <PenTool className="w-3.5 h-3.5" />
-            Gambar di Layar (Canvas)
+            {t("signature.tab_draw", "Gambar di Layar (Canvas)")}
           </button>
           <button
             type="button"
@@ -439,7 +441,7 @@ export const SignaturePadModal: React.FC<SignaturePadModalProps> = ({
             }`}
           >
             <Upload className="w-3.5 h-3.5" />
-            Upload Foto / PNG
+            {t("signature.tab_upload", "Upload Foto / PNG")}
           </button>
           <button
             type="button"
@@ -451,7 +453,7 @@ export const SignaturePadModal: React.FC<SignaturePadModalProps> = ({
             }`}
           >
             <Type className="w-3.5 h-3.5" />
-            Font Kaligrafi
+            {t("signature.tab_font", "Font Kaligrafi")}
           </button>
         </div>
 
@@ -465,7 +467,7 @@ export const SignaturePadModal: React.FC<SignaturePadModalProps> = ({
                 <div className="flex items-center gap-2">
                   <span className="text-slate-500 font-medium flex items-center gap-1">
                     <Palette className="w-3.5 h-3.5" />
-                    Warna:
+                    {t("signature.color_label", "Warna:")}
                   </span>
                   <div className="flex items-center gap-1.5">
                     {PEN_COLORS.map(c => (
@@ -486,7 +488,7 @@ export const SignaturePadModal: React.FC<SignaturePadModalProps> = ({
 
                 {/* Stroke Width Chooser */}
                 <div className="flex items-center gap-1.5">
-                  <span className="text-slate-500 font-medium">Ketebalan:</span>
+                  <span className="text-slate-500 font-medium">{t("signature.thickness_label", "Ketebalan:")}</span>
                   {PEN_WIDTHS.map(w => (
                     <button
                       key={w.value}
@@ -510,7 +512,7 @@ export const SignaturePadModal: React.FC<SignaturePadModalProps> = ({
                     onClick={handleUndo}
                     disabled={history.length <= 1}
                     className="p-1.5 text-slate-600 hover:text-slate-900 hover:bg-white rounded border border-transparent hover:border-slate-200 disabled:opacity-30 disabled:pointer-events-none transition-colors"
-                    title="Undo goresan terakhir"
+                    title={t("signature.undo_tooltip", "Undo goresan terakhir")}
                   >
                     <Undo2 className="w-4 h-4" />
                   </button>
@@ -518,7 +520,7 @@ export const SignaturePadModal: React.FC<SignaturePadModalProps> = ({
                     type="button"
                     onClick={handleClearCanvas}
                     className="p-1.5 text-rose-600 hover:text-rose-700 hover:bg-rose-50 rounded border border-transparent hover:border-rose-100 transition-colors"
-                    title="Bersihkan area gambar"
+                    title={t("signature.clear_tooltip", "Bersihkan area gambar")}
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>
@@ -540,16 +542,16 @@ export const SignaturePadModal: React.FC<SignaturePadModalProps> = ({
                 {/* Guideline line at bottom 30% */}
                 <div className="absolute left-10 right-10 bottom-12 border-b border-dashed border-slate-200 pointer-events-none flex justify-between">
                   <span className="text-[10px] text-slate-400 select-none pb-0.5">
-                    Goreskan tanda tangan di sini (gunakan mouse / sentuhan jari)
+                    {t("signature.guideline_hint", "Goreskan tanda tangan di sini (gunakan mouse / sentuhan jari)")}
                   </span>
-                  <span className="text-[10px] text-slate-300 select-none">Area Tanda Tangan</span>
+                  <span className="text-[10px] text-slate-300 select-none">{t("signature.area_label", "Area Tanda Tangan")}</span>
                 </div>
 
                 {!hasDrawn && (
                   <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none text-slate-400 opacity-60">
                     <PenTool className="w-8 h-8 mb-1 animate-bounce" />
                     <span className="text-xs font-medium">
-                      Silakan gambar tanda tangan Anda di area putih ini
+                      {t("signature.draw_prompt", "Silakan gambar tanda tangan Anda di area putih ini")}
                     </span>
                   </div>
                 )}
@@ -558,8 +560,7 @@ export const SignaturePadModal: React.FC<SignaturePadModalProps> = ({
               <div className="flex items-center gap-2 text-[11px] text-slate-500 bg-blue-50/60 p-2.5 rounded-lg border border-blue-100">
                 <Sparkles className="w-4 h-4 text-blue-600 shrink-0" />
                 <span>
-                  Hasil goresan otomatis dipangkas (auto-crop) secara proporsional dan tersimpan
-                  dengan latar belakang transparan beresolusi tinggi saat dicetak ke PDF.
+                  {t("signature.auto_crop_hint", "Hasil goresan otomatis dipangkas (auto-crop) secara proporsional dan tersimpan dengan latar belakang transparan beresolusi tinggi saat dicetak ke PDF.")}
                 </span>
               </div>
             </div>
@@ -583,10 +584,10 @@ export const SignaturePadModal: React.FC<SignaturePadModalProps> = ({
                   <Upload className="w-6 h-6" />
                 </div>
                 <p className="font-semibold text-slate-800 text-sm">
-                  Klik untuk Memilih File Gambar Tanda Tangan
+                  {t("signature.choose_file", "Klik untuk Memilih File Gambar Tanda Tangan")}
                 </p>
                 <p className="text-xs text-slate-500 mt-1">
-                  Mendukung PNG transparan, JPG foto kertas, atau WEBP (Maks 5MB)
+                  {t("signature.supported_formats", "Mendukung PNG transparan, JPG foto kertas, atau WEBP (Maks 5MB)")}
                 </p>
               </div>
 
@@ -600,11 +601,10 @@ export const SignaturePadModal: React.FC<SignaturePadModalProps> = ({
                 />
                 <div className="text-xs">
                   <span className="font-semibold text-slate-800 block">
-                    Hapus Latar Kertas Putih Otomatis (Auto Transparent PNG)
+                    {t("signature.remove_bg", "Hapus Latar Kertas Putih Otomatis (Auto Transparent PNG)")}
                   </span>
                   <span className="text-slate-500">
-                    Otomatis membersihkan background kertas putih agar tanda tangan menyatu sempurna
-                    dengan dokumen surat lamaran.
+                    {t("signature.remove_bg_desc", "Otomatis membersihkan background kertas putih agar tanda tangan menyatu sempurna dengan dokumen surat lamaran.")}
                   </span>
                 </div>
               </label>
@@ -612,7 +612,7 @@ export const SignaturePadModal: React.FC<SignaturePadModalProps> = ({
               {/* Upload Preview */}
               {uploadedImage && (
                 <div className="border rounded-xl p-3 bg-slate-50">
-                  <p className="text-xs font-semibold text-slate-700 mb-2">Pratinjau Gambar:</p>
+                  <p className="text-xs font-semibold text-slate-700 mb-2">{t("signature.image_preview", "Pratinjau Gambar:")}</p>
                   <div className="h-28 bg-white rounded-lg border border-slate-200 flex items-center justify-center p-3 shadow-inner">
                     <img
                       src={uploadedImage}
@@ -625,7 +625,7 @@ export const SignaturePadModal: React.FC<SignaturePadModalProps> = ({
 
               {isProcessingUpload && (
                 <div className="text-center text-xs text-blue-600 font-medium py-2">
-                  Memproses & memfilter gambar...
+                  {t("signature.processing", "Memproses & memfilter gambar...")}
                 </div>
               )}
             </div>
@@ -635,20 +635,20 @@ export const SignaturePadModal: React.FC<SignaturePadModalProps> = ({
             <div className="space-y-4">
               <div>
                 <label className="text-xs font-semibold text-slate-700 block mb-1.5">
-                  Teks Tanda Tangan (Nama Pemohon):
+                  {t("signature.text_label", "Teks Tanda Tangan (Nama Pemohon):")}
                 </label>
                 <input
                   type="text"
                   value={typedName}
                   onChange={e => setTypedName(e.target.value)}
-                  placeholder="Ketik nama untuk dibuatkan tanda tangan..."
+                  placeholder={t("signature.text_placeholder", "Ketik nama untuk dibuatkan tanda tangan...")}
                   className="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
                 />
               </div>
 
               {/* Color Chooser */}
               <div className="flex items-center gap-2 text-xs bg-slate-50 p-2.5 rounded-xl border border-slate-200">
-                <span className="text-slate-500 font-medium">Warna Tinta:</span>
+                <span className="text-slate-500 font-medium">{t("signature.ink_color", "Warna Tinta:")}</span>
                 <div className="flex items-center gap-1.5">
                   {PEN_COLORS.map(c => (
                     <button
@@ -669,7 +669,7 @@ export const SignaturePadModal: React.FC<SignaturePadModalProps> = ({
               {/* Font Style Selection Cards */}
               <div className="space-y-2">
                 <label className="text-xs font-semibold text-slate-700 block">
-                  Pilih Gaya Kaligrafi:
+                  {t("signature.choose_style", "Pilih Gaya Kaligrafi:")}
                 </label>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                   {CALLIGRAPHY_STYLES.map(style => {
@@ -699,7 +699,7 @@ export const SignaturePadModal: React.FC<SignaturePadModalProps> = ({
                             fontSize: "22px",
                           }}
                         >
-                          {typedName || "Tanda Tangan"}
+                          {typedName || t("signature.fallback_name", "Tanda Tangan")}
                         </div>
                       </div>
                     );
@@ -717,7 +717,7 @@ export const SignaturePadModal: React.FC<SignaturePadModalProps> = ({
             onClick={onClose}
             className="px-4 py-2 text-xs font-semibold text-slate-600 hover:text-slate-800 hover:bg-slate-200/60 rounded-xl transition-colors"
           >
-            Batal
+            {t("actions.cancel", "Batal")}
           </button>
 
           <button
@@ -731,7 +731,7 @@ export const SignaturePadModal: React.FC<SignaturePadModalProps> = ({
             className="px-5 py-2 text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-40 disabled:pointer-events-none rounded-xl shadow-xs transition-all flex items-center gap-1.5"
           >
             <Check className="w-4 h-4" />
-            Terapkan ke Surat Lamaran
+            {t("signature.apply_btn", "Terapkan ke Surat Lamaran")}
           </button>
         </div>
       </div>

@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useI18n } from "@/lib/i18n";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import {
@@ -32,71 +33,72 @@ interface ChecklistItem {
   hint: string;
 }
 
-const DEFAULT_DOCUMENTS: ChecklistItem[] = [
-  {
-    id: "cv",
-    label: "Curriculum Vitae (CV) Terkini",
-    category: "wajib",
-    hint: "Sudah diunduh dalam format PDF bersih dari ResumeCraft AI.",
-  },
-  {
-    id: "cover_letter",
-    label: "Surat Lamaran Pekerjaan Formal",
-    category: "wajib",
-    hint: "Nama perusahaan, posisi, dan tanggal surat sudah disesuaikan.",
-  },
-  {
-    id: "photo",
-    label: "Pas Foto Berwarna Terbaru",
-    category: "wajib",
-    hint: "Pakaian formal/kemeja rapi, ukuran 3x4 atau 4x6 dengan latar merah/biru.",
-  },
-  {
-    id: "ijazah",
-    label: "Salinan Ijazah Terlegalisir",
-    category: "wajib",
-    hint: "Scan PDF resolusi tajam (bukan foto miring/buram).",
-  },
-  {
-    id: "transkrip",
-    label: "Salinan Transkrip Nilai Akademik",
-    category: "wajib",
-    hint: "Memperlihatkan IPK dan daftar mata kuliah resmi.",
-  },
-  {
-    id: "ktp",
-    label: "Salinan KTP & Dokumen Kependudukan",
-    category: "wajib",
-    hint: "NIK dan domisili terbaca jelas untuk verifikasi data HRD.",
-  },
-  {
-    id: "sertifikat",
-    label: "Sertifikat Pelatihan / Kompetensi",
-    category: "pendukung",
-    hint: "Sertifikat webinar, kursus, atau keahlian teknis yang relevan.",
-  },
-  {
-    id: "skck",
-    label: "Surat Keterangan Catatan Kepolisian (SKCK)",
-    category: "pendukung",
-    hint: "Masa berlaku masih aktif (umumnya disyaratkan BUMN / ASN / Sekolah).",
-  },
-  {
-    id: "surat_sehat",
-    label: "Surat Keterangan Sehat dari Dokter / Puskesmas",
-    category: "pendukung",
-    hint: "Menyatakan kondisi fisik sehat untuk bekerja.",
-  },
-];
-
 export default function DocumentChecklistModal({
   isOpen,
   onClose,
   cvId,
   onBackupCV,
 }: DocumentChecklistModalProps) {
+  const { t } = useI18n();
   const storageKey = `cv_checklist_${cvId}`;
   const [checkedIds, setCheckedIds] = useState<string[]>(["cv", "cover_letter"]);
+
+  const DEFAULT_DOCUMENTS: ChecklistItem[] = [
+    {
+      id: "cv",
+      label: t("checklist.doc_cv_label", "Curriculum Vitae (CV) Terkini"),
+      category: "wajib",
+      hint: t("checklist.doc_cv_hint", "Sudah diunduh dalam format PDF bersih dari ResumeCraft AI."),
+    },
+    {
+      id: "cover_letter",
+      label: t("checklist.doc_cl_label", "Surat Lamaran Pekerjaan Formal"),
+      category: "wajib",
+      hint: t("checklist.doc_cl_hint", "Nama perusahaan, posisi, dan tanggal surat sudah disesuaikan."),
+    },
+    {
+      id: "photo",
+      label: t("checklist.doc_photo_label", "Pas Foto Berwarna Terbaru"),
+      category: "wajib",
+      hint: t("checklist.doc_photo_hint", "Pakaian formal/kemeja rapi, ukuran 3x4 atau 4x6 dengan latar merah/biru."),
+    },
+    {
+      id: "ijazah",
+      label: t("checklist.doc_ijazah_label", "Salinan Ijazah Terlegalisir"),
+      category: "wajib",
+      hint: t("checklist.doc_ijazah_hint", "Scan PDF resolusi tajam (bukan foto miring/buram)."),
+    },
+    {
+      id: "transkrip",
+      label: t("checklist.doc_transkrip_label", "Salinan Transkrip Nilai Akademik"),
+      category: "wajib",
+      hint: t("checklist.doc_transkrip_hint", "Memperlihatkan IPK dan daftar mata kuliah resmi."),
+    },
+    {
+      id: "ktp",
+      label: t("checklist.doc_ktp_label", "Salinan KTP & Dokumen Kependudukan"),
+      category: "wajib",
+      hint: t("checklist.doc_ktp_hint", "NIK dan domisili terbaca jelas untuk verifikasi data HRD."),
+    },
+    {
+      id: "sertifikat",
+      label: t("checklist.doc_cert_label", "Sertifikat Pelatihan / Kompetensi"),
+      category: "pendukung",
+      hint: t("checklist.doc_cert_hint", "Sertifikat webinar, kursus, atau keahlian teknis yang relevan."),
+    },
+    {
+      id: "skck",
+      label: t("checklist.doc_skck_label", "Surat Keterangan Catatan Kepolisian (SKCK)"),
+      category: "pendukung",
+      hint: t("checklist.doc_skck_hint", "Masa berlaku masih aktif (umumnya disyaratkan BUMN / ASN / Sekolah)."),
+    },
+    {
+      id: "surat_sehat",
+      label: t("checklist.doc_health_label", "Surat Keterangan Sehat dari Dokter / Puskesmas"),
+      category: "pendukung",
+      hint: t("checklist.doc_health_hint", "Menyatakan kondisi fisik sehat untuk bekerja."),
+    },
+  ];
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -125,14 +127,14 @@ export default function DocumentChecklistModal({
     const all = DEFAULT_DOCUMENTS.map(d => d.id);
     setCheckedIds(all);
     localStorage.setItem(storageKey, JSON.stringify(all));
-    toast.success("Semua berkas ditandai siap!");
+    toast.success(t("checklist.all_ready", "Semua berkas ditandai siap!"));
   };
 
   const handleReset = () => {
     const initial = ["cv", "cover_letter"];
     setCheckedIds(initial);
     localStorage.setItem(storageKey, JSON.stringify(initial));
-    toast.info("Checklist di-reset");
+    toast.info(t("checklist.reset_msg", "Checklist di-reset"));
   };
 
   const completedCount = checkedIds.length;
@@ -150,10 +152,10 @@ export default function DocumentChecklistModal({
             </div>
             <div>
               <DialogTitle className="text-base font-bold text-neutral-900">
-                Checklist Berkas Lamaran Kerja Indonesia
+                {t("checklist.modal_title", "Checklist Berkas Lamaran Kerja Indonesia")}
               </DialogTitle>
               <p className="text-xs text-neutral-500 mt-0.5">
-                Pastikan seluruh berkas administrasi siap sebelum dikirim agar tidak gugur di tahap awal.
+                {t("checklist.modal_desc", "Pastikan seluruh berkas administrasi siap sebelum dikirim agar tidak gugur di tahap awal.")}
               </p>
             </div>
           </div>
@@ -163,10 +165,13 @@ export default function DocumentChecklistModal({
         <div className="p-4 bg-emerald-50/40 border-b border-emerald-100 space-y-2">
           <div className="flex justify-between items-center text-xs">
             <span className="font-semibold text-emerald-950">
-              Kesiapan Berkas Administrasi:
+              {t("checklist.readiness_label", "Kesiapan Berkas Administrasi:")}
             </span>
             <span className="font-bold text-emerald-700">
-              {completedCount} dari {totalCount} Berkas ({percentage}%)
+              {t("checklist.progress_text", "{count} dari {total} Berkas ({pct}%)")
+                .replace("{count}", String(completedCount))
+                .replace("{total}", String(totalCount))
+                .replace("{pct}", String(percentage))}
             </span>
           </div>
           <Progress value={percentage} className="h-2 bg-emerald-200" />
@@ -209,7 +214,7 @@ export default function DocumentChecklistModal({
                           : "bg-blue-50 text-blue-700 border border-blue-200"
                       }`}
                     >
-                      {doc.category}
+                      {doc.category === "wajib" ? t("checklist.mandatory", "wajib") : t("checklist.supporting", "pendukung")}
                     </span>
                   </div>
                   <p className="text-[11px] text-neutral-500 mt-0.5 leading-relaxed">
@@ -230,7 +235,7 @@ export default function DocumentChecklistModal({
               onClick={handleSelectAll}
               className="text-[11px] h-7 px-2 text-neutral-600 hover:bg-neutral-100"
             >
-              Tandai Semua
+              {t("checklist.mark_all", "Tandai Semua")}
             </Button>
             <Button
               variant="ghost"
@@ -238,7 +243,7 @@ export default function DocumentChecklistModal({
               onClick={handleReset}
               className="text-[11px] h-7 px-2 text-neutral-500 hover:bg-neutral-100"
             >
-              Reset
+              {t("actions.reset", "Reset")}
             </Button>
           </div>
 
@@ -248,17 +253,17 @@ export default function DocumentChecklistModal({
               size="sm"
               onClick={onBackupCV}
               className="gap-1.5 text-xs h-8 border-neutral-200 text-neutral-700 hover:bg-neutral-100"
-              title="Unduh file backup data CV dalam format .json"
+              title={t("checklist.backup_tooltip", "Unduh file backup data CV dalam format .json")}
             >
               <Download className="w-3.5 h-3.5" />
-              <span>Backup Data CV (.json)</span>
+              <span>{t("checklist.backup_btn", "Backup Data CV (.json)")}</span>
             </Button>
             <Button
               onClick={onClose}
               size="sm"
               className="text-xs h-8 bg-neutral-900 text-white hover:bg-neutral-800 rounded-lg"
             >
-              Selesai
+              {t("actions.close", "Selesai")}
             </Button>
           </div>
         </div>

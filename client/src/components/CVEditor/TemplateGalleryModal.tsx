@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import { useI18n } from "@/lib/i18n";
 import {
   Dialog,
   DialogContent,
@@ -291,6 +292,7 @@ export default function TemplateGalleryModal({
   currentTemplate,
   onSelectTemplate,
 }: TemplateGalleryModalProps) {
+  const { t } = useI18n();
   const [activeCategory, setActiveCategory] = useState<string>("Semua");
   const [searchQuery, setSearchQuery] = useState<string>("");
 
@@ -320,10 +322,10 @@ export default function TemplateGalleryModal({
               </div>
               <div>
                 <DialogTitle className="text-base font-bold text-neutral-900">
-                  Galeri Template Desain CV (29 Pilihan)
+                  {t("template_gallery.modal_title", "Galeri Template Desain CV (29 Pilihan)")}
                 </DialogTitle>
                 <p className="text-xs text-neutral-500">
-                  Pilih desain yang paling cocok untuk industri dan target karier Anda
+                  {t("template_gallery.modal_desc", "Pilih desain yang paling cocok untuk industri dan target karier Anda")}
                 </p>
               </div>
             </div>
@@ -331,7 +333,7 @@ export default function TemplateGalleryModal({
             <div className="relative w-48 sm:w-64">
               <Search className="w-3.5 h-3.5 text-neutral-400 absolute left-2.5 top-2.5" />
               <Input
-                placeholder="Cari template, profesi..."
+                placeholder={t("template_gallery.search_ph", "Cari template, profesi...")}
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
                 className="h-8 pl-8 text-xs rounded-lg"
@@ -352,7 +354,7 @@ export default function TemplateGalleryModal({
                     : "bg-neutral-100 text-neutral-600 hover:bg-neutral-200"
                 }`}
               >
-                {cat}
+                {cat === "Semua" ? t("template_gallery.cat_all", "Semua") : cat}
                 {cat === "Semua" ? ` (${TEMPLATES_DATA.length})` : ""}
               </button>
             ))}
@@ -436,7 +438,7 @@ export default function TemplateGalleryModal({
                       {isActive && (
                         <div className="absolute inset-0 bg-neutral-900/15 backdrop-blur-[0.5px] flex items-center justify-center">
                           <span className="bg-red-600 text-white text-[11px] font-bold py-1 px-3 rounded-full flex items-center gap-1 shadow-md">
-                            <Check className="w-3 h-3" /> Sedang Aktif
+                            <Check className="w-3 h-3" /> {t("template_gallery.active_badge", "Sedang Aktif")}
                           </span>
                         </div>
                       )}
@@ -474,7 +476,7 @@ export default function TemplateGalleryModal({
                           : "text-neutral-700 hover:bg-neutral-100"
                       }`}
                     >
-                      {isActive ? "Dipilih" : "Gunakan"}
+                      {isActive ? t("template_gallery.selected_btn", "Dipilih") : t("template_gallery.use_btn", "Gunakan")}
                     </Button>
                   </div>
                 </div>

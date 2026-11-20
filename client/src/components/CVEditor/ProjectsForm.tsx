@@ -63,9 +63,9 @@ export default function ProjectsForm({
       onDataChange?.(updated);
       resetForm();
       setIsDialogOpen(false);
-      toast.success("Project added");
+      toast.success(t("projects_section.added", "Project added"));
     },
-    onError: () => toast.error("Failed to add project"),
+    onError: () => toast.error(t("projects_section.add_failed", "Failed to add project")),
   });
 
   const updateMutation = trpc.cv.project.update.useMutation({
@@ -77,9 +77,9 @@ export default function ProjectsForm({
       onDataChange?.(updated);
       resetForm();
       setIsDialogOpen(false);
-      toast.success("Project updated");
+      toast.success(t("projects_section.updated", "Project updated"));
     },
-    onError: () => toast.error("Failed to update project"),
+    onError: () => toast.error(t("projects_section.update_failed", "Failed to update project")),
   });
 
   const deleteMutation = trpc.cv.project.delete.useMutation({
@@ -89,15 +89,15 @@ export default function ProjectsForm({
       onDataChange?.(updated);
       resetForm();
       setIsDialogOpen(false);
-      toast.success("Project deleted");
+      toast.success(t("projects_section.deleted", "Project deleted"));
     },
-    onError: () => toast.error("Failed to delete project"),
+    onError: () => toast.error(t("projects_section.delete_failed", "Failed to delete project")),
   });
 
   const reorderMutation = trpc.cv.project.reorder.useMutation({
     onSuccess: () => {},
     onError: () => {
-      toast.error("Failed to update order");
+      toast.error(t("projects_section.order_failed", "Failed to update order"));
       utils.cv.loadFull.invalidate();
     },
   });
@@ -123,7 +123,7 @@ export default function ProjectsForm({
 
   const handleSave = () => {
     if (!formData.projectName.trim()) {
-      toast.error("Project name is required");
+      toast.error(t("projects_section.required", "Project name is required"));
       return;
     }
     if (editingId) updateMutation.mutate({ id: editingId, ...formData });
@@ -243,7 +243,7 @@ export default function ProjectsForm({
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <Label className="text-xs font-semibold text-neutral-600 uppercase tracking-wider">
-                      Start Date
+                      {t("projects_section.start_date", "Start Date")}
                     </Label>
                     <Input
                       type="month"
@@ -256,7 +256,7 @@ export default function ProjectsForm({
                   </div>
                   <div>
                     <Label className="text-xs font-semibold text-neutral-600 uppercase tracking-wider">
-                      End Date
+                      {t("projects_section.end_date", "End Date")}
                     </Label>
                     <Input
                       type="month"
@@ -278,10 +278,10 @@ export default function ProjectsForm({
                     {isSaving ? (
                       <>
                         <Spinner className="w-4 h-4 mr-2" />
-                        Saving...
+                        {t("projects_section.saving_btn", "Saving...")}
                       </>
                     ) : (
-                      "Save Project"
+                      t("projects_section.save_project", "Save Project")
                     )}
                   </Button>
 
@@ -295,21 +295,21 @@ export default function ProjectsForm({
                           disabled={deleteMutation.isPending}
                         >
                           <Trash2 className="w-3.5 h-3.5 mr-1" />
-                          Delete
+                          {t("projects_section.delete_btn", "Delete")}
                         </Button>
                       </AlertDialogTrigger>
                       <AlertDialogContent className="border border-neutral-200 rounded-2xl">
                         <AlertDialogHeader>
                           <AlertDialogTitle className="text-base font-bold text-neutral-900">
-                            Delete "{formData.projectName}"?
+                            {t("projects_section.delete_title", 'Delete "{name}"?').replace("{name}", formData.projectName)}
                           </AlertDialogTitle>
                           <AlertDialogDescription className="text-xs text-neutral-600">
-                            This project will be permanently removed from your resume.
+                            {t("projects_section.delete_desc", "This project will be permanently removed from your resume.")}
                           </AlertDialogDescription>
                         </AlertDialogHeader>
                         <div className="flex justify-end gap-2 pt-2">
                           <AlertDialogCancel className="border-neutral-200 text-xs font-semibold">
-                            Cancel
+                            {t("projects_section.cancel_btn", "Cancel")}
                           </AlertDialogCancel>
                           <AlertDialogAction
                             onClick={() =>
@@ -317,7 +317,7 @@ export default function ProjectsForm({
                             }
                             className="bg-red-600 hover:bg-red-700 text-white text-xs font-semibold"
                           >
-                            Delete
+                            {t("projects_section.delete_btn", "Delete")}
                           </AlertDialogAction>
                         </div>
                       </AlertDialogContent>

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { trpc } from "@/lib/trpc";
+import { useI18n } from "@/lib/i18n";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -46,6 +47,7 @@ export default function GrammarCheckModal({
   isOpen,
   onClose,
 }: GrammarCheckModalProps) {
+  const { t } = useI18n();
   const [result, setResult] = useState<GrammarResult | null>(null);
   const [copiedIdx, setCopiedIdx] = useState<number | null>(null);
 
@@ -53,13 +55,13 @@ export default function GrammarCheckModal({
     onSuccess: (data: any) => {
       setResult(data);
       if (data.totalIssues === 0) {
-        toast.success("Luar biasa! Tidak ditemukan typo atau kesalahan tata bahasa.");
+        toast.success(t("grammar.no_issues_toast", "Luar biasa! Tidak ditemukan typo atau kesalahan tata bahasa."));
       } else {
-        toast.info(`Ditemukan ${data.totalIssues} catatan ejaan/EYD untuk disempurnakan.`);
+        toast.info(t("grammar.issues_found_toast", "Ditemukan {n} catatan ejaan/EYD untuk disempurnakan.").replace("{n}", String(data.totalIssues)));
       }
     },
     onError: (err: any) => {
-      toast.error(err.message || "Gagal memeriksa ejaan");
+      toast.error(err.message || t("grammar.error_toast", "Gagal memeriksa ejaan"));
     },
   });
 
@@ -70,7 +72,7 @@ export default function GrammarCheckModal({
   const handleCopy = (text: string, idx: number) => {
     navigator.clipboard.writeText(text);
     setCopiedIdx(idx);
-    toast.success("Teks perbaikan disalin!");
+    toast.success(t("grammar.copy_toast", "Teks perbaikan disalin!"));
     setTimeout(() => setCopiedIdx(null), 2000);
   };
 
@@ -85,10 +87,10 @@ export default function GrammarCheckModal({
             </div>
             <div>
               <DialogTitle className="text-base font-bold text-neutral-900">
-                Pemeriksa Ejaan, Typo & EYD V
+                {t("grammar.modal_title", "Pemeriksa Ejaan, Typo & EYD V")}
               </DialogTitle>
               <p className="text-xs text-neutral-500 mt-0.5">
-                Audit otomatis seluruh teks CV berdasarkan Pedoman Umum Ejaan Bahasa Indonesia & tata bahasa formal.
+                {t("grammar.modal_desc", "Audit otomatis seluruh teks CV berdasarkan Pedoman Umum Ejaan Bahasa Indonesia & tata bahasa formal.")}
               </p>
             </div>
           </div>
@@ -103,10 +105,10 @@ export default function GrammarCheckModal({
               </div>
               <div className="max-w-md mx-auto">
                 <h4 className="text-sm font-bold text-neutral-800">
-                  Periksa Kualitas Tata Bahasa CV Anda
+                  {t("grammar.ready_title", "Periksa Kualitas Tata Bahasa CV Anda")}
                 </h4>
                 <p className="text-xs text-neutral-500 mt-1 leading-relaxed">
-                  AI akan membaca nama, posisi, ringkasan profil, pengalaman kerja, pendidikan, dan proyek untuk memastikan tidak ada salah ketik (typo), kalimat rancu, atau istilah non-formal.
+                  {t("grammar.ready_desc", "AI akan membaca nama, posisi, ringkasan profil, pengalaman kerja, pendidikan, dan proyek untuk memastikan tidak ada salah ketik (typo), kalimat rancu, atau istilah non-formal.")}
                 </p>
               </div>
               <Button
@@ -114,7 +116,7 @@ export default function GrammarCheckModal({
                 className="gap-2 bg-purple-600 hover:bg-purple-700 text-white rounded-xl px-5 h-10 font-semibold text-xs shadow-xs"
               >
                 <Sparkles className="w-4 h-4" />
-                Mulai Pindai Sekarang
+                {t("grammar.start_btn", "Mulai Pindai Sekarang")}
               </Button>
             </div>
           )}
@@ -123,10 +125,10 @@ export default function GrammarCheckModal({
             <div className="text-center py-12 space-y-3">
               <Spinner className="w-8 h-8 text-purple-600 mx-auto" />
               <p className="text-sm font-semibold text-neutral-800">
-                Menganalisis seluruh konten CV...
+                {t("grammar.analyzing_title", "Menganalisis seluruh konten CV...")}
               </p>
               <p className="text-xs text-neutral-400">
-                Memeriksa ejaan EYD V, akurasi tanda baca, dan konsistensi kata kerja aktif.
+                {t("grammar.analyzing_desc", "Memeriksa ejaan EYD V, akurasi tanda baca, dan konsistensi kata kerja aktif.")}
               </p>
             </div>
           )}
@@ -138,7 +140,7 @@ export default function GrammarCheckModal({
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
                     <span className="text-xs font-bold uppercase tracking-wider text-neutral-500">
-                      Skor Kerapian Bahasa
+                      {t("grammar.score_label", "Skor Kerapian Bahasa")}
                     </span>
                     <span
                       className={`text-xs px-2 py-0.5 rounded-full font-bold ${
@@ -163,7 +165,7 @@ export default function GrammarCheckModal({
                   className="gap-1.5 text-xs h-8 rounded-lg shrink-0 border-neutral-200 text-neutral-700 hover:bg-neutral-100"
                 >
                   <RefreshCw className="w-3.5 h-3.5" />
-                  Pindai Ulang
+                  {t("grammar.rescan_btn", "Pindai Ulang")}
                 </Button>
               </div>
 
@@ -172,10 +174,10 @@ export default function GrammarCheckModal({
                 <div className="p-6 rounded-2xl border border-emerald-200 bg-emerald-50/50 text-center space-y-2">
                   <CheckCircle2 className="w-10 h-10 text-emerald-600 mx-auto" />
                   <h4 className="text-sm font-bold text-emerald-900">
-                    Dokumen Anda Sangat Rapi & Bebas Typo!
+                    {t("grammar.perfect_title", "Dokumen Anda Sangat Rapi & Bebas Typo!")}
                   </h4>
                   <p className="text-xs text-emerald-700 max-w-md mx-auto">
-                    Seluruh struktur kalimat, ejaan, tanda baca, dan istilah formal sudah sesuai dengan standar profesional rekrutmen.
+                    {t("grammar.perfect_desc", "Seluruh struktur kalimat, ejaan, tanda baca, dan istilah formal sudah sesuai dengan standar profesional rekrutmen.")}
                   </p>
                 </div>
               ) : (
@@ -183,9 +185,9 @@ export default function GrammarCheckModal({
                 <div className="space-y-3">
                   <div className="flex items-center justify-between text-xs text-neutral-500">
                     <span className="font-semibold text-neutral-700">
-                      Daftar Temuan ({result.issues.length})
+                      {t("grammar.findings_label", "Daftar Temuan")} ({result.issues.length})
                     </span>
-                    <span>Klik &apos;Salin&apos; untuk memakai koreksi</span>
+                    <span>{t("grammar.copy_hint", "Klik 'Salin' untuk memakai koreksi")}</span>
                   </div>
 
                   {result.issues.map((issue, idx) => (
@@ -206,12 +208,12 @@ export default function GrammarCheckModal({
                           {copiedIdx === idx ? (
                             <>
                               <Check className="w-3 h-3 text-emerald-600" />
-                              <span className="text-emerald-600 font-medium">Tersalin</span>
+                              <span className="text-emerald-600 font-medium">{t("actions.copied", "Tersalin")}</span>
                             </>
                           ) : (
                             <>
                               <Copy className="w-3 h-3" />
-                              <span>Salin</span>
+                              <span>{t("actions.copy", "Salin")}</span>
                             </>
                           )}
                         </Button>
@@ -221,7 +223,7 @@ export default function GrammarCheckModal({
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
                         <div className="p-2 rounded-lg bg-red-50/60 border border-red-100">
                           <span className="text-[10px] font-bold text-red-600 uppercase block mb-0.5">
-                            Sebelum:
+                            {t("grammar.before_label", "Sebelum:")}
                           </span>
                           <span className="text-red-950 line-through">
                             {issue.originalText}
@@ -229,7 +231,7 @@ export default function GrammarCheckModal({
                         </div>
                         <div className="p-2 rounded-lg bg-emerald-50/60 border border-emerald-100">
                           <span className="text-[10px] font-bold text-emerald-600 uppercase block mb-0.5">
-                            Saran Perbaikan:
+                            {t("grammar.suggestion_label", "Saran Perbaikan:")}
                           </span>
                           <span className="text-emerald-950 font-medium">
                             {issue.suggestedText}
@@ -258,7 +260,7 @@ export default function GrammarCheckModal({
             onClick={onClose}
             className="text-xs h-8 border-neutral-200 text-neutral-700 hover:bg-neutral-100 rounded-lg"
           >
-            Tutup
+            {t("actions.close", "Tutup")}
           </Button>
         </div>
       </DialogContent>

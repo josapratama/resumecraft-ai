@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { trpc } from "@/lib/trpc";
+import { useI18n } from "@/lib/i18n";
 import {
   Dialog,
   DialogContent,
@@ -29,27 +30,28 @@ export default function DuplicateCVModal({
   currentTitle = "CV Baru",
   currentTargetRole = "",
 }: DuplicateCVModalProps) {
+  const { t } = useI18n();
   const [, navigate] = useLocation();
-  const [newTitle, setNewTitle] = useState(`${currentTitle} (Varian Baru)`);
+  const [newTitle, setNewTitle] = useState(`${currentTitle} (${t("duplicate.new_variant_suffix", "Varian Baru")})`);
   const [targetRole, setTargetRole] = useState(currentTargetRole || "");
 
   const duplicateMutation = trpc.cv.duplicate.useMutation({
     onSuccess: (newCV: any) => {
-      toast.success("Varian CV baru berhasil dibuat!");
+      toast.success(t("duplicate.success_toast", "Varian CV baru berhasil dibuat!"));
       onClose();
       if (newCV && newCV.id) {
         navigate(`/cv/${newCV.id}`);
       }
     },
     onError: (err: any) => {
-      toast.error(err.message || "Gagal menduplikasi CV");
+      toast.error(err.message || t("duplicate.error_toast", "Gagal menduplikasi CV"));
     },
   });
 
   const handleDuplicate = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newTitle.trim()) {
-      toast.error("Nama varian CV tidak boleh kosong");
+      toast.error(t("duplicate.empty_title_error", "Nama varian CV tidak boleh kosong"));
       return;
     }
     duplicateMutation.mutate({
@@ -67,20 +69,22 @@ export default function DuplicateCVModal({
             <div className="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center">
               <Copy className="w-4 h-4" />
             </div>
-            <span>Duplikasi & Buat Varian CV Baru</span>
+            <span>{t("duplicate.modal_title", "Duplikasi & Buat Varian CV Baru")}</span>
           </DialogTitle>
           <p className="text-xs text-neutral-500 leading-relaxed">
-            Salin seluruh data CV ini (pengalaman, pendidikan, keahlian, sertifikasi) ke dokumen baru untuk disesuaikan dengan posisi lowongan lain.
+            {t("duplicate.modal_desc", "Salin seluruh data CV ini (pengalaman, pendidikan, keahlian, sertifikasi) ke dokumen baru untuk disesuaikan dengan posisi lowongan lain.")}
           </p>
         </DialogHeader>
 
         <form onSubmit={handleDuplicate} className="space-y-4 pt-2">
           <div>
-            <Label className="text-xs font-semibold text-neutral-700">Nama Dokumen CV Varian Baru *</Label>
+            <Label className="text-xs font-semibold text-neutral-700">
+              {t("duplicate.new_title_label", "Nama Dokumen CV Varian Baru *")}
+            </Label>
             <Input
               value={newTitle}
               onChange={e => setNewTitle(e.target.value)}
-              placeholder="Contoh: CV Irma Iryani - Guru Kimia"
+              placeholder={t("duplicate.new_title_ph", "Contoh: CV Irma Iryani - Guru Kimia")}
               className="mt-1 text-xs border-neutral-200 rounded-xl"
               autoFocus
               required
@@ -88,15 +92,17 @@ export default function DuplicateCVModal({
           </div>
 
           <div>
-            <Label className="text-xs font-semibold text-neutral-700">Target Posisi / Profesi Spesifik</Label>
+            <Label className="text-xs font-semibold text-neutral-700">
+              {t("duplicate.target_role_label", "Target Posisi / Profesi Spesifik")}
+            </Label>
             <Input
               value={targetRole}
               onChange={e => setTargetRole(e.target.value)}
-              placeholder="Contoh: Guru Kimia SMA / Pengajar Sains"
+              placeholder={t("duplicate.target_role_ph", "Contoh: Guru Kimia SMA / Pengajar Sains")}
               className="mt-1 text-xs border-neutral-200 rounded-xl"
             />
             <p className="text-[11px] text-neutral-400 mt-1">
-              Ditampilkan tepat di bawah nama pelamar pada header CV.
+              {t("duplicate.target_role_hint", "Ditampilkan tepat di bawah nama pelamar pada header CV.")}
             </p>
           </div>
 
@@ -109,7 +115,7 @@ export default function DuplicateCVModal({
               disabled={duplicateMutation.isPending}
               className="text-xs border-neutral-200 rounded-xl h-8"
             >
-              Batal
+              {t("actions.cancel", "Batal")}
             </Button>
             <Button
               type="submit"
@@ -120,12 +126,12 @@ export default function DuplicateCVModal({
               {duplicateMutation.isPending ? (
                 <>
                   <Spinner className="w-3.5 h-3.5" />
-                  <span>Menduplikasi...</span>
+                  <span>{t("duplicate.duplicating", "Menduplikasi...")}</span>
                 </>
               ) : (
                 <>
                   <Sparkles className="w-3.5 h-3.5" />
-                  <span>Buat Varian Sekarang</span>
+                  <span>{t("duplicate.submit_btn", "Buat Varian Sekarang")}</span>
                 </>
               )}
             </Button>

@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useLocation } from "wouter";
 import { trpc } from "@/lib/trpc";
+import { useI18n } from "@/lib/i18n";
 import { exportCVToPDF } from "@/lib/pdfExport";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -11,6 +12,7 @@ import type { FullCVData, TemplateId, PaperSize } from "@/types/cv";
 import { toast } from "sonner";
 
 export default function PublicCV() {
+  const { t } = useI18n();
   const params = useParams<{ slug: string }>();
   const [, navigate] = useLocation();
   const slug = params.slug || "";
@@ -41,9 +43,9 @@ export default function PublicCV() {
         `${data.cv.title || "resume"}.pdf`,
         paperSize
       );
-      toast.info("Select 'Save as PDF' in the print dialog to download.");
+      toast.info(t("public_cv.print_dialog_info", "Pilih 'Save as PDF' pada dialog cetak untuk mengunduh PDF."));
     } catch (err: any) {
-      toast.error(`Export failed: ${err.message || String(err)}`);
+      toast.error(`${t("public_cv.export_failed", "Export failed:")} ${err.message || String(err)}`);
     } finally {
       setIsExporting(false);
     }
@@ -53,7 +55,7 @@ export default function PublicCV() {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen bg-neutral-50 gap-3">
         <Spinner className="w-8 h-8 text-neutral-900" />
-        <p className="text-xs text-neutral-500 font-medium">Loading Candidate Resume...</p>
+        <p className="text-xs text-neutral-500 font-medium">{t("public_cv.loading", "Memuat Resume Kandidat...")}</p>
       </div>
     );
   }
@@ -65,12 +67,12 @@ export default function PublicCV() {
           <div className="w-12 h-12 bg-red-50 text-red-600 rounded-2xl flex items-center justify-center mx-auto font-bold text-xl">
             !
           </div>
-          <h2 className="text-lg font-bold text-neutral-900">Resume Not Found or Private</h2>
+          <h2 className="text-lg font-bold text-neutral-900">{t("public_cv.not_found_title", "Resume Tidak Ditemukan atau Privat")}</h2>
           <p className="text-xs text-neutral-600">
-            This resume is either private, has expired, or the shared link is incorrect.
+            {t("public_cv.not_found_desc", "Resume ini mungkin bersifat privat, telah kedaluwarsa, atau tautan yang dibagikan tidak tepat.")}
           </p>
           <Button onClick={() => navigate("/")} variant="outline" className="text-xs rounded-xl">
-            Go to ResumeCraft AI
+            {t("public_cv.back_home", "Ke Beranda ResumeCraft AI")}
           </Button>
         </div>
       </div>
@@ -96,12 +98,12 @@ export default function PublicCV() {
                 </h1>
                 <Badge variant="outline" className="text-[10px] py-0 px-1.5 border-emerald-300 text-emerald-700 bg-emerald-50 hidden sm:inline-flex items-center gap-1">
                   <CheckCircle className="w-3 h-3" />
-                  Verified Profile
+                  {t("public_cv.verified_badge", "Profil Terverifikasi")}
                 </Badge>
               </div>
               <p className="text-[11px] text-neutral-500 flex items-center gap-2 mt-0.5">
                 <span className="flex items-center gap-1 text-emerald-600 font-medium">
-                  <Globe className="w-3 h-3" /> Public Candidate Resume
+                  <Globe className="w-3 h-3" /> {t("public_cv.public_resume_label", "Public Candidate Resume")}
                 </span>
                 {cvData.personalInfo?.email && (
                   <span className="hidden md:inline text-neutral-400">
@@ -120,7 +122,7 @@ export default function PublicCV() {
               className="gap-1.5 bg-neutral-900 text-white hover:bg-neutral-800 rounded-xl text-xs font-semibold h-9 px-4 shadow-sm"
             >
               <Download className="w-3.5 h-3.5" />
-              <span>{isExporting ? "Exporting..." : "Download PDF"}</span>
+              <span>{isExporting ? t("actions.downloading", "Mengunduh...") : t("public_cv.download_pdf", "Unduh PDF")}</span>
             </Button>
           </div>
         </div>
@@ -140,7 +142,7 @@ export default function PublicCV() {
 
       {/* Footer */}
       <footer className="border-t border-neutral-200 py-6 text-center text-xs text-neutral-400 bg-white">
-        Crafted with <strong className="text-neutral-700">ResumeCraft AI</strong> • Candidate Verified Profile
+        Crafted with <strong className="text-neutral-700">ResumeCraft AI</strong> • {t("public_cv.candidate_verified", "Candidate Verified Profile")}
       </footer>
     </div>
   );

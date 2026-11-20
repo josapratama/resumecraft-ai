@@ -79,11 +79,11 @@ export default function WorkExperienceForm({
           : String(data.improvedText);
       setFormData(prev => ({ ...prev, description: improved }));
       setIsImprovingText(false);
-      toast.success("Description enhanced with AI!");
+      toast.success(t("experience.ai_enhanced", "Description enhanced with AI!"));
     },
     onError: () => {
       setIsImprovingText(false);
-      toast.error("Failed to improve description");
+      toast.error(t("experience.ai_failed", "Failed to improve description"));
     },
   });
 
@@ -95,10 +95,10 @@ export default function WorkExperienceForm({
       onDataChange?.(updated);
       resetForm();
       setIsDialogOpen(false);
-      toast.success("Work experience added");
+      toast.success(t("experience.added", "Work experience added"));
     },
     onError: () => {
-      toast.error("Failed to add work experience");
+      toast.error(t("experience.add_failed", "Failed to add work experience"));
     },
   });
 
@@ -111,17 +111,17 @@ export default function WorkExperienceForm({
       if ((data.options || []).length > 0) {
         setShowStarModal(true);
       } else {
-        toast.info("Tidak ada varian yang dihasilkan. Coba tambahkan rincian tugas Anda.");
+        toast.info(t("experience.no_star_variants", "Tidak ada varian yang dihasilkan. Coba tambahkan rincian tugas Anda."));
       }
     },
     onError: () => {
-      toast.error("Gagal menghasilkan formula STAR");
+      toast.error(t("experience.star_failed", "Gagal menghasilkan formula STAR"));
     },
   });
 
   const handleGenerateSTAR = () => {
     if (!formData.description.trim()) {
-      toast.error("Tuliskan deskripsi atau tugas pekerjaan terlebih dahulu");
+      toast.error(t("experience.write_desc_first", "Tuliskan deskripsi atau tugas pekerjaan terlebih dahulu"));
       return;
     }
     starMutation.mutate({
@@ -138,7 +138,7 @@ export default function WorkExperienceForm({
       return { ...prev, description: updated };
     });
     setShowStarModal(false);
-    toast.success("Poin STAR berhasil ditambahkan!");
+    toast.success(t("experience.star_applied", "Poin STAR berhasil ditambahkan!"));
   };
 
   const updateMutation = trpc.cv.workExperience.update.useMutation({
@@ -151,10 +151,10 @@ export default function WorkExperienceForm({
       onDataChange?.(updated);
       resetForm();
       setIsDialogOpen(false);
-      toast.success("Work experience updated");
+      toast.success(t("experience.updated", "Work experience updated"));
     },
     onError: () => {
-      toast.error("Failed to update work experience");
+      toast.error(t("experience.update_failed", "Failed to update work experience"));
     },
   });
 
@@ -165,17 +165,17 @@ export default function WorkExperienceForm({
       onDataChange?.(updated);
       resetForm();
       setIsDialogOpen(false);
-      toast.success("Work experience deleted");
+      toast.success(t("experience.deleted", "Work experience deleted"));
     },
     onError: () => {
-      toast.error("Failed to delete work experience");
+      toast.error(t("experience.delete_failed", "Failed to delete work experience"));
     },
   });
 
   const reorderMutation = trpc.cv.workExperience.reorder.useMutation({
     onSuccess: () => {},
     onError: () => {
-      toast.error("Failed to update order");
+      toast.error(t("experience.order_failed", "Failed to update order"));
       utils.cv.loadFull.invalidate();
     },
   });
@@ -202,7 +202,7 @@ export default function WorkExperienceForm({
 
   const handleSave = () => {
     if (!formData.jobTitle.trim() || !formData.company.trim()) {
-      toast.error("Job title and company are required");
+      toast.error(t("experience.required", "Job title and company are required"));
       return;
     }
     const payload = { ...formData, endDate: isCurrent ? "" : formData.endDate };
@@ -264,7 +264,7 @@ export default function WorkExperienceForm({
             <DialogContent className="border border-neutral-200 max-w-xl rounded-2xl max-h-[90vh] overflow-y-auto">
               <DialogHeader>
                 <DialogTitle className="text-base font-bold text-neutral-900">
-                  {editingId ? "Edit Work Experience" : "Add Work Experience"}
+                  {editingId ? t("experience.edit_title", "Edit Work Experience") : t("experience.add_title", "Add Work Experience")}
                 </DialogTitle>
               </DialogHeader>
 
@@ -302,14 +302,14 @@ export default function WorkExperienceForm({
                 {/* Location */}
                 <div>
                   <Label className="text-xs font-semibold text-neutral-600 uppercase tracking-wider">
-                    Location
+                    {t("experience.location_label", "Location")}
                   </Label>
                   <Input
                     value={formData.location}
                     onChange={e =>
                       setFormData({ ...formData, location: e.target.value })
                     }
-                    placeholder="e.g. San Francisco, CA (or Remote)"
+                    placeholder={t("experience.location_placeholder", "e.g. San Francisco, CA (or Remote)")}
                     className="mt-1.5 border-neutral-200 focus:border-neutral-900 rounded-xl"
                   />
                 </div>
@@ -368,7 +368,7 @@ export default function WorkExperienceForm({
                 <div>
                   <div className="flex items-center justify-between mb-1.5">
                     <Label className="text-xs font-semibold text-neutral-600 uppercase tracking-wider">
-                      Key Responsibilities & Achievements
+                      {t("experience.responsibilities_label", "Key Responsibilities & Achievements")}
                     </Label>
                     <div className="flex gap-1.5">
                       <Button
@@ -376,7 +376,7 @@ export default function WorkExperienceForm({
                         size="sm"
                         onClick={() => {
                           if (!formData.description.trim()) {
-                            toast.error("Write a description first before improving");
+                            toast.error(t("experience.write_desc_first", "Write a description first before improving"));
                             return;
                           }
                           setIsImprovingText(true);
@@ -396,7 +396,7 @@ export default function WorkExperienceForm({
                         ) : (
                           <Wand2 className="w-3 h-3 text-indigo-600" />
                         )}
-                        <span>Improve</span>
+                        <span>{t("experience.improve_btn", "Improve")}</span>
                       </Button>
                       <Button
                         type="button"
@@ -405,14 +405,14 @@ export default function WorkExperienceForm({
                         onClick={handleGenerateSTAR}
                         disabled={starMutation.isPending || !formData.description.trim()}
                         className="h-7 gap-1.5 text-xs border-purple-200 text-purple-700 bg-purple-50/70 hover:bg-purple-100 rounded-lg px-2"
-                        title="Ubah teks menjadi poin pencapaian berorientasi hasil (STAR method & metrics)"
+                        title={t("experience.star_tooltip", "Ubah teks menjadi poin pencapaian berorientasi hasil (STAR method & metrics)")}
                       >
                         {starMutation.isPending ? (
                           <Spinner className="w-3 h-3 text-purple-600" />
                         ) : (
                           <Sparkles className="w-3 h-3 text-purple-600" />
                         )}
-                        <span>Formula STAR</span>
+                        <span>{t("experience.star_btn", "Formula STAR")}</span>
                       </Button>
                       <AIAssistant
                         cvId={cvId}
@@ -438,14 +438,14 @@ export default function WorkExperienceForm({
                       <div className="flex items-center justify-between">
                         <span className="text-[11px] font-bold text-purple-900 uppercase tracking-wider flex items-center gap-1.5">
                           <Sparkles className="w-3.5 h-3.5 text-purple-600" />
-                          Pilih Poin Formula STAR:
+                          {t("experience.star_selector_title", "Pilih Poin Formula STAR:")}
                         </span>
                         <button
                           type="button"
                           onClick={() => setShowStarModal(false)}
                           className="text-[10px] text-purple-600 hover:text-purple-900"
                         >
-                          Tutup
+                          {t("experience.star_close", "Tutup")}
                         </button>
                       </div>
                       <div className="space-y-1.5">
@@ -462,7 +462,7 @@ export default function WorkExperienceForm({
                               {opt.text}
                             </p>
                             <span className="text-[10px] text-purple-600 font-semibold mt-1 inline-flex items-center gap-1 opacity-80 group-hover:opacity-100">
-                              <Check className="w-3 h-3" /> Klik untuk terapkan
+                              <Check className="w-3 h-3" /> {t("experience.star_click_apply", "Klik untuk terapkan")}
                             </span>
                           </div>
                         ))}
@@ -481,10 +481,10 @@ export default function WorkExperienceForm({
                     {isSaving ? (
                       <>
                         <Spinner className="w-4 h-4 mr-2" />
-                        Saving...
+                        {t("experience.saving_btn", "Saving...")}
                       </>
                     ) : (
-                      "Save Experience"
+                      t("experience.save_btn", "Save Experience")
                     )}
                   </Button>
 
@@ -498,21 +498,21 @@ export default function WorkExperienceForm({
                           disabled={deleteMutation.isPending}
                         >
                           <Trash2 className="w-3.5 h-3.5 mr-1" />
-                          Delete
+                          {t("experience.delete_btn", "Delete")}
                         </Button>
                       </AlertDialogTrigger>
                       <AlertDialogContent className="border border-neutral-200 rounded-2xl">
                         <AlertDialogHeader>
                           <AlertDialogTitle className="text-base font-bold text-neutral-900">
-                            Delete this experience?
+                            {t("experience.delete_title", "Delete this experience?")}
                           </AlertDialogTitle>
                           <AlertDialogDescription className="text-xs text-neutral-600">
-                            "{formData.jobTitle}" at {formData.company} will be permanently removed.
+                            "{formData.jobTitle}" at {formData.company} {t("experience.delete_desc", "will be permanently removed.")}
                           </AlertDialogDescription>
                         </AlertDialogHeader>
                         <div className="flex justify-end gap-2 pt-2">
                           <AlertDialogCancel className="border-neutral-200 text-xs font-semibold">
-                            Cancel
+                            {t("experience.cancel_btn", "Cancel")}
                           </AlertDialogCancel>
                           <AlertDialogAction
                             onClick={() =>
@@ -520,7 +520,7 @@ export default function WorkExperienceForm({
                             }
                             className="bg-red-600 hover:bg-red-700 text-white text-xs font-semibold"
                           >
-                            Delete
+                            {t("experience.delete_btn", "Delete")}
                           </AlertDialogAction>
                         </div>
                       </AlertDialogContent>
@@ -550,7 +550,7 @@ export default function WorkExperienceForm({
                         variant="outline"
                         className="text-[10px] py-0 px-1.5 border-emerald-300 text-emerald-700 bg-emerald-50 font-semibold"
                       >
-                        Current
+                        {t("experience.current_badge", "Current")}
                       </Badge>
                     )}
                   </div>
@@ -561,7 +561,7 @@ export default function WorkExperienceForm({
                   <div className="flex items-center gap-1.5 text-[11px] text-neutral-400 mt-1">
                     <Calendar className="w-3 h-3" />
                     <span>
-                      {fmtMonth(exp.startDate)} - {exp.endDate ? fmtMonth(exp.endDate) : "Present"}
+                      {fmtMonth(exp.startDate)} - {exp.endDate ? fmtMonth(exp.endDate) : t("experience.present_date", "Present")}
                     </span>
                   </div>
                 </div>
@@ -581,9 +581,9 @@ export default function WorkExperienceForm({
         ) : (
           <div className="text-center py-8 border border-dashed border-neutral-200 rounded-xl bg-neutral-50/50">
             <Briefcase className="w-8 h-8 text-neutral-300 mx-auto mb-2" />
-            <p className="text-xs font-bold text-neutral-700">No work experience added yet</p>
+            <p className="text-xs font-bold text-neutral-700">{t("experience.empty_title", "No work experience added yet")}</p>
             <p className="text-[11px] text-neutral-400 mt-0.5">
-              Add your past roles and achievements to boost your ATS match score.
+              {t("experience.empty_desc", "Add your past roles and achievements to boost your ATS match score.")}
             </p>
           </div>
         )}

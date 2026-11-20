@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useI18n } from "@/lib/i18n";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
 import {
@@ -43,21 +44,22 @@ export default function CoverLetterGrammarModal({
   fullLetterText,
   onApplyPolished,
 }: CoverLetterGrammarModalProps) {
+  const { t } = useI18n();
   const [result, setResult] = useState<GrammarResult | null>(null);
 
   const checkMutation = trpc.cvAI.checkCoverLetterGrammar.useMutation({
     onSuccess: (data: any) => {
       setResult(data as GrammarResult);
-      toast.success("Pemeriksaan EYD & etika surat selesai!");
+      toast.success(t("cl_grammar.toast_done", "Pemeriksaan EYD & etika surat selesai!"));
     },
     onError: (err: any) => {
-      toast.error(`Gagal memeriksa EYD: ${err.message}`);
+      toast.error(`${t("cl_grammar.toast_failed", "Gagal memeriksa EYD:")} ${err.message}`);
     },
   });
 
   const handleRunCheck = () => {
     if (!fullLetterText || fullLetterText.trim().length < 20) {
-      toast.error("Teks surat lamaran belum lengkap untuk diperiksa.");
+      toast.error(t("cl_grammar.toast_short", "Teks surat lamaran belum lengkap untuk diperiksa."));
       return;
     }
     checkMutation.mutate({ content: fullLetterText });
@@ -66,7 +68,7 @@ export default function CoverLetterGrammarModal({
   const handleApply = () => {
     if (!result?.polishedContent) return;
     onApplyPolished(result.polishedContent);
-    toast.success("Teks surat yang disempurnakan berhasil diterapkan!");
+    toast.success(t("cl_grammar.toast_applied", "Teks surat yang disempurnakan berhasil diterapkan!"));
     onClose();
   };
 
@@ -78,21 +80,20 @@ export default function CoverLetterGrammarModal({
             <div className="w-8 h-8 rounded-lg bg-purple-600 text-white flex items-center justify-center font-bold shadow-xs">
               <SpellCheck className="w-4 h-4" />
             </div>
-            <span>Pemeriksa EYD V & Etika Surat Lamaran Kerja</span>
+            <span>{t("cl_grammar.title", "Pemeriksa EYD V & Etika Surat Lamaran Kerja")}</span>
           </DialogTitle>
         </DialogHeader>
 
         <div className="space-y-4 pt-2">
           <p className="text-xs text-neutral-500 leading-relaxed">
-            AI memeriksa kesopanan salam, penghapusan kata mubazir (seperti <em>Kepada Yth.</em>),
-            kapitalisasi sapaan <em>Bapak/Ibu</em>, dan perbaikan ejaan baku formal sesuai standar PUEBI / EYD V.
+            {t("cl_grammar.subtitle", "AI memeriksa kesopanan salam, penghapusan kata mubazir (seperti Kepada Yth.), kapitalisasi sapaan Bapak/Ibu, dan perbaikan ejaan baku formal sesuai standar PUEBI / EYD V.")}
           </p>
 
           {!result && (
             <div className="p-4 bg-neutral-50 border border-neutral-200 rounded-xl space-y-3">
               <div className="flex items-center gap-2 text-xs font-semibold text-neutral-700">
                 <BookOpen className="w-4 h-4 text-purple-600" />
-                <span>Pratinjau Teks Surat yang Akan Diperiksa:</span>
+                <span>{t("cl_grammar.preview_label", "Pratinjau Teks Surat yang Akan Diperiksa:")}</span>
               </div>
               <div className="p-3 bg-white rounded-lg border border-neutral-200 text-xs text-neutral-600 max-h-40 overflow-y-auto leading-relaxed font-serif">
                 {fullLetterText.slice(0, 350)}...
@@ -104,11 +105,11 @@ export default function CoverLetterGrammarModal({
               >
                 {checkMutation.isPending ? (
                   <>
-                    <Spinner className="w-4 h-4" /> Memeriksa Kaidah EYD V & Etika Surat...
+                    <Spinner className="w-4 h-4" /> {t("cl_grammar.checking_btn", "Memeriksa Kaidah EYD V & Etika Surat...")}
                   </>
                 ) : (
                   <>
-                    <Sparkles className="w-4 h-4" /> Jalankan Pemeriksaan EYD Sekarang
+                    <Sparkles className="w-4 h-4" /> {t("cl_grammar.start_btn", "Jalankan Pemeriksaan EYD Sekarang")}
                   </>
                 )}
               </Button>
@@ -122,7 +123,7 @@ export default function CoverLetterGrammarModal({
                 <div>
                   <div className="flex items-center gap-2">
                     <span className="text-2xl font-black text-purple-900">{result.score}</span>
-                    <span className="text-xs text-purple-700 font-semibold">/ 100 Skor Kerapian Bahasa</span>
+                    <span className="text-xs text-purple-700 font-semibold">{t("cl_grammar.score_out_of", "/ 100 Skor Kerapian Bahasa")}</span>
                   </div>
                   <p className="text-xs font-bold text-purple-800 mt-0.5">{result.toneVerdict}</p>
                 </div>
@@ -132,7 +133,7 @@ export default function CoverLetterGrammarModal({
                   className="gap-1.5 bg-purple-600 hover:bg-purple-700 text-white text-xs font-semibold rounded-lg shadow-xs"
                 >
                   <Sparkles className="w-3.5 h-3.5" />
-                  <span>Terapkan Hasil Koreksi</span>
+                  <span>{t("cl_grammar.apply_btn", "Terapkan Hasil Koreksi")}</span>
                 </Button>
               </div>
 
@@ -140,7 +141,7 @@ export default function CoverLetterGrammarModal({
               {result.errors && result.errors.length > 0 ? (
                 <div className="space-y-2">
                   <h5 className="text-[11px] font-bold uppercase tracking-wider text-neutral-700">
-                    Catatan Koreksi ({result.errors.length} Temuan):
+                    {t("cl_grammar.findings_label", "Catatan Koreksi ({n} Temuan):").replace("{n}", String(result.errors.length))}
                   </h5>
                   <div className="space-y-2 max-h-60 overflow-y-auto pr-1">
                     {result.errors.map((err, idx) => (
@@ -162,14 +163,14 @@ export default function CoverLetterGrammarModal({
               ) : (
                 <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-xs text-emerald-800 flex items-center gap-2">
                   <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0" />
-                  <span>Luar biasa! Surat lamaran Anda sudah sangat baku, santun, dan sesuai kaidah EYD V.</span>
+                  <span>{t("cl_grammar.perfect_verdict", "Luar biasa! Surat lamaran Anda sudah sangat baku, santun, dan sesuai kaidah EYD V.")}</span>
                 </div>
               )}
 
               {/* Polished Preview */}
               <div>
                 <h5 className="text-[11px] font-bold uppercase tracking-wider text-neutral-700 mb-1.5">
-                  Versi Sempurna Siap Pakai:
+                  {t("cl_grammar.polished_label", "Versi Sempurna Siap Pakai:")}
                 </h5>
                 <div className="p-3.5 bg-white border border-neutral-200 rounded-xl text-xs text-neutral-700 leading-relaxed font-serif max-h-48 overflow-y-auto whitespace-pre-line">
                   {result.polishedContent}

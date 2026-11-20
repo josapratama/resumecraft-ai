@@ -76,10 +76,10 @@ export default function CustomSectionsForm({
       setSections(updated);
       onDataChange?.(updated);
       utils.cv.loadFull.invalidate({ cvId });
-      toast.success("Item added!");
+      toast.success(t("custom_section.item_added", "Item berhasil ditambahkan!"));
       resetForm();
     },
-    onError: () => toast.error("Failed to add item"),
+    onError: () => toast.error(t("custom_section.add_failed", "Gagal menambahkan item")),
   });
 
   const updateMutation = trpc.cv.customSections.update.useMutation({
@@ -90,10 +90,10 @@ export default function CustomSectionsForm({
       setSections(updated);
       onDataChange?.(updated);
       utils.cv.loadFull.invalidate({ cvId });
-      toast.success("Item updated!");
+      toast.success(t("custom_section.item_updated", "Item berhasil diperbarui!"));
       resetForm();
     },
-    onError: () => toast.error("Failed to update item"),
+    onError: () => toast.error(t("custom_section.update_failed", "Gagal memperbarui item")),
   });
 
   const deleteMutation = trpc.cv.customSections.delete.useMutation({
@@ -102,14 +102,14 @@ export default function CustomSectionsForm({
       setSections(updated);
       onDataChange?.(updated);
       utils.cv.loadFull.invalidate({ cvId });
-      toast.success("Item removed!");
+      toast.success(t("custom_section.item_removed", "Item berhasil dihapus!"));
     },
-    onError: () => toast.error("Failed to remove item"),
+    onError: () => toast.error(t("custom_section.remove_failed", "Gagal menghapus item")),
   });
 
   const reorderMutation = trpc.cv.customSections.reorder.useMutation({
     onError: () => {
-      toast.error("Failed to save order");
+      toast.error(t("custom_section.save_order_failed", "Gagal menyimpan urutan"));
       utils.cv.loadFull.invalidate({ cvId });
     },
   });
@@ -145,7 +145,7 @@ export default function CustomSectionsForm({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.title.trim()) {
-      toast.error("Title is required");
+      toast.error(t("custom_section.title_required", "Judul wajib diisi"));
       return;
     }
 
@@ -205,14 +205,14 @@ export default function CustomSectionsForm({
               <form onSubmit={handleSubmit} className="space-y-4 pt-1">
                 <div>
                   <Label htmlFor="category" className="text-xs font-semibold text-neutral-600 uppercase tracking-wider">
-                    Category
+                    {t("custom_section.category", "Kategori")}
                   </Label>
                   <Select
                     value={formData.category}
                     onValueChange={val => setFormData({ ...formData, category: val })}
                   >
                     <SelectTrigger id="category" className="mt-1.5 border-neutral-200 rounded-xl">
-                      <SelectValue placeholder="Select Category" />
+                      <SelectValue placeholder={t("custom_section.select_category", "Pilih Kategori")} />
                     </SelectTrigger>
                     <SelectContent className="rounded-xl border-neutral-200">
                       {CATEGORY_PRESETS.map(cat => (
@@ -226,11 +226,11 @@ export default function CustomSectionsForm({
 
                 <div>
                   <Label htmlFor="itemTitle" className="text-xs font-semibold text-neutral-600 uppercase tracking-wider">
-                    Title / Award / Role *
+                    {t("custom_section.field_title", "Judul / Penghargaan / Peran *")}
                   </Label>
                   <Input
                     id="itemTitle"
-                    placeholder="e.g. 1st Place National Hackathon or Volunteer Team Lead"
+                    placeholder={t("custom_section.title_placeholder", "cth. Juara 1 Hackathon Nasional atau Koordinator Tim Relawan")}
                     value={formData.title}
                     onChange={e => setFormData({ ...formData, title: e.target.value })}
                     className="mt-1.5 border-neutral-200 focus:border-neutral-900 rounded-xl"
@@ -241,11 +241,11 @@ export default function CustomSectionsForm({
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <Label htmlFor="itemSub" className="text-xs font-semibold text-neutral-600 uppercase tracking-wider">
-                      Issuer / Organization
+                      {t("custom_section.field_issuer", "Penyelenggara / Organisasi")}
                     </Label>
                     <Input
                       id="itemSub"
-                      placeholder="e.g. Google, IEEE, Red Cross"
+                      placeholder={t("custom_section.issuer_placeholder", "cth. Google, IEEE, Palang Merah")}
                       value={formData.subtitle}
                       onChange={e =>
                         setFormData({ ...formData, subtitle: e.target.value })
@@ -255,11 +255,11 @@ export default function CustomSectionsForm({
                   </div>
                   <div>
                     <Label htmlFor="itemDate" className="text-xs font-semibold text-neutral-600 uppercase tracking-wider">
-                      Date / Year
+                      {t("custom_section.field_date", "Bulan / Tahun")}
                     </Label>
                     <Input
                       id="itemDate"
-                      placeholder="e.g. 2024, Aug 2023"
+                      placeholder={t("custom_section.date_placeholder", "cth. 2024, Agu 2023")}
                       value={formData.date}
                       onChange={e =>
                         setFormData({ ...formData, date: e.target.value })
@@ -271,11 +271,11 @@ export default function CustomSectionsForm({
 
                 <div>
                   <Label htmlFor="itemDesc" className="text-xs font-semibold text-neutral-600 uppercase tracking-wider">
-                    Description / Impact (Optional)
+                    {t("custom_section.field_desc", "Deskripsi / Dampak (Opsional)")}
                   </Label>
                   <Textarea
                     id="itemDesc"
-                    placeholder="Briefly describe the significance, competition scale, or key contributions..."
+                    placeholder={t("custom_section.desc_placeholder", "Jelaskan secara singkat signifikansi, skala kompetisi, atau kontribusi utama Anda...")}
                     value={formData.description}
                     onChange={e =>
                       setFormData({ ...formData, description: e.target.value })
@@ -292,7 +292,7 @@ export default function CustomSectionsForm({
                     disabled={isSaving}
                     className="border-neutral-200 text-xs rounded-xl"
                   >
-                    Cancel
+                    {t("common.cancel", "Batal")}
                   </Button>
                   <Button
                     type="submit"
@@ -300,7 +300,7 @@ export default function CustomSectionsForm({
                     className="flex-1 bg-neutral-900 text-white hover:bg-neutral-800 rounded-xl font-semibold text-xs h-9"
                   >
                     {isSaving && <Spinner className="w-4 h-4 mr-2" />}
-                    {editingId ? "Save Changes" : "Add Item"}
+                    {editingId ? t("common.save_changes", "Simpan Perubahan") : t("custom_section.add_btn", "Tambah Item")}
                   </Button>
                 </div>
               </form>
@@ -367,21 +367,21 @@ export default function CustomSectionsForm({
                     <AlertDialogContent className="border border-neutral-200 rounded-2xl">
                       <AlertDialogHeader>
                         <AlertDialogTitle className="text-base font-bold text-neutral-900">
-                          Delete Section Item?
+                          {t("custom_section.delete_title", "Hapus Item Bagian?")}
                         </AlertDialogTitle>
                         <AlertDialogDescription className="text-xs text-neutral-600">
-                          Are you sure you want to remove "{item.title}"?
+                          {t("custom_section.delete_confirm", 'Apakah Anda yakin ingin menghapus "{title}"?').replace("{title}", item.title)}
                         </AlertDialogDescription>
                       </AlertDialogHeader>
                       <div className="flex justify-end gap-2 pt-2">
                         <AlertDialogCancel className="border-neutral-200 text-xs font-semibold">
-                          Cancel
+                          {t("common.cancel", "Batal")}
                         </AlertDialogCancel>
                         <AlertDialogAction
                           onClick={() => deleteMutation.mutate({ id: item.id })}
                           className="bg-red-600 hover:bg-red-700 text-white text-xs font-semibold"
                         >
-                          Delete
+                          {t("common.delete", "Hapus")}
                         </AlertDialogAction>
                       </div>
                     </AlertDialogContent>

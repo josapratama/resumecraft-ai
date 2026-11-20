@@ -56,6 +56,8 @@ import {
   MoreHorizontal,
   Download,
   ChevronDown,
+  Eye,
+  MessageSquare,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -184,10 +186,27 @@ export default function CoverLetterWorkspace({
   const [language, setLanguage] = useState<"id" | "en">("id");
   const [zoomLevel, setZoomLevel] = useState<number>(() => {
     if (typeof window !== "undefined" && window.innerWidth < 640) {
-      return Math.max(42, Math.floor(((window.innerWidth - 32) / 794) * 100));
+      return Math.max(30, Math.floor(((window.innerWidth - 24) / 794) * 100));
     }
     return 85;
   });
+
+  // Automatically recalculate responsive fit for mobile on viewport change
+  useEffect(() => {
+    const updateZoom = () => {
+      if (typeof window !== "undefined") {
+        if (window.innerWidth < 640) {
+          const padding = 20;
+          const available = Math.max(240, window.innerWidth - padding);
+          const calculated = Math.min(100, Math.max(30, Math.floor((available / 794) * 100)));
+          setZoomLevel(calculated);
+        }
+      }
+    };
+    updateZoom();
+    window.addEventListener("resize", updateZoom);
+    return () => window.removeEventListener("resize", updateZoom);
+  }, []);
   const [copied, setCopied] = useState(false);
   const [copiedSubject, setCopiedSubject] = useState(false);
   const [isSignatureModalOpen, setIsSignatureModalOpen] = useState(false);
@@ -407,6 +426,27 @@ ${letterData.fullName}`;
     setTimeout(() => setCopied(false), 2000);
   };
 
+  const handleCopyWhatsAppText = () => {
+    const waText = `Halo ${letterData.recipientName || "Bapak/Ibu Tim Rekrutmen"} ${letterData.companyName ? `di ${letterData.companyName}` : ""},
+
+Perkenalkan saya *${letterData.fullName}*. Sehubungan dengan informasi lowongan kerja untuk posisi *${letterData.jobTitle || letterData.targetRole}*, melalui pesan ini saya bermaksud untuk mengajukan lamaran kerja.
+
+*Detail Singkat Pelamar:*
+• Posisi yang Dilamar: ${letterData.jobTitle || letterData.targetRole}
+• Email: ${letterData.email}
+• No. WhatsApp: ${letterData.phone}
+${letterData.portfolioUrl ? `• Portofolio / LinkedIn: ${letterData.portfolioUrl}\n` : ""}
+Bersama pesan ini, saya lampirkan Curriculum Vitae (CV) dan Surat Lamaran Kerja resmi saya untuk bahan pertimbangan.
+
+Besar harapan saya untuk dapat berdiskusi lebih lanjut dalam tahap wawancara. Terima kasih banyak atas waktu dan perhatian Bapak/Ibu.
+
+Hormat saya,
+*${letterData.fullName}*`;
+
+    navigator.clipboard.writeText(waText);
+    toast.success("Format WhatsApp HRD berhasil disalin! Siap langsung ditempel di chat WA.");
+  };
+
   const handleCopySubject = () => {
     navigator.clipboard.writeText(letterData.subject);
     setCopiedSubject(true);
@@ -495,7 +535,7 @@ ${letterData.fullName}`;
     COVER_LETTER_TEMPLATE_COMPONENTS["formal-bumn"];
 
   return (
-    <div className="fixed inset-0 z-50 w-screen h-screen overflow-hidden bg-slate-900/80 backdrop-blur-sm flex flex-col select-none animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-50 w-full h-[100dvh] overflow-hidden bg-slate-900/80 backdrop-blur-sm flex flex-col select-none animate-in fade-in duration-200">
       <style>{`
         .custom-cl-scrollbar::-webkit-scrollbar {
           width: 5px;
@@ -630,7 +670,33 @@ ${letterData.fullName}`;
                   <p className="font-semibold text-slate-900">
                     {copied ? t("actions.copied", "Tersalin!") : t("cover_letter.btn_copy", "Salin Teks Surat")}
                   </p>
-                  <p className="text-[10px] text-slate-500">Salin naskah ke clipboard</p>
+                  <p className="text-[10px] text-slate-500">Salin naskah lengkap ke clipboard</p>
+                </div>
+              </DropdownMenuItem>
+
+              <DropdownMenuItem
+                onClick={handleCopyWhatsAppText}
+                className="gap-2.5 py-2 px-2.5 rounded-lg cursor-pointer text-xs hover:bg-emerald-50"
+              >
+                <div className="w-6 h-6 rounded-md bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0 font-bold text-xs">
+                  WA
+                </div>
+                <div>
+                  <p className="font-semibold text-emerald-950">Salin Format WhatsApp HRD</p>
+                  <p className="text-[10px] text-emerald-700">Teks pengantar ramah & terstruktur untuk WA</p>
+                </div>
+              </DropdownMenuItem>
+
+              <DropdownMenuItem
+                onClick={handleCopySubject}
+                className="gap-2.5 py-2 px-2.5 rounded-lg cursor-pointer text-xs"
+              >
+                <div className="w-6 h-6 rounded-md bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0">
+                  <FileText className="w-3.5 h-3.5" />
+                </div>
+                <div>
+                  <p className="font-semibold text-slate-900">Salin Subjek Email</p>
+                  <p className="text-[10px] text-slate-500">{letterData.subject}</p>
                 </div>
               </DropdownMenuItem>
 
@@ -811,11 +877,9 @@ ${letterData.fullName}`;
             {activeTab === "templates" && (
               <div className="space-y-3">
                 <div>
-                  <h3 className="font-bold text-slate-900 text-sm">
-                    {t("cover_letter.tpl_heading", "Pilih Format Surat Lamaran")}
-                  </h3>
+                  <h3 className="font-bold text-slate-900 text-sm">Pilih Format Surat Lamaran</h3>
                   <p className="text-slate-500 text-[11px] mt-0.5">
-                    {t("cover_letter.tpl_subheading", "Tersedia 25 format baku profesional sesuai industri, instansi, dan tingkat pengalaman Anda.")}
+                    Tersedia 25 format baku profesional sesuai industri, instansi, dan tingkat pengalaman Anda.
                   </p>
                 </div>
 
@@ -824,7 +888,7 @@ ${letterData.fullName}`;
                   <div className="relative">
                     <Search className="w-3.5 h-3.5 absolute left-2.5 top-2.5 text-slate-400" />
                     <Input
-                      placeholder={t("cover_letter.search_ph", "Cari format (BUMN, Medis, Tech, Legal, dll)...")}
+                      placeholder="Cari format (BUMN, Medis, Tech, Legal, dll)..."
                       value={templateSearch}
                       onChange={e => setTemplateSearch(e.target.value)}
                       className="pl-8 text-xs border-slate-200 h-8 rounded-lg"
@@ -861,10 +925,14 @@ ${letterData.fullName}`;
                             : "border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50/60"
                           }`}
                       >
-                        <div className="flex items-center justify-between gap-2 mb-1">
-                          <span className="font-bold text-slate-900 text-xs">
-                            {tpl.name}
-                          </span>
+                        {/* Mini visual indicator header */}
+                        <div className="flex items-center justify-between gap-1.5 mb-1.5 pb-1 border-b border-slate-100">
+                          <div className="flex items-center gap-1.5">
+                            <span className={`w-2 h-2 rounded-full ${isSelected ? "bg-blue-600" : "bg-slate-300"}`} />
+                            <span className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">
+                              {tpl.category}
+                            </span>
+                          </div>
                           <span
                             className={`text-[9px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider ${isSelected
                                 ? "bg-blue-600 text-white"
@@ -874,11 +942,17 @@ ${letterData.fullName}`;
                             {tpl.badge}
                           </span>
                         </div>
+
+                        <div className="flex items-center justify-between gap-2 mb-1">
+                          <span className="font-bold text-slate-900 text-xs">
+                            {tpl.name}
+                          </span>
+                        </div>
                         <p className="text-slate-600 text-[11px] leading-relaxed line-clamp-2">
                           {tpl.description}
                         </p>
                         <p className="text-[10px] text-blue-700 font-medium mt-1.5">
-                          Cocok untuk: {tpl.recommendedFor}
+                          {t("cover_letter.suitable_for", "Cocok untuk")}: {tpl.recommendedFor}
                         </p>
                       </div>
                     );
@@ -898,17 +972,15 @@ ${letterData.fullName}`;
                 <div className="p-3 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100 rounded-xl">
                   <div className="flex items-center gap-2 font-bold text-blue-900 text-xs">
                     <Sparkles className="w-4 h-4 text-blue-600" />
-                    <span>{t("cover_letter.ai_box_title", "AI Career Matchmaker")}</span>
+                    <span>AI Career Matchmaker</span>
                   </div>
                   <p className="text-[11px] text-blue-800/80 mt-1 leading-relaxed">
-                    {t("cover_letter.ai_box_desc", "AI akan membaca pengalaman & keahlian dari CV Anda untuk menulis surat lamaran yang sangat persuasif dan relevan dengan lowongan target.")}
+                    AI akan membaca pengalaman & keahlian dari CV Anda untuk menulis surat lamaran yang sangat persuasif dan relevan dengan lowongan target.
                   </p>
                 </div>
 
                 <div>
-                  <Label className="text-xs font-semibold text-slate-700">
-                    {t("cover_letter.company_label", "Perusahaan yang Dituju *")}
-                  </Label>
+                  <Label className="text-xs font-semibold text-slate-700">Perusahaan yang Dituju *</Label>
                   <Input
                     value={companyName}
                     onChange={e => setCompanyName(e.target.value)}
@@ -918,9 +990,7 @@ ${letterData.fullName}`;
                 </div>
 
                 <div>
-                  <Label className="text-xs font-semibold text-slate-700">
-                    {t("cover_letter.role_label", "Posisi / Role yang Dilamar *")}
-                  </Label>
+                  <Label className="text-xs font-semibold text-slate-700">Posisi / Role yang Dilamar *</Label>
                   <Input
                     value={targetJob}
                     onChange={e => setTargetJob(e.target.value)}
@@ -931,9 +1001,7 @@ ${letterData.fullName}`;
 
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <Label className="text-xs font-semibold text-slate-700">
-                      {t("cover_letter.recipient_label", "Nama Penerima")}
-                    </Label>
+                    <Label className="text-xs font-semibold text-slate-700">Nama Penerima</Label>
                     <Input
                       value={recipientName}
                       onChange={e => setRecipientName(e.target.value)}
@@ -942,9 +1010,7 @@ ${letterData.fullName}`;
                     />
                   </div>
                   <div>
-                    <Label className="text-xs font-semibold text-slate-700">
-                      {t("cover_letter.title_label", "Jabatan Penerima")}
-                    </Label>
+                    <Label className="text-xs font-semibold text-slate-700">Jabatan Penerima</Label>
                     <Input
                       value={recipientTitle}
                       onChange={e => setRecipientTitle(e.target.value)}
@@ -955,9 +1021,7 @@ ${letterData.fullName}`;
                 </div>
 
                 <div>
-                  <Label className="text-xs font-semibold text-slate-700">
-                    {t("cover_letter.address_label", "Alamat Perusahaan (Opsional)")}
-                  </Label>
+                  <Label className="text-xs font-semibold text-slate-700">Alamat Perusahaan (Opsional)</Label>
                   <Input
                     value={companyAddress}
                     onChange={e => setCompanyAddress(e.target.value)}
@@ -967,9 +1031,7 @@ ${letterData.fullName}`;
                 </div>
 
                 <div>
-                  <Label className="text-xs font-semibold text-slate-700">
-                    {t("cover_letter.tone_label", "Gaya Bahasa & Nada (Tone of Voice)")}
-                  </Label>
+                  <Label className="text-xs font-semibold text-slate-700">Gaya Bahasa & Nada (Tone of Voice)</Label>
                   <Select value={tone} onValueChange={(val: any) => setTone(val)}>
                     <SelectTrigger className="mt-1 border-slate-200 rounded-lg text-xs">
                       <SelectValue placeholder="Pilih nada" />
@@ -988,7 +1050,7 @@ ${letterData.fullName}`;
 
                 <div>
                   <Label className="text-xs font-semibold text-slate-700">
-                    {t("cover_letter.job_desc_label", "Syarat Lowongan / Job Description (Opsional)")}
+                    Syarat Lowongan / Job Description (Opsional)
                   </Label>
                   <Textarea
                     value={jobDescription}
@@ -1220,18 +1282,16 @@ ${letterData.fullName}`;
                 {activeTab === "style" && (
                   <div className="space-y-4">
                     <div>
-                      <h3 className="font-bold text-slate-900 text-sm">
-                        {t("cover_letter.style_heading", "Kustomisasi Dokumen & Desain")}
-                      </h3>
+                      <h3 className="font-bold text-slate-900 text-sm">Kustomisasi Dokumen & Desain</h3>
                       <p className="text-slate-500 text-[11px] mt-0.5">
-                        {t("cover_letter.style_subheading", "Sesuaikan elemen surat (judul, nomor dinas, tabel), tipografi, dan warna.")}
+                        Sesuaikan elemen surat (judul, nomor dinas, tabel), tipografi, dan warna.
                       </p>
                     </div>
 
                     {/* Struktur Khusus Surat (Custom Header & Element Toggles) */}
                     <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl space-y-3">
                       <span className="text-xs font-bold text-slate-800 uppercase tracking-wider block">
-                        {t("cover_letter.elements_group", "Elemen & Tata Letak Surat")}
+                        Elemen & Tata Letak Surat
                       </span>
 
                       {/* Toggle Judul SURAT LAMARAN KERJA */}
@@ -1246,16 +1306,16 @@ ${letterData.fullName}`;
                             className="w-4 h-4 rounded text-blue-600 focus:ring-blue-500 border-slate-300 cursor-pointer"
                           />
                           <span className="text-xs font-semibold text-slate-800">
-                            {t("cover_letter.title_toggle", "Judul Dokumen di Tengah Atas")}
+                            Judul Dokumen di Tengah Atas
                           </span>
                         </label>
                         {letterData.includeLetterTitle !== false && (
                           <Input
-                            value={letterData.letterTitle || t("cover_letter.title_placeholder", "SURAT LAMARAN KERJA")}
+                            value={letterData.letterTitle || "SURAT LAMARAN KERJA"}
                             onChange={e =>
                               setLetterData({ ...letterData, letterTitle: e.target.value })
                             }
-                            placeholder={t("cover_letter.title_placeholder", "SURAT LAMARAN KERJA")}
+                            placeholder="SURAT LAMARAN KERJA"
                             className="h-7 text-xs border-slate-200 bg-white rounded-md mt-1"
                           />
                         )}
@@ -1274,10 +1334,10 @@ ${letterData.fullName}`;
                           />
                           <div>
                             <span className="text-xs font-semibold text-slate-800 block">
-                              {t("cover_letter.ref_no_toggle", "Tampilkan Nomor Surat Kedinasan (Nomor : ...)")}
+                              Tampilkan Nomor Surat Kedinasan (Nomor : ...)
                             </span>
                             <span className="text-[10px] text-slate-500 leading-tight block">
-                              {t("cover_letter.ref_no_hint", "Nonaktifkan (OFF) untuk pelamar umum perseorangan. Hanya aktifkan bila instansi memerlukan penomoran arsip.")}
+                              Nonaktifkan (OFF) untuk pelamar umum perseorangan. Hanya aktifkan bila instansi memerlukan penomoran arsip.
                             </span>
                           </div>
                         </label>
@@ -1306,10 +1366,10 @@ ${letterData.fullName}`;
                           />
                           <div>
                             <span className="text-xs font-semibold text-slate-800 block">
-                              {t("cover_letter.attachment_toggle", 'Tampilkan Baris "Lampiran" di Header Atas')}
+                              Tampilkan Baris "Lampiran" di Header Atas
                             </span>
                             <span className="text-[10px] text-slate-500 leading-tight block">
-                              {t("cover_letter.attachment_hint", 'Menambahkan "Lampiran : 1 (Satu) Berkas Lengkap" tepat di bawah Perihal.')}
+                              Menambahkan "Lampiran : 1 (Satu) Berkas Lengkap" tepat di bawah Perihal.
                             </span>
                           </div>
                         </label>
@@ -1328,10 +1388,10 @@ ${letterData.fullName}`;
                           />
                           <div>
                             <span className="text-xs font-semibold text-slate-800 block">
-                              {t("cover_letter.biodata_toggle", "Tampilkan Tabel Biodata Ringkas")}
+                              Tampilkan Tabel Biodata Ringkas
                             </span>
                             <span className="text-[10px] text-slate-500 leading-tight block">
-                              {t("cover_letter.biodata_hint", "Menampilkan tabel Nama, Pendidikan, Domisili, dan No. HP di tengah surat.")}
+                              Menampilkan tabel Nama, Pendidikan, Domisili, dan No. HP di tengah surat.
                             </span>
                           </div>
                         </label>
@@ -1339,9 +1399,7 @@ ${letterData.fullName}`;
                     </div>
 
                     <div>
-                      <Label className="text-xs font-semibold text-slate-700 mb-2 block">
-                        {t("cover_letter.accent_color", "Warna Aksen")}
-                      </Label>
+                      <Label className="text-xs font-semibold text-slate-700 mb-2 block">Warna Aksen</Label>
                       <div className="flex flex-wrap gap-2.5">
                         {ACCENT_COLORS.map(c => {
                           const isSelected = letterData.accentColor === c.value;
@@ -1364,9 +1422,7 @@ ${letterData.fullName}`;
                     </div>
 
                     <div>
-                      <Label className="text-xs font-semibold text-slate-700 mb-1.5 block">
-                        {t("cover_letter.font_family", "Keluarga Font (Tipografi)")}
-                      </Label>
+                      <Label className="text-xs font-semibold text-slate-700 mb-1.5 block">Keluarga Font (Tipografi)</Label>
                       <Select
                         value={letterData.fontFamily}
                         onValueChange={val => setLetterData({ ...letterData, fontFamily: val })}
@@ -1397,12 +1453,8 @@ ${letterData.fullName}`;
                     <div className="pt-2 border-t border-slate-100 space-y-2">
                       <div className="flex items-center justify-between">
                         <div>
-                          <p className="font-semibold text-slate-900 text-xs">
-                            {t("cover_letter.digital_signature", "Tanda Tangan Digital")}
-                          </p>
-                          <p className="text-[11px] text-slate-500">
-                            {t("cover_letter.signature_desc", "Tampilkan tanda tangan di atas nama")}
-                          </p>
+                          <p className="font-semibold text-slate-900 text-xs">Tanda Tangan Digital</p>
+                          <p className="text-[11px] text-slate-500">Tampilkan tanda tangan di atas nama</p>
                         </div>
                         <input
                           type="checkbox"
@@ -1528,23 +1580,83 @@ ${letterData.fullName}`;
             </div>
           </div>
 
-          {/* Scaled A4 Sheet Container */}
+          {/* Scaled A4 Sheet Container with layout boundary bounding box */}
           <div
-            className="transition-all duration-200 ease-out origin-top flex justify-center w-full pb-16"
+            className="flex items-start justify-center transition-all duration-200 ease-out pb-16"
             style={{
-              transform: `scale(${zoomLevel / 100})`,
-              transformOrigin: "top center",
-              marginBottom: `${(zoomLevel - 100) * 8}px`,
+              width: `${Math.ceil(794 * (zoomLevel / 100))}px`,
+              minHeight: `${Math.ceil(1123 * (zoomLevel / 100))}px`,
             }}
           >
             <div
-              id="cover-letter-preview-root"
-              className="w-full max-w-[794px] min-h-[1123px] bg-white rounded-md shadow-xl border border-slate-200/80 relative"
+              className="origin-top-left transition-transform duration-200 ease-out"
+              style={{
+                width: "794px",
+                transform: `scale(${zoomLevel / 100})`,
+              }}
             >
-              <ActiveTemplateComponent data={letterData} />
+              <div
+                id="cover-letter-preview-root"
+                className="w-[794px] min-h-[1123px] bg-white rounded-md shadow-xl border border-slate-200/80 relative"
+              >
+                <ActiveTemplateComponent data={letterData} />
+              </div>
             </div>
           </div>
         </main>
+      </div>
+
+      {/* Mobile Sticky Floating Navigation & Quick Action Bar */}
+      <div className="md:hidden fixed bottom-4 left-0 right-0 z-40 px-4 flex justify-center pointer-events-none">
+        <div className="pointer-events-auto bg-slate-900/95 backdrop-blur-md text-white border border-slate-700/80 shadow-2xl rounded-full p-1.5 flex items-center gap-2">
+          {mobileTab === "editor" ? (
+            <button
+              type="button"
+              onClick={() => {
+                setMobileTab("preview");
+                window.scrollTo({ top: 0, behavior: "smooth" });
+              }}
+              className="flex items-center gap-1.5 px-3.5 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-full text-xs font-bold shadow-md transition-all active:scale-95 cursor-pointer"
+            >
+              <Eye className="w-3.5 h-3.5" />
+              <span>{t("cover_letter.btn_preview_mobile", "Lihat Surat A4")}</span>
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={() => {
+                setMobileTab("editor");
+                window.scrollTo({ top: 0, behavior: "smooth" });
+              }}
+              className="flex items-center gap-1.5 px-3.5 py-2 bg-white hover:bg-slate-100 text-slate-900 rounded-full text-xs font-bold shadow-md transition-all active:scale-95 cursor-pointer"
+            >
+              <Edit3 className="w-3.5 h-3.5" />
+              <span>{t("cover_letter.btn_edit_mobile", "Sunting Surat")}</span>
+            </button>
+          )}
+
+          {/* Quick PDF Download */}
+          <button
+            type="button"
+            onClick={handleExportPDF}
+            className="flex items-center gap-1.5 px-3 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-full text-xs font-bold shadow-md transition-all active:scale-95 cursor-pointer"
+            title="Download PDF Surat Lamaran"
+          >
+            <Download className="w-3.5 h-3.5" />
+            <span>PDF</span>
+          </button>
+
+          {/* Quick WhatsApp Pitch Copy */}
+          <button
+            type="button"
+            onClick={handleCopyWhatsAppText}
+            className="flex items-center gap-1.5 px-3 py-2 bg-emerald-700/90 hover:bg-emerald-600 text-white rounded-full text-xs font-bold shadow-md transition-all active:scale-95 cursor-pointer"
+            title="Salin Format WhatsApp HRD"
+          >
+            <MessageSquare className="w-3.5 h-3.5" />
+            <span>WA</span>
+          </button>
+        </div>
       </div>
 
       {/* Interactive Digital Signature Drawing / Upload Modal */}

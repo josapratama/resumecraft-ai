@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { useParams, useLocation } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { exportCVToPDF } from "@/lib/pdfExport";
@@ -190,6 +190,13 @@ export default function CVEditor() {
   // Responsive mobile/tablet view switcher: "editor" | "preview" | "chat"
   const [mobileTab, setMobileTab] = useState<"editor" | "preview" | "chat">("editor");
 
+  const handleSetMobileTab = (tab: "editor" | "preview" | "chat") => {
+    setMobileTab(tab);
+    if (typeof window !== "undefined") {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
+
   // Career AI and utility modals
   const [showATSModal, setShowATSModal] = useState(false);
   const [showCoverLetterModal, setShowCoverLetterModal] = useState(false);
@@ -219,6 +226,38 @@ export default function CVEditor() {
 
   // Only user/assistant messages — system prompt is injected server-side
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
+
+  // Section custom ordering state
+  const [sectionOrder, setSectionOrder] = useState<string[]>(() => {
+    try {
+      const saved = localStorage.getItem(`resumecraft_order_${cvIdNum}`);
+      if (saved) return JSON.parse(saved);
+    } catch {}
+    return SECTIONS.map(s => s.id);
+  });
+
+  const orderedSections = useMemo(() => {
+    return sectionOrder
+      .map(id => SECTIONS.find(s => s.id === id))
+      .filter((s): s is (typeof SECTIONS)[0] => Boolean(s));
+  }, [sectionOrder]);
+
+  const moveSection = (id: string, dir: -1 | 1) => {
+    setSectionOrder(prev => {
+      const idx = prev.indexOf(id);
+      if (idx === -1) return prev;
+      const target = idx + dir;
+      if (target < 0 || target >= prev.length) return prev;
+      const copy = [...prev];
+      const [item] = copy.splice(idx, 1);
+      copy.splice(target, 0, item);
+      try {
+        localStorage.setItem(`resumecraft_order_${cvIdNum}`, JSON.stringify(copy));
+      } catch {}
+      toast.success("Urutan bagian CV diperbarui!");
+      return copy;
+    });
+  };
 
   // Inline title editing
   const [isEditingTitle, setIsEditingTitle] = useState(false);
@@ -309,6 +348,25 @@ export default function CVEditor() {
       paperSize: newSize,
     });
     toast.success(`Ukuran kertas disimpan: ${newSize.toUpperCase()}`);
+  };
+
+  const handleQuickExportPDF = async () => {
+    if (!cvData) return;
+    try {
+      setIsExporting(true);
+      await exportCVToPDF(
+        "cv-preview-content",
+        `${cvData.cv.title || "resume"}.pdf`,
+        paperSize
+      );
+      toast.info("Pilih 'Save as PDF' pada dialog cetak untuk mengunduh PDF.", {
+        duration: 5000,
+      });
+    } catch (err: any) {
+      toast.error(`Export PDF gagal: ${err.message || String(err)}`);
+    } finally {
+      setIsExporting(false);
+    }
   };
 
   // Callback passed to forms so they can push updated data to preview
@@ -982,36 +1040,38 @@ export default function CVEditor() {
 
           {/* Mobile / Tablet Document Switcher & View Switcher */}
           <div className="lg:hidden mt-2 pt-2 border-t border-neutral-100 flex flex-col gap-1.5">
-            {/* Quick Document Navigation Strip for Mobile */}
-            <div className="flex items-center justify-between bg-blue-50/70 border border-blue-200/60 px-2.5 py-1.5 rounded-xl text-xs">
-              <div className="flex items-center gap-1.5 text-blue-900 font-bold truncate">
-                <FileText className="w-3.5 h-3.5 text-blue-600 shrink-0" />
-                <span className="truncate">{t("doc_switcher.doc_cv_label", "Dokumen: CV")}</span>
+            {/* Quick Document Navigation Strip for Mobile - only show on editor tab to avoid cluttering preview */}
+            {mobileTab === "editor" && (
+              <div className="flex items-center justify-between bg-blue-50/70 border border-blue-200/60 px-2.5 py-1.5 rounded-xl text-xs">
+                <div className="flex items-center gap-1.5 text-blue-900 font-bold truncate">
+                  <FileText className="w-3.5 h-3.5 text-blue-600 shrink-0" />
+                  <span className="truncate">{t("doc_switcher.doc_cv_label", "Dokumen: CV")}</span>
+                </div>
+                <div className="flex items-center gap-1.5 shrink-0">
+                  <button
+                    type="button"
+                    onClick={() => setShowCoverLetterModal(true)}
+                    className="px-2.5 py-1 bg-white hover:bg-purple-50 text-purple-700 border border-purple-200 rounded-lg text-[11px] font-bold shadow-2xs flex items-center gap-1 transition-colors"
+                  >
+                    <FileCode2 className="w-3 h-3 text-purple-600 shrink-0" />
+                    <span>{t("doc_switcher.cover_letter_short", "Surat Lamaran")}</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setShowEmailDraftModal(true)}
+                    className="px-2 py-1 bg-white hover:bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-lg text-[11px] font-bold shadow-2xs flex items-center gap-1 transition-colors"
+                  >
+                    <Mail className="w-3 h-3 text-emerald-600 shrink-0" />
+                    <span>{t("doc_switcher.email_short", "Email")}</span>
+                  </button>
+                </div>
               </div>
-              <div className="flex items-center gap-1.5 shrink-0">
-                <button
-                  type="button"
-                  onClick={() => setShowCoverLetterModal(true)}
-                  className="px-2.5 py-1 bg-white hover:bg-purple-50 text-purple-700 border border-purple-200 rounded-lg text-[11px] font-bold shadow-2xs flex items-center gap-1 transition-colors"
-                >
-                  <FileCode2 className="w-3 h-3 text-purple-600 shrink-0" />
-                  <span>{t("doc_switcher.cover_letter_short", "Surat Lamaran")}</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setShowEmailDraftModal(true)}
-                  className="px-2 py-1 bg-white hover:bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-lg text-[11px] font-bold shadow-2xs flex items-center gap-1 transition-colors"
-                >
-                  <Mail className="w-3 h-3 text-emerald-600 shrink-0" />
-                  <span>{t("doc_switcher.email_short", "Email")}</span>
-                </button>
-              </div>
-            </div>
+            )}
 
             {/* Segmented View Switcher */}
             <div className="flex items-center justify-center gap-1.5 bg-neutral-100/70 p-1 rounded-xl">
               <button
-                onClick={() => setMobileTab("editor")}
+                onClick={() => handleSetMobileTab("editor")}
                 className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-xs font-bold rounded-lg transition-all ${
                   mobileTab === "editor"
                     ? "bg-white text-neutral-900 shadow-sm"
@@ -1023,7 +1083,7 @@ export default function CVEditor() {
               </button>
 
               <button
-                onClick={() => setMobileTab("preview")}
+                onClick={() => handleSetMobileTab("preview")}
                 className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-xs font-bold rounded-lg transition-all ${
                   mobileTab === "preview"
                     ? "bg-white text-neutral-900 shadow-sm"
@@ -1035,7 +1095,7 @@ export default function CVEditor() {
               </button>
 
               <button
-                onClick={() => setMobileTab("chat")}
+                onClick={() => handleSetMobileTab("chat")}
                 className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-xs font-bold rounded-lg transition-all ${
                   mobileTab === "chat"
                     ? "bg-indigo-600 text-white shadow-sm"
@@ -1073,37 +1133,74 @@ export default function CVEditor() {
                 : "lg:col-span-7 xl:col-span-7"
               }`}
           >
-            {/* Section Horizontal Pill Selector with Counts */}
+            {/* Section Horizontal Pill Selector with Counts and Reorder */}
             <div className="mb-5 overflow-x-auto pb-1.5 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
               <div className="flex items-center gap-1.5 min-w-max p-1 bg-neutral-100/90 border border-neutral-200/70 rounded-xl shadow-2xs">
-                {SECTIONS.map(section => {
+                {orderedSections.map((section: (typeof SECTIONS)[0], idx: number) => {
                   const Icon = section.icon;
                   const count = sectionCounts[section.id] || 0;
                   const isActive = activeSection === section.id;
                   const tabKey = section.id === "certifications" ? "certs" : section.id;
                   const sectionLabel = t(`tabs.${tabKey}`, section.shortLabel);
                   return (
-                    <button
+                    <div
                       key={section.id}
-                      onClick={() => setActiveSection(section.id)}
-                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${isActive
-                        ? "bg-white text-neutral-900 shadow-xs font-semibold"
-                        : "text-neutral-600 hover:text-neutral-900 hover:bg-white/50"
-                        }`}
+                      className={`inline-flex items-center rounded-lg transition-all ${
+                        isActive
+                          ? "bg-white text-neutral-900 shadow-xs font-semibold"
+                          : "text-neutral-600 hover:text-neutral-900 hover:bg-white/50"
+                      }`}
                     >
-                      <Icon className={`w-3.5 h-3.5 ${isActive ? "text-red-600" : "text-neutral-500"}`} />
-                      <span>{sectionLabel}</span>
-                      {count > 0 && (
-                        <span
-                          className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${isActive
-                            ? "bg-neutral-100 text-neutral-900"
-                            : "bg-neutral-300/70 text-neutral-700"
+                      <button
+                        type="button"
+                        onClick={() => setActiveSection(section.id)}
+                        className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium cursor-pointer"
+                      >
+                        <Icon className={`w-3.5 h-3.5 ${isActive ? "text-red-600" : "text-neutral-500"}`} />
+                        <span>{sectionLabel}</span>
+                        {count > 0 && (
+                          <span
+                            className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${
+                              isActive
+                                ? "bg-neutral-100 text-neutral-900"
+                                : "bg-neutral-300/70 text-neutral-700"
                             }`}
-                        >
-                          {count}
-                        </span>
+                          >
+                            {count}
+                          </span>
+                        )}
+                      </button>
+
+                      {/* Mini reorder control for active section */}
+                      {isActive && (
+                        <div className="flex items-center pr-1.5 gap-0.5 border-l border-neutral-200/80 ml-0.5">
+                          <button
+                            type="button"
+                            disabled={idx === 0}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              moveSection(section.id, -1);
+                            }}
+                            className="p-1 hover:bg-neutral-100 rounded text-neutral-400 hover:text-neutral-800 disabled:opacity-20 text-[9px] leading-none"
+                            title="Geser urutan ke kiri"
+                          >
+                            ◀
+                          </button>
+                          <button
+                            type="button"
+                            disabled={idx === orderedSections.length - 1}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              moveSection(section.id, 1);
+                            }}
+                            className="p-1 hover:bg-neutral-100 rounded text-neutral-400 hover:text-neutral-800 disabled:opacity-20 text-[9px] leading-none"
+                            title="Geser urutan ke kanan"
+                          >
+                            ▶
+                          </button>
+                        </div>
                       )}
-                    </button>
+                    </div>
                   );
                 })}
               </div>
@@ -1253,7 +1350,7 @@ export default function CVEditor() {
                 : "lg:col-span-5 xl:col-span-5"
               }`}
           >
-            <div className="sticky top-20">
+            <div className="lg:sticky lg:top-20">
               <div id="cv-preview-content">
                 <CVPreview
                   template={template}
@@ -1395,6 +1492,41 @@ export default function CVEditor() {
         currentTitle={cvData.cv.title || "CV"}
         currentTargetRole={cvData.cv.targetRole}
       />
+
+      {/* Mobile Sticky Floating Navigation & Quick Action Bar */}
+      <div className="lg:hidden fixed bottom-4 left-0 right-0 z-40 px-4 flex justify-center pointer-events-none">
+        <div className="pointer-events-auto bg-neutral-900/90 backdrop-blur-md text-white border border-neutral-700/80 shadow-2xl rounded-full p-1.5 flex items-center gap-2">
+          {mobileTab === "editor" ? (
+            <button
+              type="button"
+              onClick={() => handleSetMobileTab("preview")}
+              className="flex items-center gap-1.5 px-3.5 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-full text-xs font-bold shadow-md transition-all active:scale-95 cursor-pointer"
+            >
+              <Eye className="w-3.5 h-3.5" />
+              <span>{t("topbar.tab_preview", "Lihat Pratinjau")}</span>
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={() => handleSetMobileTab("editor")}
+              className="flex items-center gap-1.5 px-3.5 py-2 bg-white hover:bg-neutral-100 text-neutral-900 rounded-full text-xs font-bold shadow-md transition-all active:scale-95 cursor-pointer"
+            >
+              <Pencil className="w-3.5 h-3.5 text-red-600" />
+              <span>{t("topbar.tab_form", "Sunting Formulir")}</span>
+            </button>
+          )}
+
+          <button
+            type="button"
+            onClick={handleQuickExportPDF}
+            disabled={isExporting}
+            className="flex items-center gap-1.5 px-3.5 py-2 bg-neutral-800 hover:bg-neutral-700 text-neutral-200 rounded-full text-xs font-semibold transition-all active:scale-95 border border-neutral-700 cursor-pointer"
+          >
+            <Download className="w-3.5 h-3.5 text-blue-400" />
+            <span>{isExporting ? t("status.saving", "Menyiapkan...") : t("topbar.download", "Unduh PDF")}</span>
+          </button>
+        </div>
+      </div>
     </div>
   );
 }

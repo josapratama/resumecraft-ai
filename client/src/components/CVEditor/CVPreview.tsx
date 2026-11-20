@@ -120,9 +120,11 @@ export default function CVPreview({
 
     const updateFit = () => {
       if (!containerRef.current) return;
-      const containerWidth = containerRef.current.clientWidth - 32; // 32px padding
-      if (containerWidth < targetWidthPx) {
-        const calculated = Math.max(45, Math.floor((containerWidth / targetWidthPx) * 100));
+      const containerWidth = containerRef.current.clientWidth;
+      const padding = containerWidth < 500 ? 16 : 32;
+      const availableWidth = Math.max(260, containerWidth - padding);
+      if (availableWidth < targetWidthPx) {
+        const calculated = Math.max(30, Math.floor((availableWidth / targetWidthPx) * 100));
         setZoom(calculated);
       } else {
         setZoom(100);
@@ -141,7 +143,7 @@ export default function CVPreview({
 
   const handleZoomOut = () => {
     setIsAutoFit(false);
-    setZoom(prev => Math.max(40, prev - 10));
+    setZoom(prev => Math.max(30, prev - 10));
   };
 
   const handleResetZoom = () => {
@@ -152,8 +154,10 @@ export default function CVPreview({
   const handleFitScreen = () => {
     setIsAutoFit(true);
     if (!containerRef.current) return;
-    const containerWidth = containerRef.current.clientWidth - 32;
-    const calculated = Math.min(100, Math.max(45, Math.floor((containerWidth / targetWidthPx) * 100)));
+    const containerWidth = containerRef.current.clientWidth;
+    const padding = containerWidth < 500 ? 16 : 32;
+    const availableWidth = Math.max(260, containerWidth - padding);
+    const calculated = Math.min(100, Math.max(30, Math.floor((availableWidth / targetWidthPx) * 100)));
     setZoom(calculated);
   };
 
@@ -295,14 +299,18 @@ export default function CVPreview({
             <ZoomIn className="w-3.5 h-3.5" />
           </Button>
 
-          <div className="w-px h-3.5 bg-slate-700 mx-1 hidden sm:block" />
+          <div className="w-px h-3.5 bg-slate-700 mx-1" />
 
           <Button
             size="sm"
             variant="ghost"
             onClick={handleFitScreen}
-            className="h-6 px-2 text-[10px] gap-1 text-slate-300 hover:text-white hover:bg-slate-800 rounded-md hidden sm:inline-flex"
-            title="Fit to Screen"
+            className={`h-6 px-2 text-[10px] gap-1 rounded-md transition-all ${
+              isAutoFit
+                ? "bg-blue-600 text-white font-bold"
+                : "text-slate-300 hover:text-white hover:bg-slate-800"
+            }`}
+            title="Fit to Screen (Paskan ke Layar)"
           >
             <Maximize2 className="w-3 h-3" />
             <span>Fit</span>
@@ -313,32 +321,36 @@ export default function CVPreview({
       {/* Document Preview Container with Content-Aware Scaling */}
       <div
         ref={containerRef}
-        className="bg-neutral-200/60 cv-scroll-wrapper overflow-auto flex items-start justify-center p-3 sm:p-5"
-        style={{
-          maxHeight: "calc(100vh - 210px)",
-          minHeight: "480px",
-        }}
+        className="bg-neutral-200/60 cv-scroll-wrapper overflow-auto flex items-start justify-center p-1 sm:p-4 min-h-[440px] max-h-none lg:max-h-[calc(100vh-140px)]"
       >
+        {/* Layout boundary matches visual scaled size so NO horizontal overflow happens on mobile */}
         <div
-          className="transition-transform duration-150 origin-top"
+          className="relative transition-all duration-150 flex items-start justify-center"
           style={{
-            transform: `scale(${zoom / 100})`,
-            marginBottom: zoom < 100 ? `-${(100 - zoom) * 9}px` : "0px",
+            width: `${Math.ceil(targetWidthPx * (zoom / 100))}px`,
+            height: `${Math.ceil(docHeight * (zoom / 100))}px`,
           }}
         >
-          {/* Document Root with Paper Size */}
           <div
-            ref={templateRef}
-            className={`cv-template-root relative bg-white shadow-2xl mx-auto rounded-xs overflow-hidden ${
-              isOnePageMode ? "cv-one-page-compact" : ""
-            }`}
+            className="transition-transform duration-150 origin-top-left"
             style={{
+              transform: `scale(${zoom / 100})`,
               width: `${targetWidthPx}px`,
-              minHeight: `${targetHeightPx}px`,
-              wordBreak: "break-word",
-              overflowWrap: "break-word",
             }}
           >
+            {/* Document Root with Paper Size */}
+            <div
+              ref={templateRef}
+              className={`cv-template-root relative bg-white shadow-2xl mx-auto rounded-xs overflow-hidden ${
+                isOnePageMode ? "cv-one-page-compact" : ""
+              }`}
+              style={{
+                width: `${targetWidthPx}px`,
+                minHeight: `${targetHeightPx}px`,
+                wordBreak: "break-word",
+                overflowWrap: "break-word",
+              }}
+            >
             {/* Visual Page-Break Guide (Visible in Studio Preview, Hidden on Print) */}
             {showPageBreakGuide && docHeight > targetHeightPx + 15 && (
               <div
@@ -369,6 +381,7 @@ export default function CVPreview({
           </div>
         </div>
       </div>
-    </Card>
+    </div>
+  </Card>
   );
 }

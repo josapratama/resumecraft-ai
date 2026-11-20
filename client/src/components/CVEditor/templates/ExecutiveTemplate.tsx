@@ -4,17 +4,29 @@ import { formatEducationTitle } from "@/lib/cvFormatters";
  * Authoritative, C-suite feel.
  */
 import type { FullCVData } from "@/types/cv";
-import { groupSkills, TechChips, LanguagesDisplay, CustomSectionsDisplay, TargetRoleDisplay, TemplateQRCode } from "./_shared";
+import {
+  groupSkills,
+  TechChips,
+  LanguagesDisplay,
+  CustomSectionsDisplay,
+  TargetRoleDisplay,
+  TemplateQRCode,
+  resolveFontFamily,
+  resolveAccentColor,
+} from "./_shared";
 
 export default function ExecutiveTemplate({ cvData }: { cvData: FullCVData }) {
   const grouped = groupSkills(cvData.skills);
+  const fontFamily = resolveFontFamily(cvData, "'Georgia', serif");
+  const accent = resolveAccentColor(cvData, "#0a1628");
+
   return (
     <div
       className="bg-white min-h-screen font-sans"
-      style={{ fontFamily: "'Georgia', serif" }}
+      style={{ fontFamily }}
     >
-      {/* Navy header */}
-      <div className="bg-[#0a1628] px-10 py-8 text-white">
+      {/* Executive header */}
+      <div className="px-10 py-8 text-white" style={{ backgroundColor: accent }}>
         <div className="flex items-end justify-between">
           <div>
             <h1 className="text-3xl font-bold tracking-tight">

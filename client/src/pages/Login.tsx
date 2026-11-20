@@ -3,10 +3,21 @@ import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card } from "@/components/ui/card";
 import { toast } from "sonner";
 import { trpc } from "@/lib/trpc";
-import { Sparkles, User, Lock, ArrowRight, CheckCircle2, Shield } from "lucide-react";
+import {
+  Sparkles,
+  User,
+  Lock,
+  ArrowRight,
+  CheckCircle2,
+  Shield,
+  FileCheck2,
+  FileText,
+  Zap,
+  Award,
+  ChevronLeft,
+} from "lucide-react";
 import { Spinner } from "@/components/ui/spinner";
 
 type Mode = "login" | "register";
@@ -51,24 +62,22 @@ export default function Login() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Client-side validation
     if (!username.trim() || !password.trim()) {
-      toast.error("Username and password are required");
+      toast.error("Username dan password wajib diisi");
       return;
     }
     if (username.trim().length < 3) {
-      toast.error("Username must be at least 3 characters");
+      toast.error("Username minimal 3 karakter");
       return;
     }
     if (password.length < 6) {
-      toast.error("Password must be at least 6 characters");
+      toast.error("Password minimal 6 karakter");
       return;
     }
 
     setLoading(true);
     try {
-      const endpoint =
-        mode === "login" ? "/api/auth/login" : "/api/auth/register";
+      const endpoint = mode === "login" ? "/api/auth/login" : "/api/auth/register";
       const body: Record<string, string> = {
         username: username.trim(),
         password,
@@ -85,15 +94,19 @@ export default function Login() {
       const data = await res.json();
 
       if (!res.ok) {
-        toast.error(data.error ?? "Authentication failed");
+        toast.error(data.error ?? "Autentikasi gagal. Silakan periksa kembali data Anda.");
         return;
       }
 
       await utils.auth.me.invalidate();
-      toast.success(mode === "login" ? "Welcome back to ResumeCraft AI!" : "Account created successfully!");
+      toast.success(
+        mode === "login"
+          ? "Selamat datang kembali di ResumeCraft AI!"
+          : "Akun berhasil dibuat! Selamat datang di Studio CV."
+      );
       navigate("/");
     } catch {
-      toast.error("Network error. Please try again.");
+      toast.error("Terjadi kendala jaringan. Silakan coba sesaat lagi.");
     } finally {
       setLoading(false);
     }
@@ -107,170 +120,301 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-neutral-50 flex items-center justify-center p-4 sm:p-6">
-      <div className="w-full max-w-md space-y-6">
-        {/* Brand Header */}
-        <div className="text-center space-y-2">
-          <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-red-600 via-rose-500 to-amber-500 mx-auto flex items-center justify-center shadow-md">
-            <Sparkles className="w-6 h-6 text-white" />
-          </div>
-          <h1 className="text-2xl font-black text-neutral-900 tracking-tight">
-            ResumeCraft <span className="text-red-600">AI</span>
-          </h1>
-          <p className="text-xs text-neutral-500">
-            {mode === "login"
-              ? "Sign in to manage and download your resumes"
-              : "Create an account to start crafting your ATS-friendly resume"}
-          </p>
-        </div>
+    <div className="min-h-screen bg-neutral-950 text-neutral-100 flex flex-col justify-center lg:p-0">
+      <div className="min-h-screen flex flex-col lg:flex-row w-full">
+        {/* Left Pane: Branding & Value Showcase (Desktop) */}
+        <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-neutral-900 via-neutral-950 to-neutral-900 border-r border-neutral-800/80 p-12 xl:p-16 flex-col justify-between relative overflow-hidden">
+          {/* Subtle glow background */}
+          <div className="absolute -top-32 -left-32 w-96 h-96 bg-red-600/15 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute -bottom-32 -right-32 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
 
-        {/* Auth Card */}
-        <Card className="p-6 sm:p-8 border border-neutral-200 bg-white rounded-2xl shadow-sm">
-          {/* Mode Switcher Tabs */}
-          <div className="flex p-1 bg-neutral-100 rounded-xl mb-6">
+          {/* Top Brand */}
+          <div className="relative z-10">
             <button
-              type="button"
-              onClick={() => switchMode("login")}
-              className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all ${mode === "login"
-                  ? "bg-white text-neutral-900 shadow-xs"
-                  : "text-neutral-500 hover:text-neutral-800"
-                }`}
+              onClick={() => navigate("/")}
+              className="inline-flex items-center gap-2 text-xs font-medium text-neutral-400 hover:text-white transition-colors mb-8 group"
             >
-              Sign In
+              <ChevronLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+              Kembali ke Beranda
             </button>
-            <button
-              type="button"
-              onClick={() => switchMode("register")}
-              className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all ${mode === "register"
-                  ? "bg-white text-neutral-900 shadow-xs"
-                  : "text-neutral-500 hover:text-neutral-800"
-                }`}
-            >
-              Register
-            </button>
-          </div>
 
-          {authHubConfig?.enabled && (
-            <div className="space-y-3 mb-5">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={handleAuthHubLogin}
-                className="w-full flex items-center justify-center gap-2 border-neutral-200 hover:bg-neutral-50 text-neutral-800 font-semibold py-2.5 h-11 rounded-xl transition-all shadow-xs"
-              >
-                <Shield className="w-4 h-4 text-amber-500 flex-shrink-0" />
-                <span>Masuk via AuthHub SSO (YubiKey PIN)</span>
-              </Button>
-
-              <div className="relative flex items-center justify-center pt-2">
-                <div className="border-t border-neutral-200 w-full" />
-                <span className="bg-white px-3 text-[11px] uppercase tracking-wider text-neutral-400 font-medium">
-                  atau login lokal
+            <div className="flex items-center gap-3">
+              <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-red-600 via-rose-500 to-amber-500 flex items-center justify-center shadow-lg shadow-red-500/20">
+                <Sparkles className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <span className="text-xl font-black text-white tracking-tight">
+                  ResumeCraft <span className="text-red-500">AI</span>
                 </span>
-                <div className="border-t border-neutral-200 w-full" />
+                <span className="block text-[11px] text-neutral-400 font-medium">
+                  Studio Pembuat CV & Dokumen Karir Standar ATS
+                </span>
               </div>
             </div>
-          )}
+          </div>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {mode === "register" && (
-              <div>
-                <Label className="text-xs font-semibold text-neutral-600 uppercase tracking-wider">
-                  Full Name
-                </Label>
-                <div className="relative mt-1.5">
-                  <User className="w-4 h-4 text-neutral-400 absolute left-3 top-1/2 -translate-y-1/2" />
-                  <Input
-                    value={name}
-                    onChange={e => setName(e.target.value)}
-                    placeholder="John Doe"
-                    className="pl-9 border-neutral-200 focus:border-neutral-900 rounded-xl"
-                    autoComplete="name"
-                  />
+          {/* Middle: Feature Highlights */}
+          <div className="relative z-10 space-y-6 my-auto py-8">
+            <div className="inline-flex items-center gap-2 bg-red-950/60 border border-red-800/50 rounded-full px-3 py-1">
+              <Award className="w-3.5 h-3.5 text-red-400" />
+              <span className="text-xs font-semibold text-red-300">
+                Standar Lolos Screening HRD & ATS Indonesia & Global
+              </span>
+            </div>
+
+            <h2 className="text-3xl xl:text-4xl font-black text-white leading-tight">
+              Tingkatkan Peluang Panggilan Wawancara Kerja Anda hingga{" "}
+              <span className="bg-gradient-to-r from-red-400 via-rose-400 to-amber-400 bg-clip-text text-transparent">
+                3.8x Lebih Tinggi.
+              </span>
+            </h2>
+
+            <p className="text-sm text-neutral-400 leading-relaxed max-w-lg">
+              ResumeCraft AI merancang format resume profesional yang mudah dibaca oleh software sistem ATS maupun HRD. Dilengkapi optimasi kata kunci AI, generator surat lamaran kerja, serta draf email siap kirim.
+            </p>
+
+            <div className="grid grid-cols-2 gap-3.5 pt-2">
+              <div className="p-3.5 bg-neutral-900/80 border border-neutral-800 rounded-xl space-y-1">
+                <div className="flex items-center gap-2 text-red-400 text-xs font-bold">
+                  <FileText className="w-4 h-4" />
+                  <span>29 Template ATS</span>
+                </div>
+                <p className="text-[11px] text-neutral-400">
+                  Format A4 & Letter presisi dengan visual page-break cetak.
+                </p>
+              </div>
+
+              <div className="p-3.5 bg-neutral-900/80 border border-neutral-800 rounded-xl space-y-1">
+                <div className="flex items-center gap-2 text-amber-400 text-xs font-bold">
+                  <Zap className="w-4 h-4" />
+                  <span>Formula STAR AI</span>
+                </div>
+                <p className="text-[11px] text-neutral-400">
+                  Ubah poin pengalaman biasa menjadi pencapaian berdampak tinggi.
+                </p>
+              </div>
+
+              <div className="p-3.5 bg-neutral-900/80 border border-neutral-800 rounded-xl space-y-1">
+                <div className="flex items-center gap-2 text-emerald-400 text-xs font-bold">
+                  <FileCheck2 className="w-4 h-4" />
+                  <span>Surat Lamaran Kerja</span>
+                </div>
+                <p className="text-[11px] text-neutral-400">
+                  25 format surat lamaran otomatis tersinkronisasi dari data CV.
+                </p>
+              </div>
+
+              <div className="p-3.5 bg-neutral-900/80 border border-neutral-800 rounded-xl space-y-1">
+                <div className="flex items-center gap-2 text-blue-400 text-xs font-bold">
+                  <Shield className="w-4 h-4" />
+                  <span>Bebas Watermark</span>
+                </div>
+                <p className="text-[11px] text-neutral-400">
+                  Ekspor PDF & Word (.docx) jernih 100% tanpa watermark.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Bottom Quote */}
+          <div className="relative z-10 pt-6 border-t border-neutral-800/80 flex items-center justify-between text-xs text-neutral-500">
+            <span>© {new Date().getFullYear()} ResumeCraft AI</span>
+            <span>Didukung AuthHub SSO & AI Architecture</span>
+          </div>
+        </div>
+
+        {/* Right Pane: Auth Card Form */}
+        <div className="flex-1 bg-white text-neutral-900 flex flex-col justify-center px-6 sm:px-12 xl:px-16 py-10 min-h-screen">
+          <div className="max-w-md w-full mx-auto space-y-6">
+            {/* Mobile Header Link */}
+            <div className="flex lg:hidden items-center justify-between pb-2 border-b border-neutral-100">
+              <button
+                onClick={() => navigate("/")}
+                className="inline-flex items-center gap-1.5 text-xs font-semibold text-neutral-600 hover:text-neutral-900"
+              >
+                <ChevronLeft className="w-4 h-4" />
+                Kembali ke Beranda
+              </button>
+              <div className="flex items-center gap-2">
+                <div className="w-6 h-6 rounded-lg bg-red-600 flex items-center justify-center">
+                  <Sparkles className="w-3.5 h-3.5 text-white" />
+                </div>
+                <span className="font-bold text-sm tracking-tight">ResumeCraft AI</span>
+              </div>
+            </div>
+
+            {/* Title & Subtitle */}
+            <div className="space-y-1.5">
+              <h1 className="text-2xl sm:text-3xl font-black text-neutral-900 tracking-tight">
+                {mode === "login" ? "Masuk ke Studio CV" : "Mulai Akun Baru"}
+              </h1>
+              <p className="text-xs sm:text-sm text-neutral-500">
+                {mode === "login"
+                  ? "Akses seluruh resume, surat lamaran kerja, dan template ATS Anda."
+                  : "Buat akun dalam beberapa detik untuk mendesain CV profesional gratis."}
+              </p>
+            </div>
+
+            {/* Mode Switcher Pills */}
+            <div className="flex p-1 bg-neutral-100 rounded-xl">
+              <button
+                type="button"
+                onClick={() => switchMode("login")}
+                className={`flex-1 py-2 text-xs sm:text-sm font-bold rounded-lg transition-all ${
+                  mode === "login"
+                    ? "bg-white text-neutral-900 shadow-sm"
+                    : "text-neutral-500 hover:text-neutral-800"
+                }`}
+              >
+                Masuk (Sign In)
+              </button>
+              <button
+                type="button"
+                onClick={() => switchMode("register")}
+                className={`flex-1 py-2 text-xs sm:text-sm font-bold rounded-lg transition-all ${
+                  mode === "register"
+                    ? "bg-white text-neutral-900 shadow-sm"
+                    : "text-neutral-500 hover:text-neutral-800"
+                }`}
+              >
+                Daftar Akun
+              </button>
+            </div>
+
+            {/* AuthHub SSO Button (if enabled) */}
+            {authHubConfig?.enabled && (
+              <div className="space-y-3">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={handleAuthHubLogin}
+                  className="w-full flex items-center justify-center gap-2.5 border-neutral-300 hover:bg-neutral-50 text-neutral-800 font-semibold py-2.5 h-11 rounded-xl transition-all shadow-xs"
+                >
+                  <Shield className="w-4 h-4 text-amber-500 flex-shrink-0" />
+                  <span className="text-xs sm:text-sm">Masuk via AuthHub SSO (YubiKey / PIN)</span>
+                </Button>
+
+                <div className="relative flex items-center justify-center pt-1">
+                  <div className="border-t border-neutral-200 w-full" />
+                  <span className="bg-white px-3 text-[11px] uppercase tracking-wider text-neutral-400 font-semibold">
+                    atau akun lokal
+                  </span>
+                  <div className="border-t border-neutral-200 w-full" />
                 </div>
               </div>
             )}
 
-            <div>
-              <Label className="text-xs font-semibold text-neutral-600 uppercase tracking-wider">
-                Username
-              </Label>
-              <div className="relative mt-1.5">
-                <User className="w-4 h-4 text-neutral-400 absolute left-3 top-1/2 -translate-y-1/2" />
-                <Input
-                  value={username}
-                  onChange={e => setUsername(e.target.value)}
-                  placeholder="johndoe"
-                  className="pl-9 border-neutral-200 focus:border-neutral-900 rounded-xl"
-                  autoComplete="username"
-                  required
-                  minLength={3}
-                />
-              </div>
-            </div>
-
-            <div>
-              <Label className="text-xs font-semibold text-neutral-600 uppercase tracking-wider">
-                Password
-              </Label>
-              <div className="relative mt-1.5">
-                <Lock className="w-4 h-4 text-neutral-400 absolute left-3 top-1/2 -translate-y-1/2" />
-                <Input
-                  type="password"
-                  value={password}
-                  onChange={e => setPassword(e.target.value)}
-                  placeholder={mode === "register" ? "Minimum 6 characters" : "••••••••"}
-                  className="pl-9 border-neutral-200 focus:border-neutral-900 rounded-xl"
-                  autoComplete={mode === "login" ? "current-password" : "new-password"}
-                  required
-                  minLength={mode === "register" ? 6 : undefined}
-                />
-              </div>
-            </div>
-
-            <Button
-              type="submit"
-              disabled={loading}
-              className="w-full bg-neutral-900 text-white hover:bg-neutral-800 rounded-xl h-11 font-semibold text-xs sm:text-sm mt-2 shadow-xs"
-            >
-              {loading ? (
-                <div className="flex items-center gap-2">
-                  <Spinner className="w-4 h-4" />
-                  <span>{mode === "login" ? "Signing In..." : "Creating Account..."}</span>
-                </div>
-              ) : (
-                <div className="flex items-center gap-1.5">
-                  <span>{mode === "login" ? "Sign In to Studio" : "Create My Account"}</span>
-                  <ArrowRight className="w-4 h-4" />
+            {/* Standard Form */}
+            <form onSubmit={handleSubmit} className="space-y-4">
+              {mode === "register" && (
+                <div>
+                  <Label className="text-xs font-bold text-neutral-700 uppercase tracking-wider">
+                    Nama Lengkap
+                  </Label>
+                  <div className="relative mt-1.5">
+                    <User className="w-4 h-4 text-neutral-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                    <Input
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      placeholder="Contoh: Pratama Saputra"
+                      className="pl-10 h-11 border-neutral-300 focus:border-neutral-900 rounded-xl text-sm"
+                      autoComplete="name"
+                    />
+                  </div>
                 </div>
               )}
-            </Button>
-          </form>
 
-          {/* Quick Perks */}
-          <div className="mt-6 pt-5 border-t border-neutral-100 space-y-2">
-            {[
-              "Free instant access to 25 ATS templates",
-              "AI writing enhancements & ATS match score",
-            ].map(perk => (
-              <div key={perk} className="flex items-center gap-2 text-[11px] text-neutral-500">
-                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 flex-shrink-0" />
-                <span>{perk}</span>
+              <div>
+                <Label className="text-xs font-bold text-neutral-700 uppercase tracking-wider">
+                  Username
+                </Label>
+                <div className="relative mt-1.5">
+                  <User className="w-4 h-4 text-neutral-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                  <Input
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    placeholder="nama_pengguna"
+                    className="pl-10 h-11 border-neutral-300 focus:border-neutral-900 rounded-xl text-sm"
+                    autoComplete="username"
+                    required
+                    minLength={3}
+                  />
+                </div>
               </div>
-            ))}
-          </div>
-        </Card>
 
-        {/* Back Link */}
-        <div className="text-center">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => navigate("/")}
-            className="text-xs text-neutral-400 hover:text-neutral-700"
-          >
-            ← Back to Homepage
-          </Button>
+              <div>
+                <div className="flex items-center justify-between">
+                  <Label className="text-xs font-bold text-neutral-700 uppercase tracking-wider">
+                    Kata Sandi
+                  </Label>
+                  {mode === "login" && (
+                    <span className="text-[11px] text-neutral-400">Min. 6 Karakter</span>
+                  )}
+                </div>
+                <div className="relative mt-1.5">
+                  <Lock className="w-4 h-4 text-neutral-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                  <Input
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder={mode === "register" ? "Minimal 6 karakter" : "••••••••"}
+                    className="pl-10 h-11 border-neutral-300 focus:border-neutral-900 rounded-xl text-sm"
+                    autoComplete={mode === "login" ? "current-password" : "new-password"}
+                    required
+                    minLength={mode === "register" ? 6 : undefined}
+                  />
+                </div>
+              </div>
+
+              <Button
+                type="submit"
+                disabled={loading}
+                className="w-full bg-neutral-900 text-white hover:bg-neutral-800 rounded-xl h-11 font-bold text-xs sm:text-sm mt-3 shadow-md"
+              >
+                {loading ? (
+                  <div className="flex items-center gap-2">
+                    <Spinner className="w-4 h-4" />
+                    <span>{mode === "login" ? "Memproses Masuk..." : "Mendaftarkan Akun..."}</span>
+                  </div>
+                ) : (
+                  <div className="flex items-center justify-center gap-2">
+                    <span>
+                      {mode === "login" ? "Masuk ke Studio ResumeCraft" : "Buat Akun Sekarang"}
+                    </span>
+                    <ArrowRight className="w-4 h-4" />
+                  </div>
+                )}
+              </Button>
+            </form>
+
+            {/* Quick Benefits Guarantee */}
+            <div className="pt-4 border-t border-neutral-100 space-y-2">
+              {[
+                "Akses langsung 29 template CV standar ATS teruji",
+                "Fitur AI resume polish, koreksi EYD, dan skor kecocokan lowongan",
+                "Ekspor PDF A4 & Letter tajam tanpa watermark selamanya",
+              ].map((perk) => (
+                <div key={perk} className="flex items-center gap-2 text-xs text-neutral-600">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 flex-shrink-0" />
+                  <span>{perk}</span>
+                </div>
+              ))}
+            </div>
+
+            {/* Switch Mode Prompt */}
+            <div className="text-center pt-2">
+              <p className="text-xs text-neutral-500">
+                {mode === "login" ? "Belum memiliki akun?" : "Sudah memiliki akun sebelumnya?"}{" "}
+                <button
+                  type="button"
+                  onClick={() => switchMode(mode === "login" ? "register" : "login")}
+                  className="font-bold text-neutral-900 hover:text-red-600 underline transition-colors"
+                >
+                  {mode === "login" ? "Daftar Akun Baru" : "Masuk di Sini"}
+                </button>
+              </p>
+            </div>
+          </div>
         </div>
       </div>
     </div>

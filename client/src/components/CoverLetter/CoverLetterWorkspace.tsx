@@ -190,7 +190,9 @@ export default function CoverLetterWorkspace({
   const [recipientTitle, setRecipientTitle] = useState("HRD Manager");
   const [companyAddress, setCompanyAddress] = useState("Di Tempat");
   const [jobDescription, setJobDescription] = useState("");
-  const [tone, setTone] = useState<"professional" | "confident" | "enthusiastic" | "concise">("professional");
+  const [tone, setTone] = useState<
+    "professional" | "confident" | "enthusiastic" | "concise" | "formal_bumn" | "modern_startup" | "creative_agency"
+  >("professional");
 
   // Cover Letter Data State
   const [letterData, setLetterData] = useState<CoverLetterData>(() =>
@@ -403,11 +405,14 @@ ${letterData.fullName}`;
     setTimeout(() => setCopiedSubject(false), 2000);
   };
 
+  const currentPaperSize = cvData?.cv?.paperSize || "a4";
+
   const handleExportPDF = async () => {
     try {
       await exportCoverLetterToPDF(
         "cover-letter-preview-root",
-        `Surat_Lamaran_${letterData.fullName.replace(/\s+/g, "_")}_${letterData.companyName.replace(/\s+/g, "_")}.pdf`
+        `Surat_Lamaran_${letterData.fullName.replace(/\s+/g, "_")}_${letterData.companyName.replace(/\s+/g, "_")}.pdf`,
+        currentPaperSize
       );
       toast.info("Jendela cetak dibuka. Pilih 'Save as PDF' untuk menyimpan file PDF.");
     } catch (err: any) {
@@ -420,7 +425,8 @@ ${letterData.fullName}`;
       await exportBundleToPDF(
         "cover-letter-preview-root",
         "cv-preview-content",
-        `Paket_Lamaran_${letterData.fullName.replace(/\s+/g, "_")}.pdf`
+        `Paket_Lamaran_${letterData.fullName.replace(/\s+/g, "_")}.pdf`,
+        currentPaperSize
       );
       toast.info("Jendela cetak dibuka. Pilih 'Save as PDF' untuk menyimpan paket Surat Lamaran + CV (1 file PDF).");
     } catch (err: any) {
@@ -892,16 +898,19 @@ ${letterData.fullName}`;
                 </div>
 
                 <div>
-                  <Label className="text-xs font-semibold text-slate-700">Nada Bahasa (Tone of Voice)</Label>
+                  <Label className="text-xs font-semibold text-slate-700">Gaya Bahasa & Nada (Tone of Voice)</Label>
                   <Select value={tone} onValueChange={(val: any) => setTone(val)}>
                     <SelectTrigger className="mt-1 border-slate-200 rounded-lg text-xs">
                       <SelectValue placeholder="Pilih nada" />
                     </SelectTrigger>
                     <SelectContent className="rounded-xl border-slate-200">
                       <SelectItem value="professional" className="text-xs">Formal & Profesional (Standar HRD)</SelectItem>
-                      <SelectItem value="confident" className="text-xs">Percaya Diri & Berorientasi Metrik</SelectItem>
-                      <SelectItem value="enthusiastic" className="text-xs">Antusias & Berenergi Tinggi</SelectItem>
-                      <SelectItem value="concise" className="text-xs">Ringkas & To the Point (&lt; 200 kata)</SelectItem>
+                      <SelectItem value="formal_bumn" className="text-xs">🏛️ Sangat Formal & Baku (BUMN / PNS / Lembaga Negara)</SelectItem>
+                      <SelectItem value="modern_startup" className="text-xs">🚀 Modern & Enerjik (Startup / Tech Company)</SelectItem>
+                      <SelectItem value="creative_agency" className="text-xs">🎨 Kreatif & Storytelling (Agensi / Media)</SelectItem>
+                      <SelectItem value="confident" className="text-xs">💪 Percaya Diri & Berorientasi Metrik</SelectItem>
+                      <SelectItem value="enthusiastic" className="text-xs">✨ Antusias & Berenergi Tinggi</SelectItem>
+                      <SelectItem value="concise" className="text-xs">⚡ Ringkas & To the Point (&lt; 200 kata)</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -1397,7 +1406,7 @@ ${letterData.fullName}`;
           <div className="w-full max-w-[820px] mb-3 flex items-center justify-between text-xs text-slate-500 shrink-0">
             <div className="flex items-center gap-1.5 font-medium">
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              <span>Pratinjau Kertas A4 (Live Preview)</span>
+              <span>Pratinjau Kertas {currentPaperSize.toUpperCase()} (Live Preview)</span>
             </div>
 
             <div className="flex items-center gap-1 bg-white border border-slate-200/80 rounded-lg p-0.5 shadow-2xs">

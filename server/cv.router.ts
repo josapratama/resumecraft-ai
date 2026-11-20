@@ -84,6 +84,10 @@ const templateEnum = z.enum([
   "monochrome",
   "atlas",
   "swiss",
+  "dark",
+  "midnight",
+  "pastel",
+  "split",
 ]);
 
 // Reusable trimmed string validators with max lengths matching the DB schema
@@ -128,6 +132,7 @@ export const cvRouter = router({
         cvId: z.number(),
         title: shortStr.optional(),
         template: templateEnum.optional(),
+        paperSize: z.enum(["a4", "letter"]).optional(),
       })
     )
     .mutation(async ({ ctx, input }) => {
@@ -139,6 +144,7 @@ export const cvRouter = router({
       return updateCV(input.cvId, {
         title: input.title,
         template: input.template,
+        paperSize: input.paperSize,
       });
     }),
 

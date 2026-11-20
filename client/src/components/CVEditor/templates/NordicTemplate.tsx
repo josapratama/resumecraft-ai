@@ -3,19 +3,31 @@ import { formatEducationTitle, ensureAbsoluteUrl } from "@/lib/cvFormatters";
  * Nordic — Scandinavian minimalism, teal/seafoam accents, extreme whitespace.
  */
 import type { FullCVData } from "@/types/cv";
-import { groupSkills, TechChips, LanguagesDisplay, CustomSectionsDisplay, TargetRoleDisplay, TemplateQRCode } from "./_shared";
+import {
+  groupSkills,
+  TechChips,
+  LanguagesDisplay,
+  CustomSectionsDisplay,
+  TargetRoleDisplay,
+  TemplateQRCode,
+  resolveFontFamily,
+  resolveAccentColor,
+} from "./_shared";
 
 export default function NordicTemplate({ cvData }: { cvData: FullCVData }) {
   const grouped = groupSkills(cvData.skills);
+  const fontFamily = resolveFontFamily(cvData, "-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif");
+  const accent = resolveAccentColor(cvData, "#2d9b8a");
+
   return (
     <div
       className="bg-[#f8f9f7] min-h-screen"
       style={{
-        fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+        fontFamily,
       }}
     >
-      {/* Teal top bar */}
-      <div className="h-2 bg-[#2d9b8a]" />
+      {/* Top Accent bar */}
+      <div className="h-2" style={{ backgroundColor: accent }} />
 
       <div className="px-10 py-9 max-w-2xl">
         {/* Name block */}
@@ -24,7 +36,7 @@ export default function NordicTemplate({ cvData }: { cvData: FullCVData }) {
             {cvData.personalInfo?.fullName || "Your Name"}
           </h1>
         <TargetRoleDisplay role={cvData.cv?.targetRole} />
-          <div className="w-12 h-0.5 bg-[#2d9b8a] mt-2 mb-2" />
+          <div className="w-12 h-0.5 mt-2 mb-2" style={{ backgroundColor: accent }} />
           <div className="flex flex-wrap gap-x-4 text-xs text-gray-500">
             {cvData.personalInfo?.location && (
               <span>{cvData.personalInfo.location}</span>

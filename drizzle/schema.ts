@@ -57,9 +57,14 @@ export const cvs = mysqlTable("cvs", {
     "monochrome",
     "atlas",
     "swiss",
+    "dark",
+    "midnight",
+    "pastel",
+    "split",
   ])
     .default("modern")
     .notNull(),
+  paperSize: mysqlEnum("paperSize", ["a4", "letter"]).default("a4").notNull(),
   isPublic: int("isPublic").default(0).notNull(),
   shareSlug: varchar("shareSlug", { length: 128 }),
   viewsCount: int("viewsCount").default(0).notNull(),

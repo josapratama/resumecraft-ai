@@ -100,6 +100,8 @@ export interface CustomSection {
   updatedAt: Date;
 }
 
+export type PaperSize = "a4" | "letter";
+
 export type TemplateId =
   | "modern"
   | "classic"
@@ -125,13 +127,18 @@ export type TemplateId =
   | "portfolio"
   | "monochrome"
   | "atlas"
-  | "swiss";
+  | "swiss"
+  | "dark"
+  | "midnight"
+  | "pastel"
+  | "split";
 
 export interface CV {
   id: number;
   userId: number;
   title: string;
   template: TemplateId;
+  paperSize?: PaperSize;
   isPublic?: number;
   shareSlug?: string | null;
   viewsCount?: number;

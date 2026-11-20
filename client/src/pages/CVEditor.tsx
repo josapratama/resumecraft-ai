@@ -43,6 +43,7 @@ import {
   FileCode2,
   Mic,
   MoreHorizontal,
+  Copy,
 } from "lucide-react";
 import { toast } from "sonner";
 import {
@@ -72,12 +73,16 @@ import JobTrackerModal from "@/components/JobTracker/JobTrackerModal";
 import DocumentChecklistModal from "@/components/CVEditor/DocumentChecklistModal";
 import SalaryBenchmarkModal from "@/components/CVEditor/SalaryBenchmarkModal";
 import CareerPitchModal from "@/components/CVEditor/CareerPitchModal";
+import JobMatcherModal from "@/components/CVEditor/JobMatcherModal";
+import TemplateGalleryModal from "@/components/CVEditor/TemplateGalleryModal";
+import ATSReadinessBadge from "@/components/CVEditor/ATSReadinessBadge";
+import DuplicateCVModal from "@/components/CVEditor/DuplicateCVModal";
 import CVPreview from "@/components/CVEditor/CVPreview";
 import { AIChatBox } from "@/components/AIChatBox";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { useI18n } from "@/lib/i18n";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
-import type { FullCVData, TemplateId } from "@/types/cv";
+import type { FullCVData, TemplateId, PaperSize } from "@/types/cv";
 
 /** Narrows AIChatBox Message to the roles the AI endpoint actually accepts. */
 type ChatMessage = { role: "user" | "assistant"; content: string };
@@ -159,6 +164,10 @@ const ALL_TEMPLATES: { id: TemplateId; label: string; category: string }[] = [
   { id: "retro", label: "Retro", category: "Unique" },
   { id: "stealth", label: "Stealth", category: "Unique" },
   { id: "brutalist", label: "Brutalist", category: "Unique" },
+  { id: "dark", label: "Dark Zinc", category: "Unique" },
+  { id: "midnight", label: "Midnight Navy", category: "Unique" },
+  { id: "pastel", label: "Pastel Lavender", category: "Stylish" },
+  { id: "split", label: "Split Blue", category: "Professional" },
 ];
 
 export default function CVEditor() {
@@ -174,6 +183,7 @@ export default function CVEditor() {
 
   const [activeSection, setActiveSection] = useState("personal");
   const [template, setTemplate] = useState<TemplateId>("modern");
+  const [paperSize, setPaperSize] = useState<PaperSize>("a4");
   const [isExporting, setIsExporting] = useState(false);
   const [showAIChat, setShowAIChat] = useState(false);
 
@@ -193,6 +203,9 @@ export default function CVEditor() {
   const [showChecklistModal, setShowChecklistModal] = useState(false);
   const [showSalaryModal, setShowSalaryModal] = useState(false);
   const [showPitchModal, setShowPitchModal] = useState(false);
+  const [showGalleryModal, setShowGalleryModal] = useState(false);
+  const [showJobMatcherModal, setShowJobMatcherModal] = useState(false);
+  const [showDuplicateModal, setShowDuplicateModal] = useState(false);
 
   const handleBackupCV = () => {
     if (!cvData) return;
@@ -240,6 +253,18 @@ export default function CVEditor() {
     },
   });
 
+  const duplicateMutation = trpc.cv.duplicate.useMutation({
+    onSuccess: (newCV: any) => {
+      toast.success("CV berhasil diduplikasi menjadi varian baru!");
+      if (newCV && newCV.id) {
+        navigate(`/cv/${newCV.id}`);
+      }
+    },
+    onError: (err: any) => {
+      toast.error(err.message || "Gagal menduplikasi CV");
+    },
+  });
+
   const handleTitleSave = () => {
     const trimmed = titleDraft.trim();
     if (!trimmed) {
@@ -270,9 +295,21 @@ export default function CVEditor() {
     if (cvData && !seeded.current) {
       seeded.current = true;
       setTemplate(cvData.cv.template);
+      if (cvData.cv.paperSize) {
+        setPaperSize(cvData.cv.paperSize as PaperSize);
+      }
       setPreviewData(cvData);
     }
   }, [cvData]);
+
+  const handlePaperSizeChange = (newSize: PaperSize) => {
+    setPaperSize(newSize);
+    updateCVMutation.mutate({
+      cvId: cvIdNum,
+      paperSize: newSize,
+    });
+    toast.success(`Ukuran kertas disimpan: ${newSize.toUpperCase()}`);
+  };
 
   // Callback passed to forms so they can push updated data to preview
   const handleDataChange = useCallback((updated: Partial<FullCVData>) => {
@@ -416,77 +453,87 @@ export default function CVEditor() {
               </div>
             </div>
 
-            {/* Center: Clean Compact Document Type Dropdown */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="gap-2 h-8.5 px-3 rounded-xl border-neutral-200 bg-neutral-50/80 hover:bg-neutral-100 text-neutral-800 font-semibold text-xs shadow-2xs whitespace-nowrap"
-                  title="Ganti Dokumen (CV, Surat Lamaran, Draf Email)"
-                >
-                  <FileText className="w-3.5 h-3.5 text-blue-600 shrink-0" />
-                  <span className="truncate max-w-[150px] sm:max-w-none">Curriculum Vitae</span>
-                  <ChevronDown className="w-3 h-3 opacity-50 shrink-0" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="center" className="w-64 rounded-xl shadow-xl border-neutral-200 p-1.5">
-                <div className="px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-neutral-400">
-                  Paket Dokumen Lamaran
-                </div>
-                <DropdownMenuItem className="gap-2.5 p-2 rounded-lg cursor-default bg-blue-50/70 text-blue-900 font-semibold text-xs">
-                  <div className="w-7 h-7 rounded-md bg-blue-600 text-white flex items-center justify-center shrink-0">
-                    <FileText className="w-4 h-4" />
-                  </div>
-                  <div className="flex-1">
-                    <p className="font-bold text-neutral-900 flex items-center justify-between">
-                      Curriculum Vitae
-                      <Check className="w-3.5 h-3.5 text-blue-600" />
-                    </p>
-                    <p className="text-[10px] text-neutral-500 font-normal">Sedang aktif diedit</p>
-                  </div>
-                </DropdownMenuItem>
-
-                <DropdownMenuItem
-                  onClick={() => setShowCoverLetterModal(true)}
-                  className="gap-2.5 p-2 rounded-lg cursor-pointer hover:bg-neutral-100 text-xs"
-                >
-                  <div className="w-7 h-7 rounded-md bg-purple-50 text-purple-600 flex items-center justify-center shrink-0">
-                    <FileCode2 className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <p className="font-semibold text-neutral-900">Surat Lamaran Kerja</p>
-                    <p className="text-[10px] text-neutral-500">25 format surat standar</p>
-                  </div>
-                </DropdownMenuItem>
-
-                <DropdownMenuItem
-                  onClick={() => setShowEmailDraftModal(true)}
-                  className="gap-2.5 p-2 rounded-lg cursor-pointer hover:bg-neutral-100 text-xs"
-                >
-                  <div className="w-7 h-7 rounded-md bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
-                    <Mail className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <p className="font-semibold text-neutral-900">Draf Email & WA HRD</p>
-                    <p className="text-[10px] text-neutral-500">Pengantar lamaran siap kirim</p>
-                  </div>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-
-            {/* Right: Actions & Tools */}
-            <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
-              {/* AI Career Tools Dropdown */}
+            {/* Center: Clean Compact Document Type Dropdown (Desktop xl) */}
+            <div className="hidden xl:flex items-center">
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
                     variant="outline"
                     size="sm"
-                    className="gap-1.5 border-indigo-200 text-indigo-700 bg-indigo-50/70 hover:bg-indigo-100 h-8 sm:h-9 px-2 sm:px-3 rounded-lg"
+                    className="gap-2 h-8.5 px-3 rounded-xl border-neutral-200 bg-neutral-50/80 hover:bg-neutral-100 text-neutral-800 font-semibold text-xs shadow-2xs whitespace-nowrap"
+                    title="Ganti Dokumen (CV, Surat Lamaran, Draf Email)"
+                  >
+                    <FileText className="w-3.5 h-3.5 text-blue-600 shrink-0" />
+                    <span className="truncate max-w-[150px] sm:max-w-none">Curriculum Vitae</span>
+                    <ChevronDown className="w-3 h-3 opacity-50 shrink-0" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="center" className="w-64 rounded-xl shadow-xl border-neutral-200 p-1.5">
+                  <div className="px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-neutral-400">
+                    Paket Dokumen Lamaran
+                  </div>
+                  <DropdownMenuItem className="gap-2.5 p-2 rounded-lg cursor-default bg-blue-50/70 text-blue-900 font-semibold text-xs">
+                    <div className="w-7 h-7 rounded-md bg-blue-600 text-white flex items-center justify-center shrink-0">
+                      <FileText className="w-4 h-4" />
+                    </div>
+                    <div className="flex-1">
+                      <p className="font-bold text-neutral-900 flex items-center justify-between">
+                        Curriculum Vitae
+                        <Check className="w-3.5 h-3.5 text-blue-600" />
+                      </p>
+                      <p className="text-[10px] text-neutral-500 font-normal">Sedang aktif diedit</p>
+                    </div>
+                  </DropdownMenuItem>
+
+                  <DropdownMenuItem
+                    onClick={() => setShowCoverLetterModal(true)}
+                    className="gap-2.5 p-2 rounded-lg cursor-pointer hover:bg-neutral-100 text-xs"
+                  >
+                    <div className="w-7 h-7 rounded-md bg-purple-50 text-purple-600 flex items-center justify-center shrink-0">
+                      <FileCode2 className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <p className="font-semibold text-neutral-900">Surat Lamaran Kerja</p>
+                      <p className="text-[10px] text-neutral-500">25 format surat standar</p>
+                    </div>
+                  </DropdownMenuItem>
+
+                  <DropdownMenuItem
+                    onClick={() => setShowEmailDraftModal(true)}
+                    className="gap-2.5 p-2 rounded-lg cursor-pointer hover:bg-neutral-100 text-xs"
+                  >
+                    <div className="w-7 h-7 rounded-md bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+                      <Mail className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <p className="font-semibold text-neutral-900">Draf Email & WA HRD</p>
+                      <p className="text-[10px] text-neutral-500">Pengantar lamaran siap kirim</p>
+                    </div>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+
+            {/* Right: Actions & Tools (Bersih, Rapi, Terorganisir) */}
+            <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
+              {/* Live ATS Readiness Score Badge (Tablet / Desktop) */}
+              <div className="hidden sm:inline-flex">
+                <ATSReadinessBadge
+                  cvData={cvData}
+                  onClick={() => setShowATSModal(true)}
+                />
+              </div>
+
+              {/* AI Career Tools Dropdown (Desktop) */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="hidden sm:inline-flex gap-1.5 border-indigo-200 text-indigo-700 bg-indigo-50/70 hover:bg-indigo-100 h-8 sm:h-9 px-2.5 sm:px-3 rounded-xl"
                   >
                     <Sparkles className="w-3.5 h-3.5 text-indigo-600" />
-                    <span className="hidden md:inline font-semibold text-xs">{t("topbar.ai_tools", "AI Tools")}</span>
+                    <span className="font-semibold text-xs">{t("topbar.ai_tools", "Alat AI")}</span>
                     <ChevronDown className="w-3 h-3 opacity-60" />
                   </Button>
                 </DropdownMenuTrigger>
@@ -504,6 +551,19 @@ export default function CVEditor() {
                     <div>
                       <p className="text-xs font-semibold text-neutral-900">ATS Match Score</p>
                       <p className="text-[10px] text-neutral-500">Benchmark against job vacancy</p>
+                    </div>
+                  </DropdownMenuItem>
+
+                  <DropdownMenuItem
+                    onClick={() => setShowJobMatcherModal(true)}
+                    className="gap-2.5 p-2 rounded-lg cursor-pointer hover:bg-blue-50"
+                  >
+                    <div className="w-7 h-7 rounded-md bg-blue-100 text-blue-700 flex items-center justify-center flex-shrink-0">
+                      <Sparkles className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <p className="text-xs font-semibold text-neutral-900">Job Description Matcher</p>
+                      <p className="text-[10px] text-neutral-500">Pindai kata kunci yang cocok & hilang</p>
                     </div>
                   </DropdownMenuItem>
 
@@ -567,8 +627,8 @@ export default function CVEditor() {
                       <SpellCheck className="w-4 h-4" />
                     </div>
                     <div>
-                      <p className="text-xs font-semibold text-neutral-900">Periksa Ejaan & EYD V</p>
-                      <p className="text-[10px] text-neutral-500">Koreksi typo, tata bahasa baku & EYD</p>
+                      <p className="text-xs font-semibold text-neutral-900">Periksa Ejaan & EYD Baku</p>
+                      <p className="text-[10px] text-neutral-500">Koreksi typo & tata bahasa formal</p>
                     </div>
                   </DropdownMenuItem>
 
@@ -594,7 +654,7 @@ export default function CVEditor() {
                     </div>
                     <div>
                       <p className="text-xs font-semibold text-neutral-900">Checklist Berkas Lamaran</p>
-                      <p className="text-[10px] text-neutral-500">Kesiapan ijazah, SKCK, foto & backup CV</p>
+                      <p className="text-[10px] text-neutral-500">Kesiapan ijazah, SKCK & backup CV</p>
                     </div>
                   </DropdownMenuItem>
 
@@ -607,7 +667,7 @@ export default function CVEditor() {
                     </div>
                     <div>
                       <p className="text-xs font-semibold text-neutral-900">Benchmark Gaji Pasar</p>
-                      <p className="text-[10px] text-neutral-500">Estimasi gaji Indonesia (IDR) & Remote (USD)</p>
+                      <p className="text-[10px] text-neutral-500">Estimasi gaji IDR & USD</p>
                     </div>
                   </DropdownMenuItem>
 
@@ -619,20 +679,20 @@ export default function CVEditor() {
                       <Mic className="w-4 h-4" />
                     </div>
                     <div>
-                      <p className="text-xs font-semibold text-neutral-900">Elevator Pitch 30 Detik & LinkedIn</p>
-                      <p className="text-[10px] text-neutral-500">Naskah lisan wawancara & bio profil LinkedIn</p>
+                      <p className="text-xs font-semibold text-neutral-900">Elevator Pitch 30 Detik</p>
+                      <p className="text-[10px] text-neutral-500">Naskah lisan wawancara & LinkedIn</p>
                     </div>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
 
-              {/* Unified Design & Template Picker */}
+              {/* Unified Design & Template Picker (Tablet / Desktop) */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
                     variant="outline"
                     size="sm"
-                    className="gap-1.5 border-neutral-200 text-neutral-700 hover:bg-neutral-100 h-8 sm:h-9 px-2.5 sm:px-3 rounded-lg"
+                    className="hidden md:inline-flex gap-1.5 border-neutral-200 text-neutral-700 hover:bg-neutral-100 h-8 sm:h-9 px-2.5 sm:px-3 rounded-xl"
                     title="Pilih Desain & Kustomisasi CV"
                   >
                     <Layout className="w-3.5 h-3.5 text-neutral-600 shrink-0" />
@@ -646,6 +706,20 @@ export default function CVEditor() {
                   align="end"
                   className="w-60 max-h-96 overflow-y-auto rounded-xl p-1.5 shadow-xl border-neutral-200"
                 >
+                  {/* Visual Template Showcase Gallery Modal */}
+                  <DropdownMenuItem
+                    onClick={() => setShowGalleryModal(true)}
+                    className="gap-2.5 py-2 px-2.5 rounded-lg cursor-pointer bg-gradient-to-r from-red-50 to-amber-50 text-red-900 font-semibold text-xs mb-1 border border-red-200/60"
+                  >
+                    <div className="w-6 h-6 rounded-md bg-red-600 text-white flex items-center justify-center shrink-0 shadow-2xs">
+                      <Sparkles className="w-3.5 h-3.5" />
+                    </div>
+                    <div>
+                      <p className="font-bold text-xs text-red-950">Galeri 29 Template</p>
+                      <p className="text-[10px] text-red-700/80 font-normal">Lihat kartu preview warna & rekomendasi</p>
+                    </div>
+                  </DropdownMenuItem>
+
                   {/* Quick Color Accent & Font setting */}
                   <DropdownMenuItem
                     onClick={() => setShowStyleModal(true)}
@@ -656,14 +730,14 @@ export default function CVEditor() {
                     </div>
                     <div>
                       <p className="font-bold text-xs">Ubah Tema & Font</p>
-                      <p className="text-[10px] text-neutral-500 font-normal">Warna aksen, tipografi, dan gaya</p>
+                      <p className="text-[10px] text-neutral-500 font-normal">Warna aksen, tipografi, dan spasi</p>
                     </div>
                   </DropdownMenuItem>
 
                   <DropdownMenuSeparator />
 
                   <div className="px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-neutral-400">
-                    Pilih Template (25 Format)
+                    Ganti Cepat Template ({ALL_TEMPLATES.length} Format)
                   </div>
 
                   {["Classic", "Professional", "Stylish", "Creative", "Unique"].map(cat => {
@@ -683,8 +757,9 @@ export default function CVEditor() {
                                 template: t.id,
                               });
                             }}
-                            className={`cursor-pointer rounded-md text-xs py-1.5 px-2.5 flex items-center justify-between ${template === t.id ? "font-semibold bg-neutral-100 text-neutral-900" : "text-neutral-600"
-                              }`}
+                            className={`cursor-pointer rounded-md text-xs py-1.5 px-2.5 flex items-center justify-between ${
+                              template === t.id ? "font-semibold bg-neutral-100 text-neutral-900" : "text-neutral-600"
+                            }`}
                           >
                             <span>{t.label}</span>
                             {template === t.id && (
@@ -698,29 +773,13 @@ export default function CVEditor() {
                 </DropdownMenuContent>
               </DropdownMenu>
 
-              {/* Desktop AI Assistant Toggle */}
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => {
-                  setShowAIChat(v => !v);
-                  if (mobileTab === "chat") setMobileTab("editor");
-                }}
-                className={`gap-1.5 h-8 sm:h-9 px-2.5 sm:px-3 rounded-lg border-neutral-200 ${showAIChat ? "bg-neutral-900 text-white hover:bg-neutral-800" : "text-neutral-700 hover:bg-neutral-100"
-                  }`}
-                title="Buka Asisten Chatbot AI"
-              >
-                {showAIChat ? <X className="w-3.5 h-3.5" /> : <Bot className="w-3.5 h-3.5 text-indigo-600" />}
-                <span className="text-xs font-semibold hidden md:inline">{t("topbar.ai_chat", "Obrolan AI")}</span>
-              </Button>
-
-              {/* Unified Export Dropdown (PDF, Word DOCX, Backup JSON) */}
+              {/* Primary Action: Unified Export Dropdown (PDF, Word DOCX, Backup JSON) */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
                     disabled={isExporting}
                     size="sm"
-                    className="gap-1.5 bg-neutral-900 text-white hover:bg-neutral-800 h-8 sm:h-9 px-3 sm:px-4 rounded-lg shadow-sm"
+                    className="gap-1.5 bg-neutral-900 text-white hover:bg-neutral-800 h-8 sm:h-9 px-3 sm:px-4 rounded-xl shadow-sm"
                   >
                     <Download className="w-3.5 h-3.5" />
                     <span className="font-semibold text-xs">
@@ -736,7 +795,8 @@ export default function CVEditor() {
                         setIsExporting(true);
                         await exportCVToPDF(
                           "cv-preview-content",
-                          `${cvData.cv.title || "resume"}.pdf`
+                          `${cvData.cv.title || "resume"}.pdf`,
+                          paperSize
                         );
                         toast.info("Pilih 'Save as PDF' pada dialog cetak untuk mengunduh PDF.", {
                           duration: 5000,
@@ -753,8 +813,8 @@ export default function CVEditor() {
                       <FileText className="w-4 h-4" />
                     </div>
                     <div>
-                      <p className="font-bold text-neutral-900">Format PDF (A4 Standar)</p>
-                      <p className="text-[10px] text-neutral-500">Tajam, vektor, siap cetak fisik</p>
+                      <p className="font-bold text-neutral-900">Format PDF ({paperSize.toUpperCase()})</p>
+                      <p className="text-[10px] text-neutral-500">Tajam, vektor, standar cetak</p>
                     </div>
                   </DropdownMenuItem>
 
@@ -780,7 +840,7 @@ export default function CVEditor() {
                     </div>
                     <div>
                       <p className="font-bold text-neutral-900">Format Word (.docx)</p>
-                      <p className="text-[10px] text-neutral-500">Bisa diedit di Microsoft Word / WPS</p>
+                      <p className="text-[10px] text-neutral-500">Bisa diedit di Word / WPS</p>
                     </div>
                   </DropdownMenuItem>
 
@@ -801,40 +861,101 @@ export default function CVEditor() {
                 </DropdownMenuContent>
               </DropdownMenu>
 
-              {/* More Menu (...) for Secondary Options */}
+              {/* Master More Menu (...) Menampung Alat Pendukung Agar Header Bersih */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
                     variant="outline"
                     size="sm"
-                    className="h-8 sm:h-9 w-8 sm:w-9 p-0 text-neutral-600 border-neutral-200 hover:bg-neutral-100 rounded-lg"
-                    title="Menu & Opsi Tambahan"
+                    className="h-8 sm:h-9 w-8 sm:w-9 p-0 text-neutral-600 border-neutral-200 hover:bg-neutral-100 rounded-xl"
+                    title="Menu Alat & Opsi Tambahan"
                   >
                     <MoreHorizontal className="w-4 h-4" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56 rounded-xl shadow-xl border-neutral-200 p-1.5">
+                <DropdownMenuContent align="end" className="w-60 rounded-xl shadow-xl border-neutral-200 p-1.5 max-h-[85vh] overflow-y-auto">
+                  {/* Chatbot Toggle */}
+                  <DropdownMenuItem
+                    onClick={() => {
+                      setShowAIChat(v => !v);
+                      if (mobileTab === "chat") setMobileTab("editor");
+                    }}
+                    className="gap-2.5 py-2 px-2.5 rounded-lg cursor-pointer text-xs font-medium"
+                  >
+                    <Bot className="w-4 h-4 text-indigo-600 shrink-0" />
+                    <div className="flex-1">
+                      <p className="font-semibold text-neutral-900">
+                        {showAIChat ? "Tutup Obrolan AI" : "Buka Obrolan AI"}
+                      </p>
+                      <p className="text-[10px] text-neutral-500">Asisten pembuat konten karir</p>
+                    </div>
+                  </DropdownMenuItem>
+
+                  {/* Public Link Share */}
                   <DropdownMenuItem
                     onClick={() => setShowShareModal(true)}
                     className="gap-2.5 py-2 px-2.5 rounded-lg cursor-pointer text-xs"
                   >
-                    <Share2 className="w-3.5 h-3.5 text-blue-600" />
+                    <Share2 className="w-4 h-4 text-blue-600 shrink-0" />
                     <div>
-                      <p className="font-semibold text-neutral-900">Bagikan Tautan Online</p>
+                      <p className="font-semibold text-neutral-900">Bagikan Tautan Online & QR</p>
                       <p className="text-[10px] text-neutral-500">Link CV publik untuk HRD</p>
                     </div>
                   </DropdownMenuItem>
 
+                  {/* Duplicate CV */}
                   <DropdownMenuItem
-                    onClick={() => setShowStyleModal(true)}
+                    onClick={() => setShowDuplicateModal(true)}
                     className="gap-2.5 py-2 px-2.5 rounded-lg cursor-pointer text-xs"
                   >
-                    <Palette className="w-3.5 h-3.5 text-amber-600" />
+                    <Copy className="w-4 h-4 text-amber-600 shrink-0" />
                     <div>
-                      <p className="font-semibold text-neutral-900">Warna Tema & Font</p>
-                      <p className="text-[10px] text-neutral-500">Kustomisasi tipografi & aksen</p>
+                      <p className="font-semibold text-neutral-900">Duplikasi CV (Varian)</p>
+                      <p className="text-[10px] text-neutral-500">Targetkan ke posisi lowongan lain</p>
                     </div>
                   </DropdownMenuItem>
+
+                  {/* Mobile-only tools shortcut */}
+                  <div className="lg:hidden border-t border-neutral-100 my-1 pt-1">
+                    <div className="px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-neutral-400">
+                      Menu Mobile Tambahan
+                    </div>
+                    <DropdownMenuItem
+                      onClick={() => setShowGalleryModal(true)}
+                      className="gap-2.5 py-1.5 px-2.5 rounded-lg cursor-pointer text-xs"
+                    >
+                      <Layout className="w-3.5 h-3.5 text-neutral-600" />
+                      <span>Galeri 29 Template</span>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={() => setShowStyleModal(true)}
+                      className="gap-2.5 py-1.5 px-2.5 rounded-lg cursor-pointer text-xs"
+                    >
+                      <Palette className="w-3.5 h-3.5 text-amber-600" />
+                      <span>Ubah Tema & Font</span>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={() => setShowCoverLetterModal(true)}
+                      className="gap-2.5 py-1.5 px-2.5 rounded-lg cursor-pointer text-xs"
+                    >
+                      <FileCode2 className="w-3.5 h-3.5 text-purple-600" />
+                      <span>Surat Lamaran Kerja</span>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={() => setShowEmailDraftModal(true)}
+                      className="gap-2.5 py-1.5 px-2.5 rounded-lg cursor-pointer text-xs"
+                    >
+                      <Mail className="w-3.5 h-3.5 text-emerald-600" />
+                      <span>Draf Email & WA HRD</span>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={() => setShowATSModal(true)}
+                      className="gap-2.5 py-1.5 px-2.5 rounded-lg cursor-pointer text-xs"
+                    >
+                      <Target className="w-3.5 h-3.5 text-indigo-600" />
+                      <span>Evaluasi Skor ATS</span>
+                    </DropdownMenuItem>
+                  </div>
 
                   <DropdownMenuSeparator />
 
@@ -842,55 +963,59 @@ export default function CVEditor() {
                     onClick={handleBackupCV}
                     className="gap-2.5 py-2 px-2.5 rounded-lg cursor-pointer text-xs"
                   >
-                    <Download className="w-3.5 h-3.5 text-emerald-600" />
+                    <Download className="w-4 h-4 text-emerald-600 shrink-0" />
                     <div>
                       <p className="font-semibold text-neutral-900">Backup Data (JSON)</p>
                       <p className="text-[10px] text-neutral-500">Ekspor file arsip data</p>
                     </div>
                   </DropdownMenuItem>
+
+                  {/* Language Switcher */}
+                  <div className="p-2 border-t border-neutral-100 flex items-center justify-between">
+                    <span className="text-[11px] font-semibold text-neutral-500">Bahasa Dokumen</span>
+                    <LanguageSwitcher />
+                  </div>
                 </DropdownMenuContent>
               </DropdownMenu>
-
-              {/* Multilingual Switcher (Polyglot Hub) */}
-              <div className="hidden sm:block">
-                <LanguageSwitcher />
-              </div>
             </div>
           </div>
 
-          {/* Mobile / Tablet Segmented View Switcher */}
-          <div className="lg:hidden mt-2.5 pt-2 border-t border-neutral-100 flex items-center justify-center gap-1">
+          {/* Mobile / Tablet Segmented View Switcher (Sangat Bersih & Nyaman) */}
+          <div className="lg:hidden mt-2.5 pt-2 border-t border-neutral-100 flex items-center justify-center gap-1.5 bg-neutral-100/70 p-1 rounded-xl">
             <button
               onClick={() => setMobileTab("editor")}
-              className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 text-xs font-semibold rounded-lg transition-colors ${mobileTab === "editor"
-                ? "bg-neutral-900 text-white shadow-xs"
-                : "text-neutral-600 hover:bg-neutral-100"
-                }`}
+              className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-xs font-bold rounded-lg transition-all ${
+                mobileTab === "editor"
+                  ? "bg-white text-neutral-900 shadow-sm"
+                  : "text-neutral-500 hover:text-neutral-800"
+              }`}
             >
               <Pencil className="w-3.5 h-3.5" />
-              <span>Form Editor</span>
+              <span>Formulir</span>
             </button>
 
             <button
               onClick={() => setMobileTab("preview")}
-              className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 text-xs font-semibold rounded-lg transition-colors ${mobileTab === "preview"
-                ? "bg-neutral-900 text-white shadow-xs"
-                : "text-neutral-600 hover:bg-neutral-100"
-                }`}
+              className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-xs font-bold rounded-lg transition-all ${
+                mobileTab === "preview"
+                  ? "bg-white text-neutral-900 shadow-sm"
+                  : "text-neutral-500 hover:text-neutral-800"
+              }`}
             >
-              <Eye className="w-3.5 h-3.5" />
-              <span>Live Preview</span>
+              <Eye className="w-3.5 h-3.5 text-blue-600" />
+              <span>Pratinjau CV</span>
             </button>
 
             <button
               onClick={() => setMobileTab("chat")}
-              className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 text-xs font-semibold rounded-lg transition-colors ${mobileTab === "chat"
-                ? "bg-indigo-600 text-white shadow-xs"
-                : "text-indigo-700 bg-indigo-50 hover:bg-indigo-100"
-                }`}
+              className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-xs font-bold rounded-lg transition-all ${
+                mobileTab === "chat"
+                  ? "bg-indigo-600 text-white shadow-sm"
+                  : "text-indigo-600 hover:bg-white/60"
+              }`}
             >
               <Bot className="w-3.5 h-3.5" />
-              <span>AI Chat</span>
+              <span>Obrolan AI</span>
             </button>
           </div>
         </div>
@@ -1101,7 +1226,12 @@ export default function CVEditor() {
           >
             <div className="sticky top-20">
               <div id="cv-preview-content">
-                <CVPreview template={template} cvData={displayData} />
+                <CVPreview
+                  template={template}
+                  cvData={displayData}
+                  paperSize={paperSize}
+                  onPaperSizeChange={handlePaperSizeChange}
+                />
               </div>
             </div>
           </div>
@@ -1206,6 +1336,35 @@ export default function CVEditor() {
         onClose={() => setShowPitchModal(false)}
         cvId={cvIdNum}
         candidateName={cvData.personalInfo?.fullName || "Kandidat"}
+      />
+
+      <TemplateGalleryModal
+        isOpen={showGalleryModal}
+        onClose={() => setShowGalleryModal(false)}
+        currentTemplate={template}
+        onSelectTemplate={(newTemplate) => {
+          setTemplate(newTemplate);
+          updateCVMutation.mutate({
+            cvId: cvIdNum,
+            template: newTemplate,
+          });
+          toast.success(`Template berhasil diubah ke: ${newTemplate}`);
+        }}
+      />
+
+      <JobMatcherModal
+        isOpen={showJobMatcherModal}
+        onClose={() => setShowJobMatcherModal(false)}
+        cvId={cvIdNum}
+        defaultRole={cvData.cv.targetRole || cvData.cv.title}
+      />
+
+      <DuplicateCVModal
+        isOpen={showDuplicateModal}
+        onClose={() => setShowDuplicateModal(false)}
+        cvId={cvIdNum}
+        currentTitle={cvData.cv.title || "CV"}
+        currentTargetRole={cvData.cv.targetRole}
       />
     </div>
   );

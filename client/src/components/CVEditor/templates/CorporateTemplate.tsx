@@ -2,19 +2,30 @@
  * Corporate — blue/grey palette, formal layout, suited for big companies.
  */
 import type { FullCVData } from "@/types/cv";
-import { groupSkills, TechChips, CustomSectionsDisplay, TargetRoleDisplay, TemplateQRCode } from "./_shared";
+import {
+  groupSkills,
+  TechChips,
+  CustomSectionsDisplay,
+  TargetRoleDisplay,
+  TemplateQRCode,
+  resolveFontFamily,
+  resolveAccentColor,
+} from "./_shared";
 
 export default function CorporateTemplate({ cvData }: { cvData: FullCVData }) {
   const grouped = groupSkills(cvData.skills);
+  const fontFamily = resolveFontFamily(cvData, "-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif");
+  const accent = resolveAccentColor(cvData, "#1e3a5f");
+
   return (
     <div
       className="bg-white min-h-screen"
       style={{
-        fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+        fontFamily,
       }}
     >
       {/* Header */}
-      <div className="bg-[#1e3a5f] px-10 py-7 text-white">
+      <div className="px-10 py-7 text-white" style={{ backgroundColor: accent }}>
         <div className="flex items-center gap-6 min-w-0">
           <div className="w-14 h-14 bg-[#4a90c4] rounded-full flex items-center justify-center flex-shrink-0">
             <span className="text-xl font-bold text-white">

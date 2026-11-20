@@ -1,3 +1,5 @@
+import type { PaperSize } from "@/types/cv";
+
 /**
  * CV PDF Export
  *
@@ -14,7 +16,8 @@
  */
 export async function exportCVToPDF(
   previewContainerId: string,
-  fileName: string = "resume.pdf"
+  fileName: string = "resume.pdf",
+  paperSize: PaperSize = "a4"
 ): Promise<void> {
   const container = document.getElementById(previewContainerId);
   if (!container) {
@@ -41,6 +44,9 @@ export async function exportCVToPDF(
     .map(s => `<style>${s.textContent}</style>`)
     .join("\n");
 
+  const pageSizeRule = paperSize === "letter" ? "letter" : "A4";
+  const wrapperMaxWidth = paperSize === "letter" ? "816px" : "794px";
+
   const htmlContent = `<!DOCTYPE html>
 <html>
 <head>
@@ -51,7 +57,7 @@ export async function exportCVToPDF(
   ${inlineStyles}
   <style>
     @page {
-      size: A4;
+      size: ${pageSizeRule};
       margin: 0;
     }
     html, body {
@@ -88,7 +94,7 @@ export async function exportCVToPDF(
     /* Only show the CV content — no browser chrome artifacts */
     @media screen {
       body { padding: 20px; background: #f0f0f0; }
-      .cv-print-wrapper { background: white; max-width: 794px; margin: 0 auto; box-shadow: 0 0 20px rgba(0,0,0,0.2); }
+      .cv-print-wrapper { background: white; max-width: ${wrapperMaxWidth}; margin: 0 auto; box-shadow: 0 0 20px rgba(0,0,0,0.2); }
     }
   </style>
 </head>

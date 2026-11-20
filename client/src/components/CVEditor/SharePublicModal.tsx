@@ -170,6 +170,30 @@ export default function SharePublicModal({
                 </div>
               </div>
 
+              {/* Special Integration for Portfolio */}
+              <div className="p-3.5 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200/80 rounded-xl space-y-2">
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-blue-600 animate-pulse" />
+                    <span className="text-xs font-bold text-blue-950">Gunakan untuk Website Portofolio</span>
+                  </div>
+                  <Button
+                    size="sm"
+                    variant="default"
+                    onClick={() => {
+                      navigator.clipboard.writeText(publicUrl);
+                      toast.success("Tautan CV berhasil disalin untuk Web Portofolio!");
+                    }}
+                    className="h-6 px-2.5 text-[10px] bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-md gap-1"
+                  >
+                    <Copy className="w-3 h-3" /> Salin Link Portofolio
+                  </Button>
+                </div>
+                <p className="text-[11px] text-blue-800/90 leading-relaxed">
+                  Tempelkan link ini di <strong>Admin Portofolio &gt; Resume / CV</strong>. Tombol "Download CV" di landing page portofolio Anda akan langsung terhubung ke resume ini.
+                </p>
+              </div>
+
               <div className="flex items-center gap-2 p-3 bg-blue-50/60 border border-blue-200 rounded-lg text-xs text-blue-900">
                 <Eye className="w-4 h-4 text-blue-600 flex-shrink-0" />
                 <span>

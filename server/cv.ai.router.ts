@@ -563,7 +563,17 @@ KEMBALIKAN HANYA OBJEK JSON VALID dengan format:
         recipientName: z.string().trim().optional(),
         recipientTitle: z.string().trim().optional(),
         jobDescription: z.string().trim().optional(),
-        tone: z.enum(["professional", "confident", "enthusiastic", "concise"]).default("professional"),
+        tone: z
+          .enum([
+            "professional",
+            "confident",
+            "enthusiastic",
+            "concise",
+            "formal_bumn",
+            "modern_startup",
+            "creative_agency",
+          ])
+          .default("professional"),
         language: z.enum(["id", "en"]).default("id"),
         templateStyle: z.string().optional(),
       })
@@ -588,7 +598,11 @@ ${input.jobDescription ? `Kualifikasi / Persyaratan Lowongan:\n${input.jobDescri
 
 ${cvContext}
 
-Panduan Penulisan (Standar Baku EYD Bahasa Indonesia):
+Panduan Penulisan & Nada Bahasa:
+- Jika nada "formal_bumn": Gunakan tata bahasa Indonesia yang sangat formal, takzim, terstruktur rapi, cocok untuk instansi pemerintahan, kementerian, BUMN, perbankan, dan lembaga pendidikan.
+- Jika nada "modern_startup": Gunakan gaya bahasa dinamis, lugas, berorientasi dampak (impact-driven), kolaboratif, dan menekankan pemecahan masalah serta adaptabilitas cepat di industri teknologi.
+- Jika nada "creative_agency": Gunakan storytelling yang memikat, bahasa segar dan persuasif, serta tonjolkan kreativitas, keunikan gagasan, dan portofolio karya.
+- Jika nada lainnya: Sesuaikan dengan nada yang diminta (${input.tone}) dengan tetap menjaga profesionalitas tinggi.
 1. Format Subjek email profesional: "[Lamaran Pekerjaan] - ${input.jobTitle} - [Nama Lengkap Pelamar]".
 2. Salam Pembuka resmi: "Dengan hormat,".
 3. Paragraf Pembuka: sebutkan antusiasme melamar ke posisi ${input.jobTitle} di ${input.companyName} dan motivasi bergabung.
@@ -1498,6 +1512,66 @@ Kembalikan HANYA JSON VALID:
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "Gagal membuat career pitch",
+        });
+      }
+    }),
+
+  // ─── AI ATS Job Description Matcher & Keyword Scanner ─────────────────────
+  matchJobDescription: protectedProcedure
+    .input(
+      z.object({
+        cvId: z.number(),
+        jobDescription: z.string().min(20, "Deskripsi lowongan minimal 20 karakter"),
+      })
+    )
+    .mutation(async ({ input }) => {
+      const cvContext = await buildCVContext(input.cvId);
+      const prompt = `Anda adalah ATS (Applicant Tracking System) Scanner dan Senior Technical Recruiter.
+Tugas Anda adalah membandingkan profil CV kandidat dengan deskripsi lowongan kerja (Job Description) yang diberikan, lalu menganalisis kecocokannya secara objektif dan mendalam.
+
+DESKRIPSI LOWONGAN PEKERJAAN (TARGET JOB DESCRIPTION):
+"""
+${input.jobDescription}
+"""
+
+PROFIL CV KANDIDAT:
+"""
+${cvContext}
+"""
+
+Berikan analisis dalam format JSON VALID dengan struktur berikut:
+{
+  "matchScore": <angka bulat 0-100>,
+  "verdict": "<Penilaian singkat 1 kalimat dalam bahasa Indonesia>",
+  "matchedKeywords": ["<kata kunci / keahlian yang sudah ada di CV dan dicari lowongan>", ...],
+  "missingKeywords": ["<kata kunci penting yang dicari lowongan tapi BELUM ada di CV>", ...],
+  "keyStrengths": ["<poin kelebihan profil kandidat untuk posisi ini>", ...],
+  "atsGaps": ["<kelemahan atau kesenjangan yang bisa membuat CV gugur di ATS>", ...],
+  "actionableRecommendations": [
+    "<langkah perbaikan konkret 1>",
+    "<langkah perbaikan konkret 2>",
+    "<langkah perbaikan konkret 3>"
+  ],
+  "tailoredSummarySuggestion": "<usulan revisi ringkasan profil (About Me) yang sudah disesuaikan dengan kata kunci lowongan>"
+}
+
+Pastikan respons HANYA berupa JSON valid tanpa teks lain di luar kurung kurawal.`;
+
+      const response = await invokeLLM({
+        model: "gpt-4o-mini",
+        messages: [{ role: "user", content: prompt }],
+        responseFormat: { type: "json_object" },
+        max_tokens: 2200,
+      });
+
+      const raw = response.choices[0]?.message?.content || "{}";
+      const cleaned = typeof raw === "string" ? raw.replace(/```json\n?|```/g, "").trim() : JSON.stringify(raw);
+      try {
+        return JSON.parse(cleaned);
+      } catch {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Gagal memproses analisis kecocokan lowongan kerja",
         });
       }
     }),

@@ -253,7 +253,11 @@ export type TemplateId =
   | "portfolio"
   | "monochrome"
   | "atlas"
-  | "swiss";
+  | "swiss"
+  | "dark"
+  | "midnight"
+  | "pastel"
+  | "split";
 
 export async function createCV(
   userId: number,
@@ -355,6 +359,7 @@ export async function updateCV(
   data: {
     title?: string;
     template?: TemplateId;
+    paperSize?: "a4" | "letter";
     isPublic?: number;
     shareSlug?: string | null;
     viewsCount?: number;

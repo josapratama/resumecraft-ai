@@ -1,11 +1,14 @@
+import type { PaperSize } from "@/types/cv";
+
 /**
  * Export Cover Letter to PDF
- * Captures the exact rendered HTML and stylesheets, formats for standard A4 paper,
+ * Captures the exact rendered HTML and stylesheets, formats for standard A4/Letter paper,
  * and triggers window.print() for saving as PDF or printing.
  */
 export async function exportCoverLetterToPDF(
   elementId: string,
-  fileName: string = "surat_lamaran.pdf"
+  fileName: string = "surat_lamaran.pdf",
+  paperSize: PaperSize = "a4"
 ): Promise<void> {
   const container = document.getElementById(elementId);
   if (!container) {
@@ -23,6 +26,9 @@ export async function exportCoverLetterToPDF(
     .map(s => `<style>${s.textContent}</style>`)
     .join("\n");
 
+  const pageSizeRule = paperSize === "letter" ? "letter portrait" : "A4 portrait";
+  const maxWidthRule = paperSize === "letter" ? "816px" : "794px";
+
   const htmlContent = `<!DOCTYPE html>
 <html>
 <head>
@@ -33,7 +39,7 @@ export async function exportCoverLetterToPDF(
   ${inlineStyles}
   <style>
     @page {
-      size: A4 portrait;
+      size: ${pageSizeRule};
       margin: 12mm 15mm 12mm 15mm;
     }
     html, body {
@@ -50,14 +56,15 @@ export async function exportCoverLetterToPDF(
     }
     .cover-letter-signature-img,
     img[alt*="Tanda Tangan"] {
-      height: 46px !important;
-      max-height: 50px !important;
+      height: 44px !important;
+      max-height: 48px !important;
       width: auto !important;
-      max-width: 180px !important;
+      max-width: 170px !important;
       object-fit: contain !important;
       display: block !important;
-      margin: 0 auto !important;
-      mix-blend-mode: normal !important;
+      margin: 6px auto !important;
+      mix-blend-mode: multiply !important;
+      background-color: transparent !important;
     }
     .cover-letter-paper {
       width: 100% !important;
@@ -80,7 +87,7 @@ export async function exportCoverLetterToPDF(
     }
     @media screen {
       body { padding: 20px; background: #f1f5f9; }
-      .print-wrapper { background: white; max-width: 794px; margin: 0 auto; box-shadow: 0 4px 20px rgba(0,0,0,0.1); padding: 40px; }
+      .print-wrapper { background: white; max-width: ${maxWidthRule}; margin: 0 auto; box-shadow: 0 4px 20px rgba(0,0,0,0.1); padding: 40px; }
     }
   </style>
 </head>
@@ -137,7 +144,8 @@ export async function exportCoverLetterToPDF(
 export async function exportBundleToPDF(
   coverLetterElementId: string,
   cvElementId: string = "cv-preview-content",
-  fileName: string = "paket_lamaran_lengkap.pdf"
+  fileName: string = "paket_lamaran_lengkap.pdf",
+  paperSize: PaperSize = "a4"
 ): Promise<void> {
   const clContainer = document.getElementById(coverLetterElementId);
   const cvContainer = document.getElementById(cvElementId);
@@ -151,7 +159,7 @@ export async function exportBundleToPDF(
 
   if (!cvElement) {
     // If CV element is not found, fallback to Cover Letter only
-    return exportCoverLetterToPDF(coverLetterElementId, fileName);
+    return exportCoverLetterToPDF(coverLetterElementId, fileName, paperSize);
   }
 
   const styleLinks = Array.from(document.querySelectorAll<HTMLLinkElement>("link[rel='stylesheet']"))
@@ -161,6 +169,10 @@ export async function exportBundleToPDF(
   const inlineStyles = Array.from(document.querySelectorAll("style"))
     .map(s => `<style>${s.textContent}</style>`)
     .join("\n");
+
+  const pageSizeRule = paperSize === "letter" ? "letter portrait" : "A4 portrait";
+  const minHeightRule = paperSize === "letter" ? "279.4mm" : "297mm";
+  const maxWidthRule = paperSize === "letter" ? "816px" : "794px";
 
   const htmlContent = `<!DOCTYPE html>
 <html>
@@ -172,7 +184,7 @@ export async function exportBundleToPDF(
   ${inlineStyles}
   <style>
     @page {
-      size: A4 portrait;
+      size: ${pageSizeRule};
       margin: 0;
     }
     html, body {
@@ -189,19 +201,20 @@ export async function exportBundleToPDF(
     }
     .cover-letter-signature-img,
     img[alt*="Tanda Tangan"] {
-      height: 46px !important;
-      max-height: 50px !important;
+      height: 44px !important;
+      max-height: 48px !important;
       width: auto !important;
-      max-width: 180px !important;
+      max-width: 170px !important;
       object-fit: contain !important;
       display: block !important;
-      margin: 0 auto !important;
-      mix-blend-mode: normal !important;
+      margin: 6px auto !important;
+      mix-blend-mode: multiply !important;
+      background-color: transparent !important;
     }
     .bundle-page-1 {
       box-sizing: border-box;
       padding: 12mm 15mm 12mm 15mm;
-      min-height: 297mm;
+      min-height: ${minHeightRule};
       page-break-after: always;
       break-after: page;
     }
@@ -216,7 +229,7 @@ export async function exportBundleToPDF(
     }
     .bundle-page-2 {
       box-sizing: border-box;
-      min-height: 297mm;
+      min-height: ${minHeightRule};
       page-break-before: always;
       break-before: page;
     }
@@ -237,7 +250,7 @@ export async function exportBundleToPDF(
       body { padding: 20px; background: #f1f5f9; }
       .bundle-page-1, .bundle-page-2 {
         background: white;
-        max-width: 794px;
+        max-width: ${maxWidthRule};
         margin: 20px auto;
         box-shadow: 0 4px 20px rgba(0,0,0,0.1);
       }

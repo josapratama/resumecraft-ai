@@ -3,6 +3,33 @@ import { useI18n } from "@/lib/i18n";
 import { formatProficiency, formatDisplayUrl, ensureAbsoluteUrl } from "@/lib/cvFormatters";
 import CVQRCode from "../CVQRCode";
 
+/**
+ * Universal Font Resolver
+ * Maps user-selected font classes to robust cross-platform CSS font families.
+ */
+export function resolveFontFamily(
+  cvData: FullCVData,
+  fallback = "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif"
+): string {
+  const font = cvData.cv?.fontFamily;
+  if (!font) return fallback;
+  if (font === "font-serif") return "'Merriweather', Georgia, Cambria, serif";
+  if (font === "font-sans-roboto") return "'Roboto', -apple-system, sans-serif";
+  if (font === "font-playfair") return "'Playfair Display', Georgia, serif";
+  if (font === "font-sans") return "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
+  return font;
+}
+
+/**
+ * Universal Accent Color Resolver
+ */
+export function resolveAccentColor(
+  cvData: FullCVData,
+  fallback = "#ef4444"
+): string {
+  return cvData.cv?.accentColor || fallback;
+}
+
 export function getQRTargetUrl(cvData: FullCVData): string | null {
   if (cvData.cv?.showQrCode === 0) return null;
   return (

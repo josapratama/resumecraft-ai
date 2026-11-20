@@ -366,6 +366,43 @@ export default function PersonalInfoForm({
             placeholder="Contoh: https://linkedin.com/in/nama atau https://irma-iryani.josapratama.com"
             className="mt-1.5 border-neutral-200 focus:border-neutral-900 rounded-xl"
           />
+          <div className="flex flex-wrap gap-1.5 mt-2">
+            <span className="text-[10px] text-neutral-400 font-medium self-center">Preset Cepat:</span>
+            <button
+              type="button"
+              onClick={() => {
+                const url = "https://linkedin.com/in/";
+                setPortfolioUrl(url);
+                onPortfolioUrlChange?.(url);
+              }}
+              className="text-[10px] px-2 py-0.5 rounded-md bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200 transition-colors cursor-pointer"
+            >
+              💼 LinkedIn
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                const nameSlug = (formData.fullName || "profil").toLowerCase().trim().replace(/[^a-z0-9]+/g, "-");
+                const url = `https://${nameSlug}.josapratama.com`;
+                setPortfolioUrl(url);
+                onPortfolioUrlChange?.(url);
+              }}
+              className="text-[10px] px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200 transition-colors cursor-pointer"
+            >
+              🌐 Portofolio Web Pribadi
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setPortfolioUrl("");
+                onPortfolioUrlChange?.("");
+              }}
+              className="text-[10px] px-2 py-0.5 rounded-md bg-neutral-100 text-neutral-600 hover:bg-neutral-200 border border-neutral-200 transition-colors cursor-pointer"
+              title="Jika dikosongkan, QR code otomatis mengarah ke Link Publik CV ini"
+            >
+              🔗 Link Publik CV
+            </button>
+          </div>
         </div>
 
         {/* Professional Summary */}

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useLocation } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { exportCVToPDF } from "@/lib/pdfExport";
@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Spinner } from "@/components/ui/spinner";
 import { Download, Globe, Sparkles, Mail, Phone, MapPin, CheckCircle } from "lucide-react";
 import CVPreview from "@/components/CVEditor/CVPreview";
-import type { FullCVData, TemplateId } from "@/types/cv";
+import type { FullCVData, TemplateId, PaperSize } from "@/types/cv";
 import { toast } from "sonner";
 
 export default function PublicCV() {
@@ -15,17 +15,32 @@ export default function PublicCV() {
   const [, navigate] = useLocation();
   const slug = params.slug || "";
   const [isExporting, setIsExporting] = useState(false);
+  const [paperSize, setPaperSize] = useState<PaperSize>("a4");
 
   const { data, isLoading, error } = trpc.cv.getPublic.useQuery(
     { identifier: slug },
-    { enabled: Boolean(slug), retry: 1 }
+    {
+      enabled: Boolean(slug),
+      retry: 1,
+    }
   );
+
+  // Sync paperSize when CV loads
+  useEffect(() => {
+    if (data?.cv && (data.cv as any).paperSize) {
+      setPaperSize((data.cv as any).paperSize as PaperSize);
+    }
+  }, [data]);
 
   const handleDownload = async () => {
     if (!data) return;
     try {
       setIsExporting(true);
-      await exportCVToPDF("public-cv-content", `${data.cv.title || "resume"}.pdf`);
+      await exportCVToPDF(
+        "public-cv-content",
+        `${data.cv.title || "resume"}.pdf`,
+        paperSize
+      );
       toast.info("Select 'Save as PDF' in the print dialog to download.");
     } catch (err: any) {
       toast.error(`Export failed: ${err.message || String(err)}`);
@@ -114,7 +129,12 @@ export default function PublicCV() {
       {/* Main CV Document View */}
       <main className="max-w-5xl mx-auto py-6 sm:py-10 px-3 sm:px-6 flex-1 w-full">
         <div id="public-cv-content">
-          <CVPreview template={template} cvData={cvData} />
+          <CVPreview
+            template={template}
+            cvData={cvData}
+            paperSize={paperSize}
+            onPaperSizeChange={setPaperSize}
+          />
         </div>
       </main>
 

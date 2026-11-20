@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
+import { useI18n } from "@/lib/i18n";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -19,11 +20,13 @@ import {
   ChevronLeft,
 } from "lucide-react";
 import { Spinner } from "@/components/ui/spinner";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 
 type Mode = "login" | "register";
 
 export default function Login() {
   const [, navigate] = useLocation();
+  const { t } = useI18n();
   const [mode, setMode] = useState<Mode>("login");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -63,15 +66,15 @@ export default function Login() {
     e.preventDefault();
 
     if (!username.trim() || !password.trim()) {
-      toast.error("Username dan password wajib diisi");
+      toast.error(t("auth.valid_req", "Username dan password wajib diisi"));
       return;
     }
     if (username.trim().length < 3) {
-      toast.error("Username minimal 3 karakter");
+      toast.error(t("auth.valid_user_len", "Username minimal 3 karakter"));
       return;
     }
     if (password.length < 6) {
-      toast.error("Password minimal 6 karakter");
+      toast.error(t("auth.valid_pass_len", "Password minimal 6 karakter"));
       return;
     }
 
@@ -94,19 +97,19 @@ export default function Login() {
       const data = await res.json();
 
       if (!res.ok) {
-        toast.error(data.error ?? "Autentikasi gagal. Silakan periksa kembali data Anda.");
+        toast.error(data.error ?? t("auth.auth_failed", "Autentikasi gagal. Silakan periksa kembali data Anda."));
         return;
       }
 
       await utils.auth.me.invalidate();
       toast.success(
         mode === "login"
-          ? "Selamat datang kembali di ResumeCraft AI!"
-          : "Akun berhasil dibuat! Selamat datang di Studio CV."
+          ? t("auth.welcome_login_toast", "Selamat datang kembali di ResumeCraft AI!")
+          : t("auth.welcome_reg_toast", "Akun berhasil dibuat! Selamat datang di Studio CV.")
       );
       navigate("/");
     } catch {
-      toast.error("Terjadi kendala jaringan. Silakan coba sesaat lagi.");
+      toast.error(t("auth.network_error_toast", "Terjadi kendala jaringan. Silakan coba sesaat lagi."));
     } finally {
       setLoading(false);
     }
@@ -130,13 +133,16 @@ export default function Login() {
 
           {/* Top Brand */}
           <div className="relative z-10">
-            <button
-              onClick={() => navigate("/")}
-              className="inline-flex items-center gap-2 text-xs font-medium text-neutral-400 hover:text-white transition-colors mb-8 group"
-            >
-              <ChevronLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-              Kembali ke Beranda
-            </button>
+            <div className="flex items-center justify-between mb-8">
+              <button
+                onClick={() => navigate("/")}
+                className="inline-flex items-center gap-2 text-xs font-medium text-neutral-400 hover:text-white transition-colors group"
+              >
+                <ChevronLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+                {t("auth.back_to_home", "Kembali ke Beranda")}
+              </button>
+              <LanguageSwitcher />
+            </div>
 
             <div className="flex items-center gap-3">
               <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-red-600 via-rose-500 to-amber-500 flex items-center justify-center shadow-lg shadow-red-500/20">
@@ -147,7 +153,7 @@ export default function Login() {
                   ResumeCraft <span className="text-red-500">AI</span>
                 </span>
                 <span className="block text-[11px] text-neutral-400 font-medium">
-                  Studio Pembuat CV & Dokumen Karir Standar ATS
+                  {t("landing_page.tagline", "Studio Pembuat CV & Dokumen Karir Standar ATS")}
                 </span>
               </div>
             </div>
@@ -158,59 +164,59 @@ export default function Login() {
             <div className="inline-flex items-center gap-2 bg-red-950/60 border border-red-800/50 rounded-full px-3 py-1">
               <Award className="w-3.5 h-3.5 text-red-400" />
               <span className="text-xs font-semibold text-red-300">
-                Standar Lolos Screening HRD & ATS Indonesia & Global
+                {t("auth.hero_badge", "Standar Lolos Screening HRD & ATS Indonesia & Global")}
               </span>
             </div>
 
             <h2 className="text-3xl xl:text-4xl font-black text-white leading-tight">
-              Tingkatkan Peluang Panggilan Wawancara Kerja Anda hingga{" "}
+              {t("auth.hero_title_1", "Tingkatkan Peluang Panggilan Wawancara Kerja Anda hingga")}{" "}
               <span className="bg-gradient-to-r from-red-400 via-rose-400 to-amber-400 bg-clip-text text-transparent">
-                3.8x Lebih Tinggi.
+                {t("auth.hero_title_highlight", "3.8x Lebih Tinggi.")}
               </span>
             </h2>
 
             <p className="text-sm text-neutral-400 leading-relaxed max-w-lg">
-              ResumeCraft AI merancang format resume profesional yang mudah dibaca oleh software sistem ATS maupun HRD. Dilengkapi optimasi kata kunci AI, generator surat lamaran kerja, serta draf email siap kirim.
+              {t("auth.hero_desc", "ResumeCraft AI merancang format resume profesional yang mudah dibaca oleh software sistem ATS maupun HRD. Dilengkapi optimasi kata kunci AI, generator surat lamaran kerja, serta draf email siap kirim.")}
             </p>
 
             <div className="grid grid-cols-2 gap-3.5 pt-2">
               <div className="p-3.5 bg-neutral-900/80 border border-neutral-800 rounded-xl space-y-1">
                 <div className="flex items-center gap-2 text-red-400 text-xs font-bold">
                   <FileText className="w-4 h-4" />
-                  <span>29 Template ATS</span>
+                  <span>{t("auth.perk_templates_title", "29 Template ATS")}</span>
                 </div>
                 <p className="text-[11px] text-neutral-400">
-                  Format A4 & Letter presisi dengan visual page-break cetak.
+                  {t("auth.perk_templates_desc", "Format A4 & Letter presisi dengan visual page-break cetak.")}
                 </p>
               </div>
 
               <div className="p-3.5 bg-neutral-900/80 border border-neutral-800 rounded-xl space-y-1">
                 <div className="flex items-center gap-2 text-amber-400 text-xs font-bold">
                   <Zap className="w-4 h-4" />
-                  <span>Formula STAR AI</span>
+                  <span>{t("auth.perk_star_title", "Formula STAR AI")}</span>
                 </div>
                 <p className="text-[11px] text-neutral-400">
-                  Ubah poin pengalaman biasa menjadi pencapaian berdampak tinggi.
+                  {t("auth.perk_star_desc", "Ubah poin pengalaman biasa menjadi pencapaian berdampak tinggi.")}
                 </p>
               </div>
 
               <div className="p-3.5 bg-neutral-900/80 border border-neutral-800 rounded-xl space-y-1">
                 <div className="flex items-center gap-2 text-emerald-400 text-xs font-bold">
                   <FileCheck2 className="w-4 h-4" />
-                  <span>Surat Lamaran Kerja</span>
+                  <span>{t("auth.perk_cl_title", "Surat Lamaran Kerja")}</span>
                 </div>
                 <p className="text-[11px] text-neutral-400">
-                  25 format surat lamaran otomatis tersinkronisasi dari data CV.
+                  {t("auth.perk_cl_desc", "25 format surat lamaran otomatis tersinkronisasi dari data CV.")}
                 </p>
               </div>
 
               <div className="p-3.5 bg-neutral-900/80 border border-neutral-800 rounded-xl space-y-1">
                 <div className="flex items-center gap-2 text-blue-400 text-xs font-bold">
                   <Shield className="w-4 h-4" />
-                  <span>Bebas Watermark</span>
+                  <span>{t("auth.perk_watermark_title", "Bebas Watermark")}</span>
                 </div>
                 <p className="text-[11px] text-neutral-400">
-                  Ekspor PDF & Word (.docx) jernih 100% tanpa watermark.
+                  {t("auth.perk_watermark_desc", "Ekspor PDF & Word (.docx) jernih 100% tanpa watermark.")}
                 </p>
               </div>
             </div>
@@ -219,7 +225,7 @@ export default function Login() {
           {/* Bottom Quote */}
           <div className="relative z-10 pt-6 border-t border-neutral-800/80 flex items-center justify-between text-xs text-neutral-500">
             <span>© {new Date().getFullYear()} ResumeCraft AI</span>
-            <span>Didukung AuthHub SSO & AI Architecture</span>
+            <span>{t("auth.supported_by", "Didukung AuthHub SSO & AI Architecture")}</span>
           </div>
         </div>
 
@@ -233,25 +239,24 @@ export default function Login() {
                 className="inline-flex items-center gap-1.5 text-xs font-semibold text-neutral-600 hover:text-neutral-900"
               >
                 <ChevronLeft className="w-4 h-4" />
-                Kembali ke Beranda
+                {t("auth.back_to_home", "Kembali ke Beranda")}
               </button>
               <div className="flex items-center gap-2">
-                <div className="w-6 h-6 rounded-lg bg-red-600 flex items-center justify-center">
-                  <Sparkles className="w-3.5 h-3.5 text-white" />
-                </div>
-                <span className="font-bold text-sm tracking-tight">ResumeCraft AI</span>
+                <LanguageSwitcher />
               </div>
             </div>
 
             {/* Title & Subtitle */}
             <div className="space-y-1.5">
               <h1 className="text-2xl sm:text-3xl font-black text-neutral-900 tracking-tight">
-                {mode === "login" ? "Masuk ke Studio CV" : "Mulai Akun Baru"}
+                {mode === "login"
+                  ? t("auth.login_title", "Masuk ke Studio CV")
+                  : t("auth.register_title", "Mulai Akun Baru")}
               </h1>
               <p className="text-xs sm:text-sm text-neutral-500">
                 {mode === "login"
-                  ? "Akses seluruh resume, surat lamaran kerja, dan template ATS Anda."
-                  : "Buat akun dalam beberapa detik untuk mendesain CV profesional gratis."}
+                  ? t("auth.login_subtitle", "Akses seluruh resume, surat lamaran kerja, dan template ATS Anda.")
+                  : t("auth.register_subtitle", "Buat akun dalam beberapa detik untuk mendesain CV profesional gratis.")}
               </p>
             </div>
 
@@ -266,7 +271,7 @@ export default function Login() {
                     : "text-neutral-500 hover:text-neutral-800"
                 }`}
               >
-                Masuk (Sign In)
+                {t("auth.tab_signin", "Masuk (Sign In)")}
               </button>
               <button
                 type="button"
@@ -277,7 +282,7 @@ export default function Login() {
                     : "text-neutral-500 hover:text-neutral-800"
                 }`}
               >
-                Daftar Akun
+                {t("auth.tab_signup", "Daftar Akun")}
               </button>
             </div>
 
@@ -291,13 +296,15 @@ export default function Login() {
                   className="w-full flex items-center justify-center gap-2.5 border-neutral-300 hover:bg-neutral-50 text-neutral-800 font-semibold py-2.5 h-11 rounded-xl transition-all shadow-xs"
                 >
                   <Shield className="w-4 h-4 text-amber-500 flex-shrink-0" />
-                  <span className="text-xs sm:text-sm">Masuk via AuthHub SSO (YubiKey / PIN)</span>
+                  <span className="text-xs sm:text-sm">
+                    {t("auth.sso_btn", "Masuk via AuthHub SSO (YubiKey / PIN)")}
+                  </span>
                 </Button>
 
                 <div className="relative flex items-center justify-center pt-1">
                   <div className="border-t border-neutral-200 w-full" />
                   <span className="bg-white px-3 text-[11px] uppercase tracking-wider text-neutral-400 font-semibold">
-                    atau akun lokal
+                    {t("auth.or_local", "atau akun lokal")}
                   </span>
                   <div className="border-t border-neutral-200 w-full" />
                 </div>
@@ -309,7 +316,7 @@ export default function Login() {
               {mode === "register" && (
                 <div>
                   <Label className="text-xs font-bold text-neutral-700 uppercase tracking-wider">
-                    Nama Lengkap
+                    {t("auth.fullname_label", "Nama Lengkap")}
                   </Label>
                   <div className="relative mt-1.5">
                     <User className="w-4 h-4 text-neutral-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
@@ -326,7 +333,7 @@ export default function Login() {
 
               <div>
                 <Label className="text-xs font-bold text-neutral-700 uppercase tracking-wider">
-                  Username
+                  {t("auth.username_label", "Username")}
                 </Label>
                 <div className="relative mt-1.5">
                   <User className="w-4 h-4 text-neutral-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
@@ -345,7 +352,7 @@ export default function Login() {
               <div>
                 <div className="flex items-center justify-between">
                   <Label className="text-xs font-bold text-neutral-700 uppercase tracking-wider">
-                    Kata Sandi
+                    {t("auth.password_label", "Kata Sandi")}
                   </Label>
                   {mode === "login" && (
                     <span className="text-[11px] text-neutral-400">Min. 6 Karakter</span>
@@ -374,12 +381,14 @@ export default function Login() {
                 {loading ? (
                   <div className="flex items-center gap-2">
                     <Spinner className="w-4 h-4" />
-                    <span>{mode === "login" ? "Memproses Masuk..." : "Mendaftarkan Akun..."}</span>
+                    <span>{mode === "login" ? t("status.processing", "Memproses...") : t("status.processing", "Memproses...")}</span>
                   </div>
                 ) : (
                   <div className="flex items-center justify-center gap-2">
                     <span>
-                      {mode === "login" ? "Masuk ke Studio ResumeCraft" : "Buat Akun Sekarang"}
+                      {mode === "login"
+                        ? t("auth.submit_login", "Masuk ke Studio ResumeCraft")
+                        : t("auth.submit_register", "Buat Akun Sekarang")}
                     </span>
                     <ArrowRight className="w-4 h-4" />
                   </div>
@@ -404,13 +413,17 @@ export default function Login() {
             {/* Switch Mode Prompt */}
             <div className="text-center pt-2">
               <p className="text-xs text-neutral-500">
-                {mode === "login" ? "Belum memiliki akun?" : "Sudah memiliki akun sebelumnya?"}{" "}
+                {mode === "login"
+                  ? t("auth.dont_have_account", "Belum memiliki akun?")
+                  : t("auth.already_have_account", "Sudah memiliki akun sebelumnya?")}{" "}
                 <button
                   type="button"
                   onClick={() => switchMode(mode === "login" ? "register" : "login")}
                   className="font-bold text-neutral-900 hover:text-red-600 underline transition-colors"
                 >
-                  {mode === "login" ? "Daftar Akun Baru" : "Masuk di Sini"}
+                  {mode === "login"
+                    ? t("auth.tab_signup", "Daftar Akun Baru")
+                    : t("auth.tab_signin", "Masuk di Sini")}
                 </button>
               </p>
             </div>

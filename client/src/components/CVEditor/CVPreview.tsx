@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import { useI18n } from "@/lib/i18n";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -82,6 +83,7 @@ export default function CVPreview({
   paperSize = "a4",
   onPaperSizeChange,
 }: CVPreviewProps) {
+  const { t } = useI18n();
   const TemplateComponent = TEMPLATE_MAP[template] ?? ModernTemplate;
   const containerRef = useRef<HTMLDivElement>(null);
   const templateRef = useRef<HTMLDivElement>(null);
@@ -199,7 +201,7 @@ export default function CVPreview({
           {isOnePage ? (
             <span className="text-[10px] py-0.5 px-2.5 rounded-full bg-emerald-950/90 text-emerald-300 border border-emerald-700/80 font-semibold inline-flex items-center gap-1.5 shadow-2xs shrink-0">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-              <span>Pas 1 Halaman</span>
+              <span>{t("preview_bar.one_page_fit", "Pas 1 Halaman")}</span>
             </span>
           ) : isSlightOverflow ? (
             <button
@@ -208,11 +210,18 @@ export default function CVPreview({
               title="Konten tumpah sedikit. Klik untuk padatkan otomatis ke 1 halaman!"
             >
               <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-ping" />
-              <span>Tumpah +{Math.max(1, Math.round((docHeight - targetHeightPx) / 24))} baris (Klik Paskan)</span>
+              <span>
+                {t("preview_bar.overflow_warning", "Tumpah +{n} baris (Klik Paskan)").replace(
+                  "{n}",
+                  String(Math.max(1, Math.round((docHeight - targetHeightPx) / 24)))
+                )}
+              </span>
             </button>
           ) : (
             <span className="text-[10px] py-0.5 px-2 rounded-full bg-slate-800 text-slate-300 border border-slate-700 font-medium inline-flex shrink-0">
-              {Math.ceil(docHeight / targetHeightPx)} Halaman {paperSize.toUpperCase()}
+              {t("preview_bar.pages_label", "{n} Halaman {paper}")
+                .replace("{n}", String(Math.ceil(docHeight / targetHeightPx)))
+                .replace("{paper}", paperSize.toUpperCase())}
             </span>
           )}
 
@@ -228,7 +237,11 @@ export default function CVPreview({
             title={`Padatkan konten CV agar pas di 1 lembar ${paperSize.toUpperCase()}`}
           >
             <FileCheck className="w-3 h-3 text-emerald-400" />
-            <span>{isOnePageMode ? "1 Hal: Aktif" : "Padatkan"}</span>
+            <span>
+              {isOnePageMode
+                ? t("preview_bar.btn_compact_active", "1 Hal: Aktif")
+                : t("preview_bar.btn_compact", "Padatkan")}
+            </span>
           </Button>
 
           {docHeight > targetHeightPx + 15 && (
@@ -244,7 +257,11 @@ export default function CVPreview({
               title="Garis pembatas lembar halaman cetak"
             >
               <Scissors className="w-3 h-3 text-blue-400" />
-              <span className="hidden sm:inline">{showPageBreakGuide ? "Garis: On" : "Garis: Off"}</span>
+              <span className="hidden sm:inline">
+                {showPageBreakGuide
+                  ? t("preview_bar.guide_on", "Garis: On")
+                  : t("preview_bar.guide_off", "Garis: Off")}
+              </span>
             </Button>
           )}
         </div>

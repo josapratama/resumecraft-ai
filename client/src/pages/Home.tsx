@@ -1,4 +1,5 @@
 import { useAuth } from "@/_core/hooks/useAuth";
+import { useI18n } from "@/lib/i18n";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -203,6 +204,7 @@ function CreateResumeModal({
 
 export default function Home() {
   const { user, isAuthenticated, logout } = useAuth();
+  const { t } = useI18n();
   const [, navigate] = useLocation();
 
   const [searchQuery, setSearchQuery] = useState("");
@@ -311,19 +313,19 @@ export default function Home() {
             {/* Desktop Navigation Links */}
             <nav className="hidden md:flex items-center gap-6 text-xs font-semibold text-neutral-400">
               <a href="#fitur" className="hover:text-white transition-colors">
-                Fitur Unggulan
+                {t("landing.features", "Fitur Unggulan")}
               </a>
               <a href="#template" className="hover:text-white transition-colors">
-                29 Template ATS
+                {t("dashboard.templates_count", "29 Template ATS")}
               </a>
               <a href="#komparasi" className="hover:text-white transition-colors">
-                Perbandingan
+                {t("landing_page.comparison_tag", "Perbandingan")}
               </a>
               <a href="#carakerja" className="hover:text-white transition-colors">
-                Cara Kerja
+                {t("landing_page.how_it_works_tag", "Cara Kerja")}
               </a>
               <a href="#faq" className="hover:text-white transition-colors">
-                FAQ
+                {t("landing_page.faq_tag", "FAQ")}
               </a>
             </nav>
 
@@ -335,14 +337,14 @@ export default function Home() {
                 onClick={() => navigate("/login")}
                 className="text-xs font-semibold text-neutral-300 hover:text-white hover:bg-neutral-800 rounded-xl"
               >
-                Masuk
+                {t("auth.login", "Masuk")}
               </Button>
               <Button
                 size="sm"
                 onClick={() => navigate("/login")}
                 className="bg-red-600 hover:bg-red-500 text-white font-bold text-xs sm:text-sm px-4 rounded-xl shadow-md shadow-red-600/30 gap-1.5"
               >
-                <span>Buat CV Gratis</span>
+                <span>{t("landing.start_free", "Buat CV Gratis")}</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </Button>
             </div>
@@ -361,19 +363,19 @@ export default function Home() {
                 <div className="inline-flex items-center gap-2 bg-neutral-900/90 border border-neutral-700/80 rounded-full px-4 py-1.5 shadow-inner">
                   <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
                   <span className="text-xs font-bold text-neutral-300 uppercase tracking-wider">
-                    ✨ Pembuat CV Standar ATS No. 1 di Indonesia
+                    {t("landing_page.tagline", "✨ Pembuat CV Standar ATS No. 1 di Indonesia")}
                   </span>
                 </div>
 
                 <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-white leading-[1.1] tracking-tight">
-                  Buat CV Standar ATS & Lolos Screening HRD dalam{" "}
+                  {t("landing_page.hero_title_1", "Buat CV Standar ATS & Lolos Screening HRD dalam")}{" "}
                   <span className="bg-gradient-to-r from-red-400 via-rose-400 to-amber-400 bg-clip-text text-transparent">
-                    Hitungan Menit.
+                    {t("landing_page.hero_title_2", "Hitungan Menit.")}
                   </span>
                 </h1>
 
                 <p className="text-sm sm:text-base lg:text-lg text-neutral-400 leading-relaxed">
-                  Tingkatkan peluang panggilan interview hingga 3.8x lebih tinggi. Ditenagai 29 template teruji ATS, formula STAR berbasis AI, integrasi Surat Lamaran Kerja otomatis, dan ekspor PDF vektor tajam tanpa watermark.
+                  {t("landing_page.hero_desc", "Tingkatkan peluang panggilan interview hingga 3.8x lebih tinggi. Ditenagai 29 template teruji ATS, formula STAR berbasis AI, integrasi Surat Lamaran Kerja otomatis, dan ekspor PDF vektor tajam tanpa watermark.")}
                 </p>
 
                 {/* Value Checkpoints */}
@@ -400,14 +402,14 @@ export default function Home() {
                     onClick={() => navigate("/login")}
                     className="w-full sm:w-auto bg-red-600 hover:bg-red-500 text-white font-black text-sm px-8 py-6 rounded-2xl shadow-xl shadow-red-600/30 gap-2"
                   >
-                    <span>Mulai Buat CV Sekarang</span>
+                    <span>{t("landing_page.btn_start", "Mulai Buat CV Sekarang")}</span>
                     <ArrowRight className="w-4 h-4" />
                   </Button>
                   <a
                     href="#template"
                     className="w-full sm:w-auto text-center px-6 py-3.5 rounded-2xl border border-neutral-700 bg-neutral-900/60 hover:bg-neutral-800 text-neutral-300 hover:text-white text-xs font-bold transition-all"
                   >
-                    Jelajahi 29 Desain Template
+                    {t("landing_page.btn_browse_templates", "Jelajahi 29 Desain Template")}
                   </a>
                 </div>
               </div>
@@ -791,17 +793,17 @@ export default function Home() {
         <section className="py-16 bg-gradient-to-r from-red-950 via-neutral-950 to-neutral-950 border-t border-neutral-800 relative overflow-hidden">
           <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-6 relative z-10">
             <h2 className="text-3xl sm:text-4xl font-black text-white tracking-tight">
-              Siap Raih Karir Impian Anda Sekarang?
+              {t("landing_page.final_cta_title", "Siap Raih Karir Impian Anda Sekarang?")}
             </h2>
             <p className="text-sm sm:text-base text-neutral-400 max-w-xl mx-auto">
-              Bergabunglah dengan ribuan profesional dan fresh graduate yang berhasil lolos wawancara kerja dengan ResumeCraft AI.
+              {t("landing_page.final_cta_desc", "Bergabunglah dengan ribuan profesional dan fresh graduate yang berhasil lolos wawancara kerja dengan ResumeCraft AI.")}
             </p>
             <Button
               size="lg"
               onClick={() => navigate("/login")}
               className="bg-red-600 hover:bg-red-500 text-white font-black text-sm px-8 py-6 rounded-2xl shadow-xl shadow-red-600/30 gap-2"
             >
-              <span>Mulai Buat Resume Gratis Sekarang</span>
+              <span>{t("landing_page.final_cta_btn", "Mulai Buat Resume Gratis Sekarang")}</span>
               <ArrowRight className="w-4 h-4" />
             </Button>
           </div>
@@ -812,10 +814,10 @@ export default function Home() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-2 text-neutral-400">
               <Sparkles className="w-4 h-4 text-red-500" />
-              <span className="font-bold text-white">ResumeCraft AI</span> — Standar Keunggulan Karir Profesional.
+              <span className="font-bold text-white">ResumeCraft AI</span> — {t("landing_page.footer_tagline", "Standar Keunggulan Karir Profesional.")}
             </div>
             <div>
-              © {new Date().getFullYear()} ResumeCraft AI. Dilindungi Hak Cipta.
+              © {new Date().getFullYear()} {t("landing_page.footer_copyright", "ResumeCraft AI. Dilindungi Hak Cipta.")}
             </div>
           </div>
         </footer>
@@ -856,8 +858,8 @@ export default function Home() {
                 className="gap-1 border-indigo-200 text-indigo-700 bg-indigo-50/60 hover:bg-indigo-100 rounded-xl text-xs font-semibold h-8 sm:h-9 px-2 sm:px-3"
               >
                 <Sparkles className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
-                <span className="hidden sm:inline">Impor CV Otomatis</span>
-                <span className="sm:hidden">Impor</span>
+                <span className="hidden sm:inline">{t("dashboard.btn_import", "Impor CV Otomatis")}</span>
+                <span className="sm:hidden">{t("dashboard.btn_import_short", "Impor")}</span>
               </Button>
 
               {/* New CV Button Trigger */}
@@ -867,8 +869,8 @@ export default function Home() {
                 className="bg-neutral-900 text-white hover:bg-neutral-800 gap-1 rounded-xl text-xs font-semibold h-8 sm:h-9 px-2.5 sm:px-3.5 shadow-sm"
               >
                 <Plus className="w-3.5 h-3.5 shrink-0" />
-                <span className="hidden sm:inline">Buat CV Baru</span>
-                <span className="sm:hidden">Buat CV</span>
+                <span className="hidden sm:inline">{t("dashboard.btn_new_cv", "Buat CV Baru")}</span>
+                <span className="sm:hidden">{t("dashboard.btn_new_cv_short", "Buat CV")}</span>
               </Button>
 
               <Button
@@ -877,7 +879,7 @@ export default function Home() {
                 onClick={logout}
                 className="text-neutral-500 hover:text-neutral-900 text-xs h-8 sm:h-9 px-2 sm:px-2.5 rounded-xl"
               >
-                Keluar
+                {t("auth.logout", "Keluar")}
               </Button>
             </div>
           </div>
@@ -891,7 +893,7 @@ export default function Home() {
           <div className="bg-white p-4 rounded-2xl border border-neutral-200 shadow-xs">
             <div className="flex items-center gap-2.5 text-neutral-500 text-xs font-semibold mb-1">
               <FileText className="w-4 h-4 text-blue-600" />
-              <span>Total Dokumen CV</span>
+              <span>{t("dashboard.total_resumes", "Total Dokumen CV")}</span>
             </div>
             <div className="text-2xl font-black text-neutral-900">{stats.total}</div>
           </div>
@@ -899,7 +901,7 @@ export default function Home() {
           <div className="bg-white p-4 rounded-2xl border border-neutral-200 shadow-xs">
             <div className="flex items-center gap-2.5 text-neutral-500 text-xs font-semibold mb-1">
               <TrendingUp className="w-4 h-4 text-emerald-600" />
-              <span>Rata-Rata Kelengkapan</span>
+              <span>{t("dashboard.avg_strength", "Rata-Rata Kelengkapan")}</span>
             </div>
             <div className="text-2xl font-black text-neutral-900">{stats.avgPct}%</div>
           </div>
@@ -907,17 +909,19 @@ export default function Home() {
           <div className="bg-white p-4 rounded-2xl border border-neutral-200 shadow-xs">
             <div className="flex items-center gap-2.5 text-neutral-500 text-xs font-semibold mb-1">
               <Layout className="w-4 h-4 text-purple-600" />
-              <span>Pilihan Desain</span>
+              <span>{t("dashboard.ready_templates", "Pilihan Desain")}</span>
             </div>
-            <div className="text-2xl font-black text-neutral-900">29 Template ATS</div>
+            <div className="text-2xl font-black text-neutral-900">{t("dashboard.templates_count", "29 Template ATS")}</div>
           </div>
 
           <div className="bg-white p-4 rounded-2xl border border-neutral-200 shadow-xs">
             <div className="flex items-center gap-2.5 text-neutral-500 text-xs font-semibold mb-1">
               <ExternalLink className="w-4 h-4 text-amber-600" />
-              <span>Tautan Publik</span>
+              <span>{t("dashboard.public_resumes", "Tautan Publik")}</span>
             </div>
-            <div className="text-2xl font-black text-neutral-900">{stats.publicCount} Aktif</div>
+            <div className="text-2xl font-black text-neutral-900">
+              {stats.publicCount} {t("dashboard.active_count", "Aktif")}
+            </div>
           </div>
         </div>
 
@@ -928,7 +932,7 @@ export default function Home() {
             <Input
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Cari berdasarkan nama CV atau posisi..."
+              placeholder={t("dashboard.search_placeholder", "Cari berdasarkan nama CV atau posisi...")}
               className="pl-9 h-10 border-neutral-200 rounded-xl text-xs bg-white"
             />
           </div>
@@ -940,7 +944,7 @@ export default function Home() {
                 filterType === "all" ? "bg-white text-neutral-900 shadow-xs" : "text-neutral-500 hover:text-neutral-900"
               }`}
             >
-              Semua ({cvList.length})
+              {t("dashboard.filter_all", "Semua")} ({cvList.length})
             </button>
             <button
               onClick={() => setFilterType("complete")}
@@ -948,7 +952,7 @@ export default function Home() {
                 filterType === "complete" ? "bg-white text-neutral-900 shadow-xs" : "text-neutral-500 hover:text-neutral-900"
               }`}
             >
-              Lengkap (≥80%)
+              {t("dashboard.filter_complete", "Lengkap (≥80%)")}
             </button>
             <button
               onClick={() => setFilterType("draft")}
@@ -956,7 +960,7 @@ export default function Home() {
                 filterType === "draft" ? "bg-white text-neutral-900 shadow-xs" : "text-neutral-500 hover:text-neutral-900"
               }`}
             >
-              Draf (&lt;80%)
+              {t("dashboard.filter_draft", "Draf (<80%)")}
             </button>
           </div>
         </div>
@@ -965,7 +969,7 @@ export default function Home() {
         {cvListQuery.isLoading ? (
           <div className="text-center py-20">
             <Spinner className="w-8 h-8 text-neutral-400 mx-auto" />
-            <p className="text-xs text-neutral-400 mt-2 font-medium">Memuat daftar CV...</p>
+            <p className="text-xs text-neutral-400 mt-2 font-medium">{t("dashboard.loading", "Memuat daftar CV...")}</p>
           </div>
         ) : filteredCVs.length === 0 ? (
           <div className="bg-white border border-neutral-200 rounded-2xl p-12 text-center max-w-md mx-auto my-12 space-y-4">
@@ -973,9 +977,9 @@ export default function Home() {
               <FileText className="w-6 h-6" />
             </div>
             <div>
-              <h3 className="font-bold text-neutral-900 text-sm">Belum ada CV yang sesuai</h3>
+              <h3 className="font-bold text-neutral-900 text-sm">{t("dashboard.empty_title", "Belum ada CV yang sesuai")}</h3>
               <p className="text-xs text-neutral-500 mt-1">
-                {searchQuery ? "Coba kata kunci pencarian lain" : "Mulai rancang CV ATS pertama Anda sekarang."}
+                {searchQuery ? "Coba kata kunci pencarian lain" : t("dashboard.empty_desc", "Mulai rancang CV ATS pertama Anda sekarang.")}
               </p>
             </div>
             <Button
@@ -984,7 +988,7 @@ export default function Home() {
               className="bg-neutral-900 text-white hover:bg-neutral-800 rounded-xl text-xs font-semibold gap-1.5"
             >
               <Plus className="w-4 h-4" />
-              <span>Buat CV Sekarang</span>
+              <span>{t("dashboard.btn_new_cv", "Buat CV Sekarang")}</span>
             </Button>
           </div>
         ) : (
@@ -1008,7 +1012,7 @@ export default function Home() {
                         </h3>
                         <p className="text-[11px] text-neutral-400 mt-0.5 flex items-center gap-1.5">
                           <Clock className="w-3 h-3" />
-                          Diperbarui {new Date(cv.updatedAt).toLocaleDateString("id-ID")}
+                          {t("status.updated_at", "Diperbarui")} {new Date(cv.updatedAt).toLocaleDateString()}
                         </p>
                       </div>
 
@@ -1020,7 +1024,7 @@ export default function Home() {
                             : "bg-amber-50 text-amber-700 border-amber-200"
                         }`}
                       >
-                        {pct}% Siap
+                        {t("dashboard.ready_pct", "{pct}% Siap").replace("{pct}", String(pct))}
                       </Badge>
                     </div>
 
@@ -1031,7 +1035,7 @@ export default function Home() {
                       </span>
                       {cv.isPublic && (
                         <Badge variant="outline" className="text-[10px] py-0 px-1.5 bg-blue-50 text-blue-700 border-blue-200">
-                          Publik
+                          {t("dashboard.public_badge", "Publik")}
                         </Badge>
                       )}
                     </div>
@@ -1044,7 +1048,7 @@ export default function Home() {
                       onClick={() => navigate(`/cv/${cv.id}`)}
                       className="bg-neutral-900 text-white hover:bg-neutral-800 text-xs font-semibold rounded-xl h-8 px-3.5"
                     >
-                      Buka Studio CV
+                      {t("dashboard.btn_open_studio", "Buka Studio CV")}
                     </Button>
 
                     <div className="flex items-center gap-1">
@@ -1053,7 +1057,7 @@ export default function Home() {
                         variant="ghost"
                         onClick={() => duplicateCVMutation.mutate({ cvId: cv.id })}
                         className="h-8 w-8 p-0 text-neutral-500 hover:text-neutral-900 rounded-lg"
-                        title="Duplikasi CV ini"
+                        title={t("dashboard.duplicate_tooltip", "Duplikasi CV ini")}
                       >
                         <Copy className="w-3.5 h-3.5" />
                       </Button>
@@ -1064,7 +1068,7 @@ export default function Home() {
                             size="sm"
                             variant="ghost"
                             className="h-8 w-8 p-0 text-neutral-400 hover:text-red-600 rounded-lg"
-                            title="Hapus CV"
+                            title={t("dashboard.delete_tooltip", "Hapus CV")}
                           >
                             <Trash2 className="w-3.5 h-3.5" />
                           </Button>
@@ -1072,19 +1076,21 @@ export default function Home() {
                         <AlertDialogContent className="rounded-2xl max-w-sm">
                           <AlertDialogHeader>
                             <AlertDialogTitle className="text-base font-bold text-neutral-900">
-                              Hapus CV ini?
+                              {t("dashboard.delete_title", "Hapus CV ini?")}
                             </AlertDialogTitle>
                             <AlertDialogDescription className="text-xs text-neutral-500">
-                              Tindakan ini permanen dan tidak dapat dibatalkan.
+                              {t("dashboard.delete_desc", "Tindakan ini permanen dan tidak dapat dibatalkan.")}
                             </AlertDialogDescription>
                           </AlertDialogHeader>
                           <div className="flex justify-end gap-2 pt-3">
-                            <AlertDialogCancel className="text-xs rounded-xl">Batal</AlertDialogCancel>
+                            <AlertDialogCancel className="text-xs rounded-xl">
+                              {t("dashboard.delete_cancel", "Batal")}
+                            </AlertDialogCancel>
                             <AlertDialogAction
                               onClick={() => deleteCVMutation.mutate({ cvId: cv.id })}
                               className="bg-red-600 hover:bg-red-700 text-white text-xs font-bold rounded-xl"
                             >
-                              Ya, Hapus
+                              {t("dashboard.delete_confirm", "Ya, Hapus")}
                             </AlertDialogAction>
                           </div>
                         </AlertDialogContent>

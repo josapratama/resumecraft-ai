@@ -16,6 +16,24 @@ const PROJECT_SLUG = process.argv[2] || "resumecraft";
 const TARGET_DIR = path.resolve(process.cwd(), process.argv[3] || "client/src/locales");
 const POLYGLOT_URL = (process.argv[4] || process.env.POLYGLOT_HUB_URL || "https://polyglot-hub.josapratama.com").replace(/\/+$/, "");
 
+function deepMerge(target, source) {
+  const output = { ...target };
+  if (source && typeof source === 'object' && !Array.isArray(source)) {
+    Object.keys(source).forEach(key => {
+      if (source[key] && typeof source[key] === 'object' && !Array.isArray(source[key])) {
+        if (!(key in target)) {
+          output[key] = source[key];
+        } else {
+          output[key] = deepMerge(target[key], source[key]);
+        }
+      } else {
+        output[key] = source[key];
+      }
+    });
+  }
+  return output;
+}
+
 async function syncTranslations() {
   console.log("\n======================================================");
   console.log("🌐 [Polyglot Hub] Build-Time Translation Sync");
@@ -41,13 +59,22 @@ async function syncTranslations() {
     const targetFile = path.join(TARGET_DIR, `${lang.code}.json`);
     let synced = false;
 
+    let localExisting = {};
+    if (fs.existsSync(targetFile)) {
+      try {
+        localExisting = JSON.parse(fs.readFileSync(targetFile, "utf-8"));
+      } catch {}
+    }
+
     try {
       const res = await fetch(exportUrl, { signal: AbortSignal.timeout(3000) });
       if (res.ok) {
         const dictionary = await res.json();
         if (dictionary && Object.keys(dictionary).length > 0) {
-          fs.writeFileSync(targetFile, JSON.stringify(dictionary, null, 2), "utf-8");
-          console.log(`  ✓ Synced ${lang.code}.json from Polyglot Hub server`);
+          // Merge: localExisting provides fallbacks, server dictionary updates existing
+          const merged = deepMerge(localExisting, dictionary);
+          fs.writeFileSync(targetFile, JSON.stringify(merged, null, 2), "utf-8");
+          console.log(`  ✓ Synced ${lang.code}.json (merged server & local keys)`);
           synced = true;
           successCount++;
         }

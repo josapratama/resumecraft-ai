@@ -461,16 +461,16 @@ export default function CVEditor() {
                     variant="outline"
                     size="sm"
                     className="gap-2 h-8.5 px-3 rounded-xl border-neutral-200 bg-neutral-50/80 hover:bg-neutral-100 text-neutral-800 font-semibold text-xs shadow-2xs whitespace-nowrap"
-                    title="Ganti Dokumen (CV, Surat Lamaran, Draf Email)"
+                    title={t("doc_switcher.switch_title", "Ganti Dokumen (CV, Surat Lamaran, Draf Email)")}
                   >
                     <FileText className="w-3.5 h-3.5 text-blue-600 shrink-0" />
-                    <span className="truncate max-w-[150px] sm:max-w-none">Curriculum Vitae</span>
+                    <span className="truncate max-w-[150px] sm:max-w-none">{t("doc_switcher.cv", "Curriculum Vitae")}</span>
                     <ChevronDown className="w-3 h-3 opacity-50 shrink-0" />
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="center" className="w-64 rounded-xl shadow-xl border-neutral-200 p-1.5">
                   <div className="px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-neutral-400">
-                    Paket Dokumen Lamaran
+                    {t("doc_switcher.package_title", "Paket Dokumen Lamaran")}
                   </div>
                   <DropdownMenuItem className="gap-2.5 p-2 rounded-lg cursor-default bg-blue-50/70 text-blue-900 font-semibold text-xs">
                     <div className="w-7 h-7 rounded-md bg-blue-600 text-white flex items-center justify-center shrink-0">
@@ -478,10 +478,10 @@ export default function CVEditor() {
                     </div>
                     <div className="flex-1">
                       <p className="font-bold text-neutral-900 flex items-center justify-between">
-                        Curriculum Vitae
+                        {t("doc_switcher.cv", "Curriculum Vitae")}
                         <Check className="w-3.5 h-3.5 text-blue-600" />
                       </p>
-                      <p className="text-[10px] text-neutral-500 font-normal">Sedang aktif diedit</p>
+                      <p className="text-[10px] text-neutral-500 font-normal">{t("doc_switcher.badge_active", "Sedang aktif diedit")}</p>
                     </div>
                   </DropdownMenuItem>
 
@@ -493,8 +493,8 @@ export default function CVEditor() {
                       <FileCode2 className="w-4 h-4" />
                     </div>
                     <div>
-                      <p className="font-semibold text-neutral-900">Surat Lamaran Kerja</p>
-                      <p className="text-[10px] text-neutral-500">25 format surat standar</p>
+                      <p className="font-semibold text-neutral-900">{t("doc_switcher.cover_letter", "Surat Lamaran Kerja")}</p>
+                      <p className="text-[10px] text-neutral-500">{t("doc_switcher.subtitle_cl", "25 format surat standar")}</p>
                     </div>
                   </DropdownMenuItem>
 
@@ -506,8 +506,8 @@ export default function CVEditor() {
                       <Mail className="w-4 h-4" />
                     </div>
                     <div>
-                      <p className="font-semibold text-neutral-900">Draf Email & WA HRD</p>
-                      <p className="text-[10px] text-neutral-500">Pengantar lamaran siap kirim</p>
+                      <p className="font-semibold text-neutral-900">{t("doc_switcher.email_draft", "Draf Email & WA HRD")}</p>
+                      <p className="text-[10px] text-neutral-500">{t("doc_switcher.subtitle_email", "Pengantar lamaran siap kirim")}</p>
                     </div>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
@@ -986,7 +986,7 @@ export default function CVEditor() {
             <div className="flex items-center justify-between bg-blue-50/70 border border-blue-200/60 px-2.5 py-1.5 rounded-xl text-xs">
               <div className="flex items-center gap-1.5 text-blue-900 font-bold truncate">
                 <FileText className="w-3.5 h-3.5 text-blue-600 shrink-0" />
-                <span className="truncate">Dokumen: CV</span>
+                <span className="truncate">{t("doc_switcher.doc_cv_label", "Dokumen: CV")}</span>
               </div>
               <div className="flex items-center gap-1.5 shrink-0">
                 <button
@@ -995,7 +995,7 @@ export default function CVEditor() {
                   className="px-2.5 py-1 bg-white hover:bg-purple-50 text-purple-700 border border-purple-200 rounded-lg text-[11px] font-bold shadow-2xs flex items-center gap-1 transition-colors"
                 >
                   <FileCode2 className="w-3 h-3 text-purple-600 shrink-0" />
-                  <span>Surat Lamaran</span>
+                  <span>{t("doc_switcher.cover_letter_short", "Surat Lamaran")}</span>
                 </button>
                 <button
                   type="button"
@@ -1003,7 +1003,7 @@ export default function CVEditor() {
                   className="px-2 py-1 bg-white hover:bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-lg text-[11px] font-bold shadow-2xs flex items-center gap-1 transition-colors"
                 >
                   <Mail className="w-3 h-3 text-emerald-600 shrink-0" />
-                  <span>Email</span>
+                  <span>{t("doc_switcher.email_short", "Email")}</span>
                 </button>
               </div>
             </div>
@@ -1019,7 +1019,7 @@ export default function CVEditor() {
                 }`}
               >
                 <Pencil className="w-3.5 h-3.5" />
-                <span>Formulir</span>
+                <span>{t("topbar.tab_form", "Formulir")}</span>
               </button>
 
               <button
@@ -1031,7 +1031,7 @@ export default function CVEditor() {
                 }`}
               >
                 <Eye className="w-3.5 h-3.5 text-blue-600" />
-                <span>Pratinjau CV</span>
+                <span>{t("topbar.tab_preview", "Pratinjau CV")}</span>
               </button>
 
               <button
@@ -1043,7 +1043,7 @@ export default function CVEditor() {
                 }`}
               >
                 <Bot className="w-3.5 h-3.5" />
-                <span>Obrolan AI</span>
+                <span>{t("topbar.tab_chat", "Obrolan AI")}</span>
               </button>
             </div>
           </div>

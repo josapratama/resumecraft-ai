@@ -138,32 +138,32 @@ export default function CVPreview({ template, cvData }: CVPreviewProps) {
   return (
     <Card className="overflow-hidden shadow-sm border border-neutral-200/80 bg-neutral-100/50 rounded-2xl">
       {/* Top Interactive Preview Toolbar - Modern Refined Studio Bar */}
-      <div className="flex items-center justify-between px-3.5 py-2.5 bg-slate-900 text-white text-xs border-b border-slate-800/90 gap-2">
-        <div className="flex items-center gap-2 min-w-0 flex-wrap">
-          <span className="font-bold tracking-wide capitalize text-white text-xs truncate">
+      <div className="flex items-center justify-between px-3.5 py-2.5 bg-slate-900 text-white text-xs border-b border-slate-800/90 gap-2 flex-nowrap">
+        <div className="flex items-center gap-2 min-w-0 flex-nowrap overflow-hidden">
+          <span className="font-bold tracking-wide capitalize text-white text-xs truncate shrink-0">
             {template}
           </span>
-          <span className="text-[10px] py-0.5 px-2 rounded-full bg-slate-800 text-slate-300 font-medium border border-slate-700/80">
-            A4 Standard
+          <span className="text-[10px] py-0.5 px-2 rounded-full bg-slate-800 text-slate-300 font-medium border border-slate-700/80 shrink-0">
+            A4
           </span>
 
           {/* Dynamic Page Budget Indicator */}
           {docHeight <= 1135 ? (
-            <span className="text-[10px] py-0.5 px-2.5 rounded-full bg-emerald-950/90 text-emerald-300 border border-emerald-700/80 font-semibold hidden sm:inline-flex items-center gap-1.5 shadow-2xs">
+            <span className="text-[10px] py-0.5 px-2.5 rounded-full bg-emerald-950/90 text-emerald-300 border border-emerald-700/80 font-semibold inline-flex items-center gap-1.5 shadow-2xs shrink-0">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-              <span>Pas 1 Halaman A4</span>
+              <span>Pas 1 Halaman</span>
             </span>
           ) : docHeight <= 1380 ? (
             <button
               onClick={() => setIsOnePageMode(true)}
-              className="text-[10px] py-0.5 px-2.5 rounded-full bg-amber-950/90 text-amber-300 border border-amber-600/80 font-semibold inline-flex items-center gap-1.5 hover:bg-amber-900 transition-all cursor-pointer shadow-2xs"
-              title="Konten sedikit tumpah ke halaman 2. Klik untuk padatkan otomatis ke 1 halaman!"
+              className="text-[10px] py-0.5 px-2 rounded-full bg-amber-950/90 text-amber-300 border border-amber-600/80 font-semibold inline-flex items-center gap-1.5 hover:bg-amber-900 transition-all cursor-pointer shadow-2xs shrink-0 whitespace-nowrap"
+              title="Konten tumpah sedikit. Klik untuk padatkan otomatis ke 1 halaman!"
             >
               <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-ping" />
               <span>Tumpah +{Math.max(1, Math.round((docHeight - 1123) / 24))} baris (Klik Paskan)</span>
             </button>
           ) : (
-            <span className="text-[10px] py-0.5 px-2 rounded-full bg-slate-800 text-slate-300 border border-slate-700 font-medium hidden sm:inline-flex">
+            <span className="text-[10px] py-0.5 px-2 rounded-full bg-slate-800 text-slate-300 border border-slate-700 font-medium inline-flex shrink-0">
               {Math.ceil(docHeight / 1123)} Halaman A4
             </span>
           )}
@@ -172,7 +172,7 @@ export default function CVPreview({ template, cvData }: CVPreviewProps) {
             size="sm"
             variant="ghost"
             onClick={() => setIsOnePageMode(!isOnePageMode)}
-            className={`h-6 px-2 text-[10px] gap-1 rounded-full font-semibold transition-all ${
+            className={`h-6 px-2 text-[10px] gap-1 rounded-full font-semibold transition-all shrink-0 ${
               isOnePageMode
                 ? "bg-emerald-600 text-white hover:bg-emerald-700 shadow-xs"
                 : "text-slate-300 hover:text-white hover:bg-slate-800 border border-slate-700"
@@ -180,7 +180,7 @@ export default function CVPreview({ template, cvData }: CVPreviewProps) {
             title="Padatkan konten CV agar pas di 1 lembar A4"
           >
             <FileCheck className="w-3 h-3 text-emerald-400" />
-            <span>{isOnePageMode ? "1 Hal: Aktif" : "Pas 1 Halaman"}</span>
+            <span>{isOnePageMode ? "1 Hal: Aktif" : "Padatkan"}</span>
           </Button>
         </div>
 

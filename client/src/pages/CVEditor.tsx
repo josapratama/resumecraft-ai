@@ -416,31 +416,64 @@ export default function CVEditor() {
               </div>
             </div>
 
-            {/* Center: Suite Document Switcher (CV | Cover Letter | Email Draft) */}
-            <div className="hidden xl:flex items-center bg-neutral-100/90 p-1 rounded-xl border border-neutral-200/80 text-xs shadow-2xs">
-              <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-bold bg-white text-neutral-900 shadow-xs cursor-default">
-                <FileText className="w-3.5 h-3.5 text-blue-600" />
-                <span>Curriculum Vitae</span>
-              </span>
-              <button
-                type="button"
-                onClick={() => setShowCoverLetterModal(true)}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-medium text-neutral-600 hover:text-neutral-900 hover:bg-white/60 transition-all cursor-pointer"
-                title="Buka Studio Surat Lamaran Kerja (25 Format)"
-              >
-                <FileCode2 className="w-3.5 h-3.5 text-slate-500" />
-                <span>Surat Lamaran</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => setShowEmailDraftModal(true)}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-medium text-neutral-600 hover:text-neutral-900 hover:bg-white/60 transition-all cursor-pointer"
-                title="Buka Generator Draf Email & WhatsApp Pengantar Lamaran"
-              >
-                <Mail className="w-3.5 h-3.5 text-emerald-600" />
-                <span>Draf Email HRD</span>
-              </button>
-            </div>
+            {/* Center: Clean Compact Document Type Dropdown */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="gap-2 h-8.5 px-3 rounded-xl border-neutral-200 bg-neutral-50/80 hover:bg-neutral-100 text-neutral-800 font-semibold text-xs shadow-2xs whitespace-nowrap"
+                  title="Ganti Dokumen (CV, Surat Lamaran, Draf Email)"
+                >
+                  <FileText className="w-3.5 h-3.5 text-blue-600 shrink-0" />
+                  <span className="truncate max-w-[150px] sm:max-w-none">Curriculum Vitae</span>
+                  <ChevronDown className="w-3 h-3 opacity-50 shrink-0" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="center" className="w-64 rounded-xl shadow-xl border-neutral-200 p-1.5">
+                <div className="px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-neutral-400">
+                  Paket Dokumen Lamaran
+                </div>
+                <DropdownMenuItem className="gap-2.5 p-2 rounded-lg cursor-default bg-blue-50/70 text-blue-900 font-semibold text-xs">
+                  <div className="w-7 h-7 rounded-md bg-blue-600 text-white flex items-center justify-center shrink-0">
+                    <FileText className="w-4 h-4" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="font-bold text-neutral-900 flex items-center justify-between">
+                      Curriculum Vitae
+                      <Check className="w-3.5 h-3.5 text-blue-600" />
+                    </p>
+                    <p className="text-[10px] text-neutral-500 font-normal">Sedang aktif diedit</p>
+                  </div>
+                </DropdownMenuItem>
+
+                <DropdownMenuItem
+                  onClick={() => setShowCoverLetterModal(true)}
+                  className="gap-2.5 p-2 rounded-lg cursor-pointer hover:bg-neutral-100 text-xs"
+                >
+                  <div className="w-7 h-7 rounded-md bg-purple-50 text-purple-600 flex items-center justify-center shrink-0">
+                    <FileCode2 className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <p className="font-semibold text-neutral-900">Surat Lamaran Kerja</p>
+                    <p className="text-[10px] text-neutral-500">25 format surat standar</p>
+                  </div>
+                </DropdownMenuItem>
+
+                <DropdownMenuItem
+                  onClick={() => setShowEmailDraftModal(true)}
+                  className="gap-2.5 p-2 rounded-lg cursor-pointer hover:bg-neutral-100 text-xs"
+                >
+                  <div className="w-7 h-7 rounded-md bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+                    <Mail className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <p className="font-semibold text-neutral-900">Draf Email & WA HRD</p>
+                    <p className="text-[10px] text-neutral-500">Pengantar lamaran siap kirim</p>
+                  </div>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
 
             {/* Right: Actions & Tools */}
             <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
@@ -593,31 +626,51 @@ export default function CVEditor() {
                 </DropdownMenuContent>
               </DropdownMenu>
 
-              {/* Template Picker Dropdown */}
+              {/* Unified Design & Template Picker */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
                     variant="outline"
                     size="sm"
-                    className="gap-1.5 border-neutral-200 text-neutral-700 hover:bg-neutral-100 h-8 sm:h-9 px-2 sm:px-3 rounded-lg max-w-[125px] sm:max-w-none"
-                    title="Pilih Desain Template CV"
+                    className="gap-1.5 border-neutral-200 text-neutral-700 hover:bg-neutral-100 h-8 sm:h-9 px-2.5 sm:px-3 rounded-lg"
+                    title="Pilih Desain & Kustomisasi CV"
                   >
-                    <Layout className="w-3.5 h-3.5 text-neutral-600 flex-shrink-0" />
-                    <span className="truncate text-xs font-medium">
+                    <Layout className="w-3.5 h-3.5 text-neutral-600 shrink-0" />
+                    <span className="truncate text-xs font-semibold">
                       {ALL_TEMPLATES.find(t => t.id === template)?.label ?? template}
                     </span>
-                    <ChevronDown className="w-3 h-3 opacity-50 flex-shrink-0" />
+                    <ChevronDown className="w-3 h-3 opacity-50 shrink-0" />
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent
                   align="end"
-                  className="w-56 max-h-80 overflow-y-auto rounded-xl p-1 shadow-lg border-neutral-200"
+                  className="w-60 max-h-96 overflow-y-auto rounded-xl p-1.5 shadow-xl border-neutral-200"
                 >
+                  {/* Quick Color Accent & Font setting */}
+                  <DropdownMenuItem
+                    onClick={() => setShowStyleModal(true)}
+                    className="gap-2.5 py-2 px-2.5 rounded-lg cursor-pointer bg-slate-50 text-slate-900 font-semibold text-xs mb-1"
+                  >
+                    <div className="w-6 h-6 rounded-md bg-amber-100 text-amber-700 flex items-center justify-center shrink-0">
+                      <Palette className="w-3.5 h-3.5" />
+                    </div>
+                    <div>
+                      <p className="font-bold text-xs">Ubah Tema & Font</p>
+                      <p className="text-[10px] text-neutral-500 font-normal">Warna aksen, tipografi, dan gaya</p>
+                    </div>
+                  </DropdownMenuItem>
+
+                  <DropdownMenuSeparator />
+
+                  <div className="px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-neutral-400">
+                    Pilih Template (25 Format)
+                  </div>
+
                   {["Classic", "Professional", "Stylish", "Creative", "Unique"].map(cat => {
                     const catTemplates = ALL_TEMPLATES.filter(t => t.category === cat);
                     return (
                       <div key={cat}>
-                        <div className="px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-neutral-400 mt-1 first:mt-0">
+                        <div className="px-2 py-1 text-[10px] font-semibold text-neutral-400 mt-1">
                           {cat}
                         </div>
                         {catTemplates.map(t => (
@@ -645,30 +698,6 @@ export default function CVEditor() {
                 </DropdownMenuContent>
               </DropdownMenu>
 
-              {/* Theme & Accent Color Customizer */}
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setShowStyleModal(true)}
-                className="gap-1.5 border-neutral-200 text-neutral-700 hover:bg-neutral-100 h-8 sm:h-9 px-2 sm:px-2.5 rounded-lg hidden md:inline-flex"
-                title="Sesuaikan Warna Aksen & Font Dokumen"
-              >
-                <Palette className="w-3.5 h-3.5 text-neutral-600" />
-                <span className="hidden lg:inline text-xs">{t("topbar.theme", "Tema")}</span>
-              </Button>
-
-              {/* Share Public Modal */}
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setShowShareModal(true)}
-                className="gap-1.5 border-neutral-200 text-neutral-700 hover:bg-neutral-100 h-8 sm:h-9 px-2 sm:px-2.5 rounded-lg hidden md:inline-flex"
-                title="Bagikan Tautan Online CV untuk HRD"
-              >
-                <Share2 className="w-3.5 h-3.5 text-blue-600" />
-                <span className="hidden lg:inline text-xs">{t("topbar.share", "Bagikan")}</span>
-              </Button>
-
               {/* Desktop AI Assistant Toggle */}
               <Button
                 variant="outline"
@@ -677,57 +706,13 @@ export default function CVEditor() {
                   setShowAIChat(v => !v);
                   if (mobileTab === "chat") setMobileTab("editor");
                 }}
-                className={`hidden lg:inline-flex gap-1.5 h-8 sm:h-9 px-2.5 sm:px-3 rounded-lg border-neutral-200 ${showAIChat ? "bg-neutral-900 text-white hover:bg-neutral-800" : "text-neutral-700 hover:bg-neutral-100"
+                className={`gap-1.5 h-8 sm:h-9 px-2.5 sm:px-3 rounded-lg border-neutral-200 ${showAIChat ? "bg-neutral-900 text-white hover:bg-neutral-800" : "text-neutral-700 hover:bg-neutral-100"
                   }`}
                 title="Buka Asisten Chatbot AI"
               >
                 {showAIChat ? <X className="w-3.5 h-3.5" /> : <Bot className="w-3.5 h-3.5 text-indigo-600" />}
-                <span className="text-xs font-medium">{t("topbar.ai_chat", "AI Chat")}</span>
+                <span className="text-xs font-semibold hidden md:inline">{t("topbar.ai_chat", "Obrolan AI")}</span>
               </Button>
-
-              {/* Compact Menu (...) for smaller screens */}
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="h-8 sm:h-9 w-8 sm:w-9 p-0 text-neutral-600 border-neutral-200 hover:bg-neutral-100 rounded-lg md:hidden"
-                    title="Menu Lainnya"
-                  >
-                    <MoreHorizontal className="w-4 h-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-52 rounded-xl shadow-xl border-neutral-200 p-1.5">
-                  <DropdownMenuItem
-                    onClick={() => setShowCoverLetterModal(true)}
-                    className="gap-2.5 py-2 px-2.5 rounded-lg cursor-pointer text-xs"
-                  >
-                    <FileCode2 className="w-3.5 h-3.5 text-blue-600" />
-                    <span>Surat Lamaran Kerja</span>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={() => setShowEmailDraftModal(true)}
-                    className="gap-2.5 py-2 px-2.5 rounded-lg cursor-pointer text-xs"
-                  >
-                    <Mail className="w-3.5 h-3.5 text-emerald-600" />
-                    <span>Draf Email & WA HRD</span>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={() => setShowStyleModal(true)}
-                    className="gap-2.5 py-2 px-2.5 rounded-lg cursor-pointer text-xs"
-                  >
-                    <Palette className="w-3.5 h-3.5 text-neutral-600" />
-                    <span>Warna Tema & Font</span>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={() => setShowShareModal(true)}
-                    className="gap-2.5 py-2 px-2.5 rounded-lg cursor-pointer text-xs"
-                  >
-                    <Share2 className="w-3.5 h-3.5 text-blue-600" />
-                    <span>Bagikan Tautan CV</span>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
 
               {/* Unified Export Dropdown (PDF, Word DOCX, Backup JSON) */}
               <DropdownMenu>
@@ -816,8 +801,60 @@ export default function CVEditor() {
                 </DropdownMenuContent>
               </DropdownMenu>
 
+              {/* More Menu (...) for Secondary Options */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="h-8 sm:h-9 w-8 sm:w-9 p-0 text-neutral-600 border-neutral-200 hover:bg-neutral-100 rounded-lg"
+                    title="Menu & Opsi Tambahan"
+                  >
+                    <MoreHorizontal className="w-4 h-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56 rounded-xl shadow-xl border-neutral-200 p-1.5">
+                  <DropdownMenuItem
+                    onClick={() => setShowShareModal(true)}
+                    className="gap-2.5 py-2 px-2.5 rounded-lg cursor-pointer text-xs"
+                  >
+                    <Share2 className="w-3.5 h-3.5 text-blue-600" />
+                    <div>
+                      <p className="font-semibold text-neutral-900">Bagikan Tautan Online</p>
+                      <p className="text-[10px] text-neutral-500">Link CV publik untuk HRD</p>
+                    </div>
+                  </DropdownMenuItem>
+
+                  <DropdownMenuItem
+                    onClick={() => setShowStyleModal(true)}
+                    className="gap-2.5 py-2 px-2.5 rounded-lg cursor-pointer text-xs"
+                  >
+                    <Palette className="w-3.5 h-3.5 text-amber-600" />
+                    <div>
+                      <p className="font-semibold text-neutral-900">Warna Tema & Font</p>
+                      <p className="text-[10px] text-neutral-500">Kustomisasi tipografi & aksen</p>
+                    </div>
+                  </DropdownMenuItem>
+
+                  <DropdownMenuSeparator />
+
+                  <DropdownMenuItem
+                    onClick={handleBackupCV}
+                    className="gap-2.5 py-2 px-2.5 rounded-lg cursor-pointer text-xs"
+                  >
+                    <Download className="w-3.5 h-3.5 text-emerald-600" />
+                    <div>
+                      <p className="font-semibold text-neutral-900">Backup Data (JSON)</p>
+                      <p className="text-[10px] text-neutral-500">Ekspor file arsip data</p>
+                    </div>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+
               {/* Multilingual Switcher (Polyglot Hub) */}
-              <LanguageSwitcher />
+              <div className="hidden sm:block">
+                <LanguageSwitcher />
+              </div>
             </div>
           </div>
 

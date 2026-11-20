@@ -386,7 +386,9 @@
     "hr_scan_desc": "採用担当者の目視スキャン速度を診断",
     "json_resume_format": "標準JSON Resume (.json)",
     "json_resume_desc": "jsonresume.org標準スキーマ",
-    "json_resume_success": "標準JSON Resume (.json) がダウンロードされました！"
+    "json_resume_success": "標準JSON Resume (.json) がダウンロードされました！",
+    "wa_pitch": "採用担当者向けWhatsApp文面",
+    "wa_pitch_desc": "CV送信用＆フォローアップの定型文"
   },
   "tabs": {
     "personal": "基本情報",
@@ -600,7 +602,8 @@
     "empty_title": "一致する履歴書がありません",
     "empty_desc": "最初のATS対応履歴書を作成しましょう。",
     "welcome_back": "おかえりなさい、",
-    "loading": "履歴書を読み込み中..."
+    "loading": "履歴書を読み込み中...",
+    "views_tooltip": "採用担当者／訪問者の閲覧数"
   },
   "landing_page": {
     "tagline": "✨ No.1 ATS対応履歴書＆送付状作成スタジオ",
@@ -843,5 +846,20 @@
     "summary_ideal_desc": "要約は{n}単語で、冒頭2秒でスムーズに要点が把握できます。",
     "summary_long_title": "職務要約が長すぎます",
     "summary_long_desc": "要約が{n}単語あります。読み飛ばされないよう3〜4文程度にまとめてください。"
+  },
+  "wa_pitch": {
+    "modal_title": "AI 採用担当者向けWhatsApp文章作成",
+    "modal_desc": "採用担当者に送る丁寧で礼儀正しいメッセージを1クリックで作成",
+    "company_label": "企業名",
+    "hrd_label": "採用担当者名 (任意)",
+    "role_label": "応募ポジション",
+    "tab_apply": "CV送信",
+    "tab_confirm": "メール確認",
+    "tab_followup": "進捗確認",
+    "badge_apply": "CV直接送信テンプレート",
+    "badge_confirm": "メール送信用確認文面",
+    "badge_followup": "丁寧な進捗確認テンプレート",
+    "btn_open_wa": "WhatsAppで開く",
+    "copied_toast": "WhatsAppメッセージをコピーしました！"
   }
 }

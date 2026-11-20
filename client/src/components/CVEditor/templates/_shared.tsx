@@ -32,11 +32,16 @@ export function resolveAccentColor(
 
 export function getQRTargetUrl(cvData: FullCVData): string | null {
   if (cvData.cv?.showQrCode === 0) return null;
+  // 1. If CV is public, dynamic link directly to candidate's live Interactive Web Portfolio / Public CV
+  if (cvData.cv?.isPublic) {
+    const slug = cvData.cv.shareSlug || cvData.cv.id;
+    return `https://resumecraft-ai.josapratama.com/cv/public/${slug}`;
+  }
+  // 2. Otherwise fallback to candidate portfolio or primary project link
   return (
     cvData.cv?.portfolioUrl ||
-    (cvData.personalInfo?.fullName?.toLowerCase().includes("irma") ? "https://irma-iryani.josapratama.com" : null) ||
-    (cvData.cv?.shareSlug ? `https://resumecraft-ai.josapratama.com/p/${cvData.cv.shareSlug}` : null) ||
     cvData.projects?.find(p => p.link)?.link ||
+    (cvData.cv?.shareSlug ? `https://resumecraft-ai.josapratama.com/cv/public/${cvData.cv.shareSlug}` : null) ||
     null
   );
 }

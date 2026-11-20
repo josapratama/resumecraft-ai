@@ -48,6 +48,7 @@ import {
   Mic,
   MoreHorizontal,
   Copy,
+  MessageCircle,
 } from "lucide-react";
 import { toast } from "sonner";
 import {
@@ -82,6 +83,7 @@ import TemplateGalleryModal from "@/components/CVEditor/TemplateGalleryModal";
 import ATSReadinessBadge from "@/components/CVEditor/ATSReadinessBadge";
 import DuplicateCVModal from "@/components/CVEditor/DuplicateCVModal";
 import HRScreeningModal from "@/components/CVEditor/HRScreeningModal";
+import WhatsAppPitchModal from "@/components/CVEditor/WhatsAppPitchModal";
 import CVPreview from "@/components/CVEditor/CVPreview";
 import { AIChatBox } from "@/components/AIChatBox";
 import { useAuth } from "@/_core/hooks/useAuth";
@@ -220,6 +222,7 @@ export default function CVEditor() {
   const [showJobMatcherModal, setShowJobMatcherModal] = useState(false);
   const [showDuplicateModal, setShowDuplicateModal] = useState(false);
   const [showHRScreeningModal, setShowHRScreeningModal] = useState(false);
+  const [showWAPitchModal, setShowWAPitchModal] = useState(false);
 
   const handleBackupCV = () => {
     if (!cvData) return;
@@ -385,13 +388,17 @@ export default function CVEditor() {
     }
   };
 
-  // Callback passed to forms so they can push updated data to preview
+  // Callback passed to forms so they can push updated data to preview and backup offline
   const handleDataChange = useCallback((updated: Partial<FullCVData>) => {
     setPreviewData(prev => {
       if (!prev) return prev;
-      return { ...prev, ...updated };
+      const merged = { ...prev, ...updated };
+      try {
+        localStorage.setItem(`resumecraft_draft_${cvIdNum}`, JSON.stringify(merged));
+      } catch {}
+      return merged;
     });
-  }, []);
+  }, [cvIdNum]);
 
   const handleSendChatMessage = (content: string) => {
     const newMessages: ChatMessage[] = [
@@ -689,6 +696,19 @@ export default function CVEditor() {
                     <div>
                       <p className="text-xs font-semibold text-neutral-900">{t("topbar.email_draft", "Draf Email & WA HRD")}</p>
                       <p className="text-[10px] text-neutral-500">{t("topbar.email_desc", "Teks pengantar lamaran profesional")}</p>
+                    </div>
+                  </DropdownMenuItem>
+
+                  <DropdownMenuItem
+                    onClick={() => setShowWAPitchModal(true)}
+                    className="gap-2.5 p-2 rounded-lg cursor-pointer hover:bg-emerald-50"
+                  >
+                    <div className="w-7 h-7 rounded-md bg-emerald-100 text-emerald-700 flex items-center justify-center flex-shrink-0">
+                      <MessageCircle className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <p className="text-xs font-semibold text-neutral-900">{t("topbar.wa_pitch", "Pesan WhatsApp HRD")}</p>
+                      <p className="text-[10px] text-neutral-500">{t("topbar.wa_pitch_desc", "Template kirim CV & follow-up chat WA")}</p>
                     </div>
                   </DropdownMenuItem>
 
@@ -1438,6 +1458,12 @@ export default function CVEditor() {
       <HRScreeningModal
         isOpen={showHRScreeningModal}
         onClose={() => setShowHRScreeningModal(false)}
+        cvData={displayData}
+      />
+
+      <WhatsAppPitchModal
+        isOpen={showWAPitchModal}
+        onClose={() => setShowWAPitchModal(false)}
         cvData={displayData}
       />
 

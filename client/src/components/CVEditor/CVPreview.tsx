@@ -148,6 +148,7 @@ export default function CVPreview({
     const updateFit = () => {
       if (!containerRef.current) return;
       const containerWidth = containerRef.current.clientWidth;
+      if (containerWidth <= 0) return;
       const padding = containerWidth < 500 ? 16 : 32;
       const availableWidth = Math.max(260, containerWidth - padding);
       if (availableWidth < targetWidthPx) {
@@ -159,8 +160,17 @@ export default function CVPreview({
     };
 
     updateFit();
+    const observer = new ResizeObserver(() => {
+      updateFit();
+    });
+    if (containerRef.current) {
+      observer.observe(containerRef.current);
+    }
     window.addEventListener("resize", updateFit);
-    return () => window.removeEventListener("resize", updateFit);
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("resize", updateFit);
+    };
   }, [isAutoFit, targetWidthPx]);
 
   const handleZoomIn = () => {
@@ -445,27 +455,28 @@ export default function CVPreview({
       {/* Document Preview Container with Content-Aware Scaling */}
       <div
         ref={containerRef}
-        className="bg-neutral-200/60 cv-scroll-wrapper overflow-auto flex items-start justify-center p-1 sm:p-4 min-h-[440px] max-h-none lg:max-h-[calc(100vh-140px)]"
+        className="bg-neutral-200/60 cv-scroll-wrapper overflow-auto p-1.5 sm:p-4 min-h-[440px] max-h-none lg:max-h-[calc(100vh-140px)]"
       >
         {/* Layout boundary matches visual scaled size so NO horizontal overflow happens on mobile */}
         <div
-          className="relative transition-all duration-150 block shrink-0"
+          className="relative transition-all duration-150 block shrink-0 mx-auto"
           style={{
             width: `${Math.ceil(targetWidthPx * (zoom / 100))}px`,
             height: `${Math.ceil(docHeight * (zoom / 100))}px`,
           }}
         >
           <div
-            className="transition-transform duration-150 origin-top-left"
+            className="transition-transform duration-150"
             style={{
               transform: `scale(${zoom / 100})`,
+              transformOrigin: "top left",
               width: `${targetWidthPx}px`,
             }}
           >
             {/* Document Root with Paper Size */}
             <div
               ref={templateRef}
-              className={`cv-template-root relative bg-white shadow-2xl mx-auto rounded-xs overflow-hidden ${isOnePageMode ? "cv-one-page-compact" : ""
+              className={`cv-template-root relative bg-white shadow-2xl rounded-xs overflow-hidden ${isOnePageMode ? "cv-one-page-compact" : ""
                 }`}
               style={{
                 width: `${targetWidthPx}px`,

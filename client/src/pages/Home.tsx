@@ -37,6 +37,7 @@ import {
   X,
   FileCheck2,
   Mail,
+  Eye,
   ChevronDown,
   HelpCircle,
   QrCode,
@@ -273,13 +274,14 @@ export default function Home() {
   }, [cvList, searchQuery, filterType]);
 
   const stats = useMemo(() => {
-    if (!cvList.length) return { total: 0, avgPct: 0, publicCount: 0 };
+    if (!cvList.length) return { total: 0, avgPct: 0, publicCount: 0, totalViews: 0 };
     const total = cvList.length;
     const avgPct = Math.round(
       cvList.reduce((acc, cv) => acc + completionInfo(cv).pct, 0) / total
     );
     const publicCount = cvList.filter((cv) => cv.isPublic).length;
-    return { total, avgPct, publicCount };
+    const totalViews = cvList.reduce((acc, cv) => acc + ((cv as any).viewsCount || 0), 0);
+    return { total, avgPct, publicCount, totalViews };
   }, [cvList]);
 
   // =========================================================================
@@ -913,9 +915,17 @@ export default function Home() {
           </div>
 
           <div className="bg-white p-4 rounded-2xl border border-neutral-200 shadow-xs">
-            <div className="flex items-center gap-2.5 text-neutral-500 text-xs font-semibold mb-1">
-              <ExternalLink className="w-4 h-4 text-amber-600" />
-              <span>{t("dashboard.public_resumes", "Tautan Publik")}</span>
+            <div className="flex items-center justify-between text-neutral-500 text-xs font-semibold mb-1">
+              <span className="flex items-center gap-2">
+                <ExternalLink className="w-4 h-4 text-amber-600" />
+                {t("dashboard.public_resumes", "Tautan Publik")}
+              </span>
+              {stats.totalViews > 0 && (
+                <span className="text-[10px] text-emerald-700 font-bold bg-emerald-50 border border-emerald-200/80 px-2 py-0.5 rounded-full flex items-center gap-1 shadow-2xs" title="Total kunjungan recruiter ke web portofolio Anda">
+                  <Eye className="w-2.5 h-2.5 text-emerald-600" />
+                  {stats.totalViews} views
+                </span>
+              )}
             </div>
             <div className="text-2xl font-black text-neutral-900">
               {stats.publicCount} {t("dashboard.active_count", "Aktif")}
@@ -1022,15 +1032,21 @@ export default function Home() {
                       </Badge>
                     </div>
 
-                    <div className="flex items-center gap-2 pt-1">
+                    <div className="flex items-center gap-2 pt-1 flex-wrap">
                       <span className={`w-2.5 h-2.5 rounded-full ${TEMPLATE_COLORS[cv.template] ?? "bg-neutral-800"}`} />
                       <span className="text-xs text-neutral-600 font-medium capitalize">
                         Template: {cv.template}
                       </span>
                       {cv.isPublic && (
-                        <Badge variant="outline" className="text-[10px] py-0 px-1.5 bg-blue-50 text-blue-700 border-blue-200">
-                          {t("dashboard.public_badge", "Publik")}
-                        </Badge>
+                        <div className="flex items-center gap-1.5 ml-auto">
+                          <Badge variant="outline" className="text-[10px] py-0 px-1.5 bg-blue-50 text-blue-700 border-blue-200">
+                            {t("dashboard.public_badge", "Publik")}
+                          </Badge>
+                          <span className="text-[11px] font-medium text-neutral-500 inline-flex items-center gap-1" title={t("dashboard.views_tooltip", "Dilihat oleh recruiter / pengunjung")}>
+                            <Eye className="w-3 h-3 text-neutral-400" />
+                            {(cv as any).viewsCount || 0}
+                          </span>
+                        </div>
                       )}
                     </div>
                   </div>

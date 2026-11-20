@@ -386,7 +386,9 @@
     "hr_scan_desc": "Simulate recruiter eye-scan speed",
     "json_resume_format": "Standard JSON Resume (.json)",
     "json_resume_desc": "Open-source jsonresume.org schema",
-    "json_resume_success": "Standard JSON Resume (.json) downloaded successfully!"
+    "json_resume_success": "Standard JSON Resume (.json) downloaded successfully!",
+    "wa_pitch": "WhatsApp Recruiter Pitch",
+    "wa_pitch_desc": "Templates for sending CV & follow-up chat"
   },
   "tabs": {
     "personal": "Personal",
@@ -600,7 +602,8 @@
     "empty_title": "No matching resumes found",
     "empty_desc": "Start crafting your first ATS-ready resume now.",
     "welcome_back": "Welcome back,",
-    "loading": "Loading resumes..."
+    "loading": "Loading resumes...",
+    "views_tooltip": "Viewed by recruiters / visitors"
   },
   "landing_page": {
     "tagline": "✨ #1 ATS-Friendly Resume Builder & Career Suite",
@@ -843,5 +846,20 @@
     "summary_ideal_desc": "Summary has {n} words (ideal 30-60 words). Easily read in 2 seconds.",
     "summary_long_title": "Summary Too Long",
     "summary_long_desc": "Summary has {n} words. Shorten to 3-4 crisp sentences."
+  },
+  "wa_pitch": {
+    "modal_title": "AI WhatsApp Recruiter Pitch & Confirmation",
+    "modal_desc": "Craft professional, polite WhatsApp messages ready to send to recruiters in 1 click",
+    "company_label": "Company Name",
+    "hrd_label": "Recruiter Name (Optional)",
+    "role_label": "Target Role",
+    "tab_apply": "Send CV",
+    "tab_confirm": "Email Confirm",
+    "tab_followup": "Follow-Up",
+    "badge_apply": "Direct CV Submission Template",
+    "badge_confirm": "Email Notification Confirmation",
+    "badge_followup": "Polite Follow-Up Template",
+    "btn_open_wa": "Open in WA",
+    "copied_toast": "WhatsApp message format copied successfully!"
   }
 }

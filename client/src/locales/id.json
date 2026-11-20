@@ -386,7 +386,9 @@
     "hr_scan_desc": "Simulasi kecepatan scan recruiter",
     "json_resume_format": "Standar JSON Resume (.json)",
     "json_resume_desc": "Standar portabilitas jsonresume.org",
-    "json_resume_success": "Standar JSON Resume (.json) berhasil diunduh!"
+    "json_resume_success": "Standar JSON Resume (.json) berhasil diunduh!",
+    "wa_pitch": "Pesan WhatsApp HRD",
+    "wa_pitch_desc": "Template kirim CV & follow-up chat WA"
   },
   "tabs": {
     "personal": "Pribadi",
@@ -600,7 +602,8 @@
     "empty_title": "Belum ada CV yang sesuai",
     "empty_desc": "Mulai rancang CV ATS pertama Anda sekarang.",
     "welcome_back": "Selamat datang kembali,",
-    "loading": "Memuat daftar CV..."
+    "loading": "Memuat daftar CV...",
+    "views_tooltip": "Dilihat oleh recruiter / pengunjung"
   },
   "landing_page": {
     "tagline": "✨ Platform Pembuat CV ATS-Friendly & Surat Lamaran No. 1 di Indonesia",
@@ -843,5 +846,20 @@
     "summary_ideal_desc": "Ringkasan terdiri dari {n} kata (ideal 30-60 kata). Tuntas dibaca recruiter dalam 2 detik pertama.",
     "summary_long_title": "Ringkasan Terlalu Panjang",
     "summary_long_desc": "Ringkasan Anda memiliki {n} kata. Persingkat menjadi maksimal 3-4 kalimat padat agar tidak di-skip oleh HRD."
+  },
+  "wa_pitch": {
+    "modal_title": "AI WhatsApp HRD Pitch & Konfirmasi Lamaran",
+    "modal_desc": "Susun pesan WhatsApp profesional, santun, dan siap kirim ke recruiter dalam 1 klik",
+    "company_label": "Nama Perusahaan",
+    "hrd_label": "Nama Recruiter (Opsional)",
+    "role_label": "Posisi Dilamar",
+    "tab_apply": "Kirim CV",
+    "tab_confirm": "Konfirmasi Email",
+    "tab_followup": "Follow-Up",
+    "badge_apply": "Template Kirim CV Langsung",
+    "badge_confirm": "Template Notifikasi Email",
+    "badge_followup": "Template Follow-Up Santun",
+    "btn_open_wa": "Buka di WA",
+    "copied_toast": "Format pesan WhatsApp berhasil disalin!"
   }
 }

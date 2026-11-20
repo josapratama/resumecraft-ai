@@ -175,6 +175,7 @@ export default function CVEditor() {
   const { cvId } = useParams<{ cvId: string }>();
   const cvIdNum = parseInt(cvId || "0", 10);
   const [, navigate] = useLocation();
+  const utils = trpc.useUtils();
 
   // Route guard — redirect to login if unauthenticated
   const { isAuthenticated, loading: authLoading } = useAuth({
@@ -301,6 +302,15 @@ export default function CVEditor() {
     },
     onError: (err: any) => {
       toast.error(err.message || "Gagal menduplikasi CV");
+    },
+  });
+
+  const updateDesignMutation = trpc.cv.updateDesign.useMutation({
+    onSuccess: () => {
+      utils.cv.loadFull.invalidate({ cvId: cvIdNum });
+    },
+    onError: (err: any) => {
+      toast.error(err.message || "Gagal memperbarui tema");
     },
   });
 
@@ -1357,6 +1367,15 @@ export default function CVEditor() {
                   cvData={displayData}
                   paperSize={paperSize}
                   onPaperSizeChange={handlePaperSizeChange}
+                  onStyleChange={(style) => {
+                    if (style.accentColor) {
+                      updateDesignMutation.mutate({
+                        cvId: cvIdNum,
+                        accentColor: style.accentColor,
+                      });
+                      toast.success("Warna tema CV diperbarui!");
+                    }
+                  }}
                 />
               </div>
             </div>

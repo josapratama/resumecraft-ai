@@ -24,6 +24,10 @@ import {
   AlertCircle,
   Award,
   PenLine,
+  Volume2,
+  VolumeX,
+  Mic,
+  MicOff,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -104,6 +108,66 @@ export default function InterviewPrepModal({
       targetRole: targetRole.trim() || undefined,
       jobDescription: jobDescription.trim() || undefined,
     });
+  };
+
+  const [isSpeaking, setIsSpeaking] = useState(false);
+  const [isListening, setIsListening] = useState(false);
+
+  const handleSpeakText = (text: string) => {
+    if (typeof window === "undefined" || !("speechSynthesis" in window)) {
+      toast.error("Browser Anda tidak mendukung Text-to-Speech");
+      return;
+    }
+    window.speechSynthesis.cancel();
+    if (isSpeaking) {
+      setIsSpeaking(false);
+      return;
+    }
+    const utter = new SpeechSynthesisUtterance(text);
+    utter.lang = "id-ID";
+    utter.rate = 0.95;
+    utter.onend = () => setIsSpeaking(false);
+    utter.onerror = () => setIsSpeaking(false);
+    setIsSpeaking(true);
+    window.speechSynthesis.speak(utter);
+  };
+
+  const handleToggleVoiceInput = () => {
+    const SpeechRec =
+      (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SpeechRec) {
+      toast.error("Fitur Speech-to-Text tidak didukung browser ini. Gunakan Google Chrome atau Edge.");
+      return;
+    }
+    if (isListening) {
+      setIsListening(false);
+      return;
+    }
+    try {
+      const recognition = new SpeechRec();
+      recognition.lang = "id-ID";
+      recognition.continuous = false;
+      recognition.interimResults = false;
+      recognition.onstart = () => {
+        setIsListening(true);
+        toast.info("Silakan bicara sekarang... Mikrofon aktif.");
+      };
+      recognition.onresult = (e: any) => {
+        const transcript = e.results[0][0].transcript;
+        setUserAnswer(prev => (prev ? `${prev} ${transcript}` : transcript));
+        setIsListening(false);
+        toast.success("Suara berhasil ditranskripsikan ke teks!");
+      };
+      recognition.onerror = () => {
+        setIsListening(false);
+      };
+      recognition.onend = () => {
+        setIsListening(false);
+      };
+      recognition.start();
+    } catch {
+      setIsListening(false);
+    }
   };
 
   const handleStartPractice = (q: string) => {
@@ -210,14 +274,25 @@ export default function InterviewPrepModal({
                         </span>
                         <span>{item.question}</span>
                       </h4>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => handleStartPractice(item.question)}
-                        className="text-xs h-7 px-2.5 rounded-lg border-purple-200 text-purple-700 hover:bg-purple-50 shrink-0"
-                      >
-                        <PenLine className="w-3 h-3 mr-1" /> Latih Jawaban
-                      </Button>
+                      <div className="flex items-center gap-1 shrink-0">
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => handleSpeakText(item.question)}
+                          className="h-7 w-7 p-0 rounded-lg text-neutral-500 hover:text-purple-700 hover:bg-purple-50"
+                          title="Dengarkan pertanyaan dibacakan oleh suara AI"
+                        >
+                          <Volume2 className="w-3.5 h-3.5 text-purple-600" />
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => handleStartPractice(item.question)}
+                          className="text-xs h-7 px-2.5 rounded-lg border-purple-200 text-purple-700 hover:bg-purple-50 shrink-0"
+                        >
+                          <PenLine className="w-3 h-3 mr-1" /> Latih Jawaban
+                        </Button>
+                      </div>
                     </div>
                     <div className="text-xs text-gray-600 pl-7 space-y-1.5">
                       <p>
@@ -246,14 +321,25 @@ export default function InterviewPrepModal({
                         </span>
                         <span>{item.question}</span>
                       </h4>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => handleStartPractice(item.question)}
-                        className="text-xs h-7 px-2.5 rounded-lg border-blue-200 text-blue-700 hover:bg-blue-50 shrink-0"
-                      >
-                        <PenLine className="w-3 h-3 mr-1" /> Latih Jawaban
-                      </Button>
+                      <div className="flex items-center gap-1 shrink-0">
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => handleSpeakText(item.question)}
+                          className="h-7 w-7 p-0 rounded-lg text-neutral-500 hover:text-blue-700 hover:bg-blue-50"
+                          title="Dengarkan pertanyaan dibacakan oleh suara AI"
+                        >
+                          <Volume2 className="w-3.5 h-3.5 text-blue-600" />
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => handleStartPractice(item.question)}
+                          className="text-xs h-7 px-2.5 rounded-lg border-blue-200 text-blue-700 hover:bg-blue-50 shrink-0"
+                        >
+                          <PenLine className="w-3 h-3 mr-1" /> Latih Jawaban
+                        </Button>
+                      </div>
                     </div>
                     <div className="text-xs text-gray-600 pl-7 space-y-1.5">
                       <p>
@@ -281,14 +367,25 @@ export default function InterviewPrepModal({
                         </span>
                         <span>{item.question}</span>
                       </h4>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => handleStartPractice(item.question)}
-                        className="text-xs h-7 px-2.5 rounded-lg border-emerald-200 text-emerald-700 hover:bg-emerald-50 shrink-0"
-                      >
-                        <PenLine className="w-3 h-3 mr-1" /> Latih Jawaban
-                      </Button>
+                      <div className="flex items-center gap-1 shrink-0">
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => handleSpeakText(item.question)}
+                          className="h-7 w-7 p-0 rounded-lg text-neutral-500 hover:text-emerald-700 hover:bg-emerald-50"
+                          title="Dengarkan pertanyaan dibacakan oleh suara AI"
+                        >
+                          <Volume2 className="w-3.5 h-3.5 text-emerald-600" />
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => handleStartPractice(item.question)}
+                          className="text-xs h-7 px-2.5 rounded-lg border-emerald-200 text-emerald-700 hover:bg-emerald-50 shrink-0"
+                        >
+                          <PenLine className="w-3 h-3 mr-1" /> Latih Jawaban
+                        </Button>
+                      </div>
                     </div>
                     <div className="text-xs text-gray-600 pl-7 space-y-1.5">
                       {item.scenario && (
@@ -311,9 +408,24 @@ export default function InterviewPrepModal({
               <TabsContent value="practice" className="space-y-4 pt-4">
                 <div className="p-4 border border-purple-200 rounded-2xl bg-purple-50/40 space-y-3.5">
                   <div>
-                    <Label className="text-xs font-bold text-neutral-800 uppercase tracking-wider">
-                      Pertanyaan yang Sedang Dilatih
-                    </Label>
+                    <div className="flex items-center justify-between mb-1">
+                      <Label className="text-xs font-bold text-neutral-800 uppercase tracking-wider">
+                        Pertanyaan yang Sedang Dilatih
+                      </Label>
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => handleSpeakText(practiceQuestion)}
+                        className={`h-6 px-2 text-[11px] gap-1 rounded-md font-semibold ${
+                          isSpeaking ? "text-purple-700 bg-purple-100" : "text-neutral-600 hover:bg-white"
+                        }`}
+                        title="Dengarkan pertanyaan dibacakan oleh suara AI HRD"
+                      >
+                        {isSpeaking ? <VolumeX className="w-3.5 h-3.5 text-purple-600" /> : <Volume2 className="w-3.5 h-3.5 text-purple-600" />}
+                        <span>{isSpeaking ? "Hentikan Suara" : "Dengarkan Pertanyaan"}</span>
+                      </Button>
+                    </div>
                     <Input
                       value={practiceQuestion}
                       onChange={e => setPracticeQuestion(e.target.value)}
@@ -327,9 +439,21 @@ export default function InterviewPrepModal({
                       <Label className="text-xs font-bold text-neutral-800 uppercase tracking-wider">
                         Draft Jawaban Anda
                       </Label>
-                      <span className="text-[11px] text-neutral-400">
-                        Ketik apa yang akan Anda katakan secara jujur
-                      </span>
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="outline"
+                        onClick={handleToggleVoiceInput}
+                        className={`h-6 px-2 text-[11px] gap-1 rounded-md font-semibold transition-all ${
+                          isListening
+                            ? "bg-rose-600 text-white border-rose-600 animate-pulse"
+                            : "border-purple-200 text-purple-700 bg-white hover:bg-purple-50"
+                        }`}
+                        title="Bicara dengan mikrofon untuk transkripsi jawaban langsung"
+                      >
+                        {isListening ? <MicOff className="w-3 h-3" /> : <Mic className="w-3 h-3 text-purple-600" />}
+                        <span>{isListening ? "Mendengarkan..." : "Bicara (Mic)"}</span>
+                      </Button>
                     </div>
                     <Textarea
                       rows={5}

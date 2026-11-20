@@ -1582,7 +1582,7 @@ Hormat saya,
 
           {/* Scaled A4 Sheet Container with layout boundary bounding box */}
           <div
-            className="flex items-start justify-center transition-all duration-200 ease-out pb-16"
+            className="block shrink-0 transition-all duration-200 ease-out pb-24"
             style={{
               width: `${Math.ceil(794 * (zoomLevel / 100))}px`,
               minHeight: `${Math.ceil(1123 * (zoomLevel / 100))}px`,

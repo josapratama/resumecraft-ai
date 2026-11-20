@@ -3,7 +3,23 @@ import { useI18n } from "@/lib/i18n";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ZoomIn, ZoomOut, Maximize2, RotateCcw, FileCheck, Scissors } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  ZoomIn,
+  ZoomOut,
+  Maximize2,
+  RotateCcw,
+  FileCheck,
+  Scissors,
+  Palette,
+  SlidersHorizontal,
+  Check,
+} from "lucide-react";
 import ModernTemplate from "./templates/ModernTemplate";
 import ClassicTemplate from "./templates/ClassicTemplate";
 import MinimalTemplate from "./templates/MinimalTemplate";
@@ -40,6 +56,7 @@ interface CVPreviewProps {
   cvData: FullCVData;
   paperSize?: PaperSize;
   onPaperSizeChange?: (size: PaperSize) => void;
+  onStyleChange?: (style: { accentColor?: string; fontFamily?: string }) => void;
 }
 
 const TEMPLATE_MAP: Record<
@@ -82,6 +99,7 @@ export default function CVPreview({
   cvData,
   paperSize = "a4",
   onPaperSizeChange,
+  onStyleChange,
 }: CVPreviewProps) {
   const { t } = useI18n();
   const TemplateComponent = TEMPLATE_MAP[template] ?? ModernTemplate;
@@ -92,6 +110,15 @@ export default function CVPreview({
   const [isOnePageMode, setIsOnePageMode] = useState<boolean>(false);
   const [showPageBreakGuide, setShowPageBreakGuide] = useState<boolean>(true);
   const [docHeight, setDocHeight] = useState<number>(1123);
+  const [accentColor, setAccentColor] = useState<string>(cvData.cv.accentColor || "#ef4444");
+  const [fontSizePercent, setFontSizePercent] = useState<number>(100);
+  const [lineSpacing, setLineSpacing] = useState<"compact" | "normal" | "relaxed">("normal");
+
+  useEffect(() => {
+    if (cvData.cv.accentColor) {
+      setAccentColor(cvData.cv.accentColor);
+    }
+  }, [cvData.cv.accentColor]);
 
   // Standard paper dimensions in px (at 96 DPI)
   // A4: 210mm x 297mm ≈ 794px x 1123px
@@ -248,6 +275,110 @@ export default function CVPreview({
             </span>
           </Button>
 
+          {/* Quick Accent Color Swatches Dropdown */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button
+                type="button"
+                className="h-6 px-2 text-[10px] gap-1.5 rounded-full font-semibold transition-all inline-flex items-center text-slate-300 hover:text-white bg-slate-800 border border-slate-700 shrink-0 cursor-pointer shadow-2xs"
+                title="Ganti warna tema CV"
+              >
+                <span className="w-2.5 h-2.5 rounded-full border border-white/50" style={{ backgroundColor: accentColor }} />
+                <span className="hidden sm:inline">Warna</span>
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" className="w-48 p-2 rounded-xl bg-slate-900 border-slate-700 text-white shadow-xl">
+              <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1.5 px-1">
+                Warna Aksen CV
+              </div>
+              <div className="grid grid-cols-4 gap-1.5 p-1">
+                {[
+                  { name: "Crimson Red", hex: "#ef4444" },
+                  { name: "Classic Navy", hex: "#1e3a8a" },
+                  { name: "Royal Indigo", hex: "#4f46e5" },
+                  { name: "Emerald Green", hex: "#059669" },
+                  { name: "Teal Cyan", hex: "#0d9488" },
+                  { name: "Amethyst Violet", hex: "#7c3aed" },
+                  { name: "Amber Ochre", hex: "#d97706" },
+                  { name: "Dark Zinc", hex: "#18181b" },
+                ].map(c => (
+                  <button
+                    key={c.hex}
+                    type="button"
+                    onClick={() => {
+                      setAccentColor(c.hex);
+                      onStyleChange?.({ accentColor: c.hex });
+                    }}
+                    className="w-7 h-7 rounded-full border border-white/20 flex items-center justify-center transition-transform hover:scale-110 relative"
+                    style={{ backgroundColor: c.hex }}
+                    title={c.name}
+                  >
+                    {accentColor === c.hex && <Check className="w-3.5 h-3.5 text-white drop-shadow-sm" />}
+                  </button>
+                ))}
+              </div>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          {/* Quick Micro-Spacing / Line-Height / Font-Size Adjuster */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button
+                type="button"
+                className="h-6 px-2 text-[10px] gap-1 rounded-full font-semibold transition-all inline-flex items-center text-slate-300 hover:text-white bg-slate-800 border border-slate-700 shrink-0 cursor-pointer shadow-2xs"
+                title="Atur Kerapatan Huruf & Spasi Baris agar Pas 1 Lembar"
+              >
+                <SlidersHorizontal className="w-3 h-3 text-cyan-400" />
+                <span className="hidden sm:inline">Kerapatan</span>
+                {fontSizePercent !== 100 && <span className="text-[9px] text-cyan-300">({fontSizePercent}%)</span>}
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" className="w-56 p-2.5 rounded-xl bg-slate-900 border-slate-700 text-white shadow-xl space-y-2">
+              <div>
+                <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">
+                  Ukuran Font ({fontSizePercent}%)
+                </div>
+                <div className="grid grid-cols-4 gap-1">
+                  {[90, 95, 100, 105].map(sz => (
+                    <button
+                      key={sz}
+                      type="button"
+                      onClick={() => setFontSizePercent(sz)}
+                      className={`py-1 text-[10px] rounded font-semibold transition-all ${
+                        fontSizePercent === sz ? "bg-cyan-600 text-white" : "bg-slate-800 text-slate-300 hover:bg-slate-700"
+                      }`}
+                    >
+                      {sz}%
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div className="border-t border-slate-800 pt-2">
+                <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">
+                  Jarak Spasi Baris
+                </div>
+                <div className="grid grid-cols-3 gap-1">
+                  {[
+                    { id: "compact", label: "Ketat" },
+                    { id: "normal", label: "Normal" },
+                    { id: "relaxed", label: "Renggang" },
+                  ].map(sp => (
+                    <button
+                      key={sp.id}
+                      type="button"
+                      onClick={() => setLineSpacing(sp.id as any)}
+                      className={`py-1 text-[10px] rounded font-semibold transition-all ${
+                        lineSpacing === sp.id ? "bg-cyan-600 text-white" : "bg-slate-800 text-slate-300 hover:bg-slate-700"
+                      }`}
+                    >
+                      {sp.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
           {docHeight > targetHeightPx + 15 && (
             <Button
               size="sm"
@@ -325,7 +456,7 @@ export default function CVPreview({
       >
         {/* Layout boundary matches visual scaled size so NO horizontal overflow happens on mobile */}
         <div
-          className="relative transition-all duration-150 flex items-start justify-center"
+          className="relative transition-all duration-150 block shrink-0"
           style={{
             width: `${Math.ceil(targetWidthPx * (zoom / 100))}px`,
             height: `${Math.ceil(docHeight * (zoom / 100))}px`,
@@ -349,6 +480,9 @@ export default function CVPreview({
                 minHeight: `${targetHeightPx}px`,
                 wordBreak: "break-word",
                 overflowWrap: "break-word",
+                fontSize: `${fontSizePercent}%`,
+                lineHeight: lineSpacing === "compact" ? "1.3" : lineSpacing === "relaxed" ? "1.7" : "1.5",
+                ['--accent-color' as any]: accentColor,
               }}
             >
             {/* Visual Page-Break Guide (Visible in Studio Preview, Hidden on Print) */}

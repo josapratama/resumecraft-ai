@@ -99,11 +99,11 @@ export default function PersonalInfoForm({
           : String(data.improvedText);
       setFormData(prev => ({ ...prev, professionalSummary: improved }));
       setIsImprovingText(false);
-      toast.success("Summary enhanced with AI!");
+      toast.success(t("personal.summary_improved", "Ringkasan profesional berhasil ditingkatkan dengan AI!"));
     },
     onError: () => {
       setIsImprovingText(false);
-      toast.error("Failed to improve summary");
+      toast.error(t("personal.summary_improve_failed", "Gagal meningkatkan ringkasan dengan AI"));
     },
   });
 
@@ -115,7 +115,7 @@ export default function PersonalInfoForm({
     const file = e.target.files?.[0];
     if (!file) return;
     if (!file.type.startsWith("image/")) {
-      toast.error("Please upload an image file (JPG, PNG, WebP)");
+      toast.error(t("personal.invalid_image_type", "Harap unggah file gambar yang valid (JPG, PNG, WebP)"));
       return;
     }
     const reader = new FileReader();
@@ -144,7 +144,7 @@ export default function PersonalInfoForm({
           ctx.drawImage(img, 0, 0, width, height);
           const dataUrl = canvas.toDataURL("image/jpeg", 0.85);
           handleChange("photoUrl", dataUrl);
-          toast.success("Photo loaded! Don't forget to click Save.");
+          toast.success(t("personal.photo_loaded", "Foto profil berhasil dimuat! Klik Simpan untuk menerapkan."));
         }
       };
       img.src = reader.result as string;
@@ -154,7 +154,7 @@ export default function PersonalInfoForm({
 
   const handleRemovePhoto = () => {
     handleChange("photoUrl", "");
-    toast.info("Photo removed. Click Save to apply.");
+    toast.info(t("personal.photo_removed", "Foto profil dihapus. Klik Simpan untuk menerapkan."));
   };
 
   const handleSave = () => {
@@ -175,7 +175,7 @@ export default function PersonalInfoForm({
 
   const handleImproveText = () => {
     if (!formData.professionalSummary.trim()) {
-      toast.error("Write a summary first before enhancing it");
+      toast.error(t("personal.write_summary_first", "Tulis draf ringkasan terlebih dahulu sebelum ditingkatkan dengan AI"));
       return;
     }
     setIsImprovingText(true);

@@ -19,6 +19,7 @@ import {
   AlertTriangle,
   Lightbulb,
   FileSearch,
+  Plus,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -48,6 +49,25 @@ export default function JobMatcherModal({
       toast.error(err.message || "Gagal memperbarui ringkasan CV");
     },
   });
+
+  const addSkillMutation = trpc.cv.skill.create.useMutation({
+    onSuccess: (_: any, vars: any) => {
+      utils.cv.loadFull.invalidate({ cvId });
+      toast.success(`Keahlian "${vars.skillName}" berhasil disisipkan ke CV!`);
+    },
+    onError: (err: any) => {
+      toast.error(err.message || "Gagal menyisipkan keahlian");
+    },
+  });
+
+  const handleAddMissingKeyword = (kw: string) => {
+    addSkillMutation.mutate({
+      cvId,
+      skillName: kw,
+      category: "Technical & Core Skills",
+      proficiency: "intermediate",
+    });
+  };
 
   const matchMutation = trpc.cvAI.matchJobDescription.useMutation({
     onSuccess: () => {
@@ -178,21 +198,31 @@ export default function JobMatcherModal({
 
                 {/* Missing Keywords */}
                 <div className="bg-white p-4 rounded-xl border border-neutral-200/90 shadow-2xs space-y-2.5">
-                  <div className="flex items-center gap-2 text-xs font-bold text-rose-800">
-                    <XCircle className="w-4 h-4 text-rose-600" />
-                    <span>Kata Kunci Hilang ({result.missingKeywords?.length || 0})</span>
+                  <div className="flex items-center justify-between text-xs font-bold text-rose-800">
+                    <div className="flex items-center gap-2">
+                      <XCircle className="w-4 h-4 text-rose-600" />
+                      <span>Kata Kunci Hilang ({result.missingKeywords?.length || 0})</span>
+                    </div>
+                    <span className="text-[10px] text-neutral-400 font-normal">
+                      💡 Klik kata kunci untuk sisipkan ke CV
+                    </span>
                   </div>
                   <div className="flex flex-wrap gap-1.5">
                     {result.missingKeywords?.map((kw: string, i: number) => (
-                      <Badge
+                      <button
                         key={i}
-                        className="bg-rose-50 text-rose-700 border-rose-200 text-[11px] font-medium"
+                        type="button"
+                        onClick={() => handleAddMissingKeyword(kw)}
+                        disabled={addSkillMutation.isPending}
+                        className="text-xs px-2.5 py-1 rounded-lg bg-rose-50 text-rose-800 hover:bg-rose-100 hover:border-rose-300 border border-rose-200 font-medium inline-flex items-center gap-1 transition-all shadow-2xs hover:scale-105 active:scale-95 cursor-pointer"
+                        title="Klik untuk langsung sisipkan ke daftar keahlian CV"
                       >
-                        + {kw}
-                      </Badge>
+                        <Plus className="w-3 h-3 text-rose-600" />
+                        <span>{kw}</span>
+                      </button>
                     ))}
                     {(!result.missingKeywords || result.missingKeywords.length === 0) && (
-                      <p className="text-xs text-emerald-600">Luar biasa! Semua kata kunci penting telah tercakup.</p>
+                      <p className="text-xs text-emerald-600 font-medium">Luar biasa! Semua kata kunci penting telah tercakup.</p>
                     )}
                   </div>
                 </div>
